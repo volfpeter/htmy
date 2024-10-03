@@ -1,0 +1,33 @@
+name: Build documentation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          # Issue ref: https://github.com/actions/setup-python/issues/436
+          # cache: "pip"
+          cache-dependency-path: pyproject.toml
+          python-version-file: pyproject.toml
+
+      - uses: actions/cache@v2
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+
+      - run: pip install mkdocs-material mkdocstrings[python]
+
+      - run: mkdocs gh-deploy --force
