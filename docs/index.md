@@ -279,7 +279,7 @@ The other end of spectrum -- plain rendering engines -- is dominated by the [Jin
 
 Then there are tools that aim for the middleground, usually by providing most of the benefits and drawbacks of complete application frameworks while leaving state management, client-server communication, and dynamic UI updates for the user to solve, often with some level of [HTMX](https://htmx.org/) support. This group includes libraries like [FastHTML](https://github.com/answerdotai/fasthtml) and [Ludic](https://github.com/getludic/ludic).
 
-The primary aim of `htmy` is to be an **async**, pure-Python rendering engine, which is as **simple** and **customizable** as possible, while still providing all the building blocks for (conveniently) creating complex and maintainable applications.
+The primary aim of `htmy` is to be an **async**, pure-Python rendering engine, which is as **simple**, **maintainable**, and **customizable** as possible, while still providing all the building blocks for (conveniently) creating complex and maintainable applications.
 
 ## Dependencies
 
