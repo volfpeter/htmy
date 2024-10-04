@@ -18,6 +18,7 @@
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
 - Built-in, easy to use `ErrorBoundary` component for graceful error handling.
+- **Unopinionated**: use the backend, CSS, and JS frameworks of your choice, the way you want to use them.
 - Everything is **easily customizable**, from the rendering engine to components, formatting and context management.
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
 - **Fully-typed**.
