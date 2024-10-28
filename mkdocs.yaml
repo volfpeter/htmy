@@ -48,6 +48,8 @@ nav:
   - API Reference:
       - api/core.md
       - api/renderer.md
-      - api/html.md
+      - HTML: api/html.md
+      - Markdown: api/md.md
       - api/utils.md
       - api/typing.md
+      - api/etree.md
