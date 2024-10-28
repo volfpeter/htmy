@@ -4,9 +4,11 @@ import abc
 import asyncio
 import enum
 from collections.abc import Callable, Container
+from pathlib import Path
 from typing import Any, ClassVar, Generic, Self, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
 
+from .io import open_file
 from .typing import (
     AsyncFunctionComponent,
     Component,
@@ -40,7 +42,8 @@ class Fragment:
         self._children = children
 
     def htmy(self, context: Context) -> Component:
-        return tuple(join_components(self._children, "\n"))
+        """Renders the component."""
+        return self._children
 
 
 class ErrorBoundary(Fragment):
@@ -112,7 +115,48 @@ class WithContext(Fragment):
         self._context = context
 
     def htmy_context(self) -> Context:
+        """Returns an HTMY context for child rendering."""
         return self._context
+
+
+class Snippet:
+    """
+    Base component that can load its content from a file.
+    """
+
+    __slots__ = ("_path_or_text",)
+
+    def __init__(self, path_or_text: Text | str | Path) -> None:
+        """
+        Initialization.
+
+        Arguments:
+            path_or_text: The path from where the content should be loaded or a `Text`
+                instance if this value should be rendered directly.
+        """
+        self._path_or_text = path_or_text
+
+    async def htmy(self, context: Context) -> Component:
+        """Renders the component."""
+        text = await self._get_text_content()
+        return self._render_text(text, context)
+
+    async def _get_text_content(self) -> str:
+        """Returns the plain text content that should be rendered."""
+        path_or_text = self._path_or_text
+
+        if isinstance(path_or_text, Text):
+            return path_or_text
+        else:
+            async with await open_file(path_or_text, "r") as f:
+                return await f.read()
+
+    def _render_text(self, text: str, context: Context) -> Component:
+        """
+        Render function that takes the text that must be rendered and the current rendering context,
+        and returns the corresponding HTMY component.
+        """
+        return SafeStr(text)
 
 
 # -- Context utilities
@@ -154,7 +198,7 @@ class ContextAware:
     ```
     """
 
-    __slot__ = ()
+    __slots__ = ()
 
     _base_context_type: ClassVar[type[ContextAware] | None] = None
 
@@ -214,6 +258,7 @@ class SyncFunctionComponentWrapper(Generic[T]):
         cls._wrapped_function = func
 
     def htmy(self, context: Context) -> Component:
+        """Renders the component."""
         # type(self) is necessary, otherwise the wrapped function would be called
         # with an extra self argument...
         return type(self)._wrapped_function(self._props, context)
@@ -233,6 +278,7 @@ class AsyncFunctionComponentWrapper(Generic[T]):
         cls._wrapped_function = func
 
     async def htmy(self, context: Context) -> Component:
+        """Renders the component."""
         # type(self) is necessary, otherwise the wrapped function would be called
         # with an extra self argument...
         return await type(self)._wrapped_function(self._props, context)
@@ -283,7 +329,13 @@ class SkipProperty(Exception):
     ...
 
 
-class SafeStr(str):
+class Text(str):
+    """Marker class for differentiating text content from other strings."""
+
+    ...
+
+
+class SafeStr(Text):
     """
     String subclass whose instances shouldn't get escaped during rendering.
 
@@ -422,6 +474,8 @@ _default_tag_formatter = Formatter()
 
 
 class TagConfig(TypedDict, total=False):
+    """Tag configuration."""
+
     child_separator: ComponentType | None
 
 
@@ -437,14 +491,23 @@ class BaseTag(abc.ABC):
     resolves the async content and then passes the value to the tag.
     """
 
-    __slots__ = ()
+    __slots__ = ("_htmy_name",)
+
+    def __init__(self) -> None:
+        self._htmy_name = self._get_htmy_name()
 
     @property
-    def _htmy_name(self) -> str:
-        return type(self).__name__
+    def htmy_name(self) -> str:
+        """The tag name."""
+        return self._htmy_name
 
     @abc.abstractmethod
-    def htmy(self, context: Context) -> Component: ...
+    def htmy(self, context: Context) -> Component:
+        """Abstract base method for HTMY rendering."""
+        ...
+
+    def _get_htmy_name(self) -> str:
+        return type(self).__name__
 
 
 class TagWithProps(BaseTag):
@@ -453,28 +516,25 @@ class TagWithProps(BaseTag):
     __slots__ = ("props",)
 
     def __init__(self, **props: PropertyValue) -> None:
+        """
+        Initialization.
+
+        Arguments:
+            **props: Tag properties.
+        """
         super().__init__()
         self.props = props
 
     def htmy(self, context: Context) -> Component:
-        name = self._htmy_name
-        props = self._htmy_format_props(context=context)
-        return (SafeStr(f"<{name} {props}>"), SafeStr(f"</{name}>"))
-
-    def _htmy_format_props(self, context: Context) -> str:
-        formatter = Formatter.from_context(context, _default_tag_formatter)
-        return " ".join(formatter.format(name, value) for name, value in self.props.items())
-
-
-class StandaloneTag(TagWithProps):
-    """Tag that has properties and no closing elements, e.g. `<img .../>`."""
-
-    __slots__ = ()
-
-    def htmy(self, context: Context) -> Component:
-        name = self._htmy_name
+        """Renders the component."""
+        name = self.htmy_name
         props = self._htmy_format_props(context=context)
         return SafeStr(f"<{name} {props}/>")
+
+    def _htmy_format_props(self, context: Context) -> str:
+        """Formats tag properties."""
+        formatter = Formatter.from_context(context, _default_tag_formatter)
+        return " ".join(formatter.format(name, value) for name, value in self.props.items())
 
 
 class Tag(TagWithProps):
@@ -485,12 +545,27 @@ class Tag(TagWithProps):
     tag_config: TagConfig = {"child_separator": "\n"}
 
     def __init__(self, *children: ComponentType, **props: PropertyValue) -> None:
+        """
+        Initialization.
+
+        Arguments:
+            *children: Children components.
+            **props: Tag properties.
+        """
+        super().__init__(**props)
         self.children = children
-        self.props = props
+
+    @property
+    def child_separator(self) -> ComponentType | None:
+        """The child separator to use."""
+        return self.tag_config.get("child_separator", None)
 
     def htmy(self, context: Context) -> Component:
-        separator = self.tag_config.get("child_separator", None)
-        opening, closing = cast(tuple[ComponentType, ComponentType], super().htmy(context))
+        """Renders the component."""
+        name = self.htmy_name
+        props = self._htmy_format_props(context=context)
+        opening, closing = SafeStr(f"<{name} {props}>"), SafeStr(f"</{name}>")
+        separator = self.child_separator
         return (
             opening,
             *(
@@ -500,3 +575,33 @@ class Tag(TagWithProps):
             ),
             closing,
         )
+
+
+class WildcardTag(Tag):
+    """Tag that can have both children and properties, and whose tag name can be set."""
+
+    __slots__ = ("_child_separator",)
+
+    def __init__(
+        self,
+        *children: ComponentType,
+        htmy_name: str,
+        htmy_child_separator: ComponentType | None = None,
+        **props: PropertyValue,
+    ) -> None:
+        """
+        Initialization.
+
+        Arguments:
+            *children: Children components.
+            htmy_name: The tag name to use for this tag.
+            htmy_child_separator: The child separator to use (if any).
+            **props: Tag properties.
+        """
+        super().__init__(*children, **props)
+        self._htmy_name = htmy_name
+        self._child_separator = htmy_child_separator
+
+    @property
+    def child_separator(self) -> ComponentType | None:
+        return self._child_separator
