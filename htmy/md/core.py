@@ -19,10 +19,8 @@ class MarkdownParser(ContextAware):
     """
     Context-aware markdown parser.
 
-    By default, this class uses the `markdown` (a.k.a. [Python-Markdown](https://python-markdown.github.io/))
-    library with a sensible set of [extensions](https://python-markdown.github.io/extensions/)
-    including code highlighing. This dependency is not required though if you plug in a different
-    parser.
+    By default, this class uses the `markdown` library with a sensible set of
+    [extensions](https://python-markdown.github.io/extensions/) including code highlighing.
     """
 
     __slots__ = ("_md",)
