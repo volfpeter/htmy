@@ -39,6 +39,9 @@ class ETreeConverter:
 
     def convert(self, element: str) -> ComponentType:
         """Converts the given (possible multi-root) XML string to an HTMY component."""
+        if len(self._components) == 0:
+            return SafeStr(element)
+
         element = f"<{self._htmy_fragment}>{element}</{self._htmy_fragment}>"
         return self.convert_element(ET.fromstring(element))  # noqa: S314 # Only use from XML strings from a trusted source.
 
