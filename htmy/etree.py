@@ -20,7 +20,7 @@ class ETreeConverter:
     Utility for converting XML strings to custom HTMY components.
     """
 
-    __slots__ = ("_components",)
+    __slots__ = ("_rules",)
 
     _htmy_fragment: ClassVar[str] = "htmy_fragment"
     """
@@ -28,18 +28,18 @@ class ETreeConverter:
     XML document with a single root that can be processed by standard tools.
     """
 
-    def __init__(self, components: Mapping[str, Callable[..., ComponentType]]) -> None:
+    def __init__(self, rules: Mapping[str, Callable[..., ComponentType]]) -> None:
         """
         Initialization.
 
         Arguments:
-            components: A tag-name -> HTMY component factory mapping.
+            rules: Tag-name to HTMY component conversion rules.
         """
-        self._components = components
+        self._rules = rules
 
     def convert(self, element: str) -> ComponentType:
         """Converts the given (possible multi-root) XML string to an HTMY component."""
-        if len(self._components) == 0:
+        if len(self._rules) == 0:
             return SafeStr(element)
 
         element = f"<{self._htmy_fragment}>{element}</{self._htmy_fragment}>"
@@ -47,12 +47,12 @@ class ETreeConverter:
 
     def convert_element(self, element: Element) -> ComponentType:
         """Converts the given `Element` to an HTMY component."""
-        components = self._components
-        if len(components) == 0:
+        rules = self._rules
+        if len(rules) == 0:
             return SafeStr(ET.tostring(element))
 
         tag: str = element.tag
-        component = Fragment if tag == self._htmy_fragment else components.get(tag)
+        component = Fragment if tag == self._htmy_fragment else rules.get(tag)
         children = self._convert_children(element)
         properties = self._convert_properties(element)
 
