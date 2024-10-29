@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from htmy import HTMY, ComponentType, PropertyValue, Text, etree, html, md
+from htmy import HTMY, Component, ComponentType, PropertyValue, Text, etree, html, is_component_sequence, md
 
 from .utils import tests_root
 
 _blog_post = """---
-title: "Markdown"
+title: Markdown
 ---
 
 # Essential reading
@@ -114,6 +114,17 @@ _etree_converted_blogpost_with_extra_classes = _base_etree_converted_blogpost.fo
 )
 
 
+def _md_renderer(children: Component, metadata: md.MarkdownMetadataDict | None) -> Component:
+    assert isinstance(metadata, dict)
+    title = metadata.get("title")
+    assert isinstance(title, list)  # Items in the parsed metadata are an array.
+    assert len(title) == 1
+    return html.div(
+        html.h1(title[0]),
+        *(children if is_component_sequence(children) else [children]),  # type: ignore[list-item]
+    )
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("path_or_text", "expected"),
@@ -169,3 +180,14 @@ async def test_parsing_and_conversion(
     md_component = md.MD(path_or_text, converter=converter.convert)
     rendered = await HTMY().render(md_component)
     assert rendered == expected
+
+    md_component_with_renderer = md.MD(path_or_text, converter=converter.convert, renderer=_md_renderer)
+    rendered = await HTMY().render(md_component_with_renderer)
+    assert rendered == "\n".join(
+        (
+            "<div >",
+            "<h1 >Markdown</h1>",
+            expected,
+            "</div>",
+        )
+    )
