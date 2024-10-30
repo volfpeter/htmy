@@ -2,6 +2,8 @@
 
 The focus of this example is markdown rendering and customization. As such, all you need to follow along is `htmy`, which you can install with `pip install htmy`.
 
+There's one important thing to know about markdown in relation to this tutorial and the markdown support in `htmy`: markdown can include [HTML](https://daringfireball.net/projects/markdown/syntax#html) (well, XML). Looking at this from another perspective, most HTML/XML snippets can be parsed by markdown parsers without issues. This means that while the below examples work with text files with markdown syntax, those file could also contain plain HTML snippets with no "markdown" at all. You will start to see the full power of this concept by the end of this article.
+
 ## Essentials
 
 The entire example will consist of two files: `post.md` and `app.py` which should be located next to each other in the same directory.
