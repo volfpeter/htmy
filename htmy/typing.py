@@ -30,14 +30,18 @@ Context: TypeAlias = Mapping[ContextKey, ContextValue]
 class SyncComponent(Protocol):
     """Protocol definition for sync `htmy` components."""
 
-    def htmy(self, context: Context, /) -> "Component": ...
+    def htmy(self, context: Context, /) -> "Component":
+        """Renders the component."""
+        ...
 
 
 @runtime_checkable
 class AsyncComponent(Protocol):
     """Protocol definition for async `htmy` components."""
 
-    async def htmy(self, context: Context, /) -> "Component": ...
+    async def htmy(self, context: Context, /) -> "Component":
+        """Renders the component."""
+        ...
 
 
 HTMYComponentType: TypeAlias = SyncComponent | AsyncComponent
@@ -75,14 +79,18 @@ FunctionComponent: TypeAlias = SyncFunctionComponent[T] | AsyncFunctionComponent
 class SyncContextProvider(Protocol):
     """Protocol definition for sync context providers."""
 
-    def htmy_context(self) -> Context: ...
+    def htmy_context(self) -> Context:
+        """Returns an HTMY context for child rendering."""
+        ...
 
 
 @runtime_checkable
 class AsyncContextProvider(Protocol):
     """Protocol definition for async context providers."""
 
-    async def htmy_context(self) -> Context: ...
+    async def htmy_context(self) -> Context:
+        """Returns an HTMY context for child rendering."""
+        ...
 
 
 ContextProvider: TypeAlias = SyncContextProvider | AsyncContextProvider

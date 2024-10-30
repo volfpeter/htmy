@@ -9,7 +9,7 @@
 
 # `htmy`
 
-**Async**, **zero-dependency**, **pure-Python** rendering engine.
+**Async**, **pure-Python** rendering engine.
 
 ## Key features
 
@@ -137,11 +137,14 @@ user_table = html.table(
 
 ### Built-in components
 
-`htmy` has a rich set of built-in base and utility components for both HTML and other use-cases:
+`htmy` has a rich set of built-in utilities and components for both HTML and other use-cases:
 
 - `html` module: a complete set of [baseline HTML tags](https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility).
-- `BaseTag`, `TagWithProps`, `StandaloneTag`, `Tag`: base classes for custom XML tags.
+- `BaseTag`, `TagWithProps`, `Tag`, `WildcardTag`: base classes for custom XML tags.
 - `ErrorBoundary`, `Fragment`, `SafeStr`, `WithContext`: utilities for error handling, component wrappers, context providers, and formatting.
+- `Snippet`: utility class for loading and customizing document snippets from the file system.
+- `md`: `MarkdownParser` utility and `MD` component for loading, parsing, converting, and rendering markdown content.
+- `etree.ETreeConverter`: utility that converts XML to a component tree with support for custom HTMY components.
 
 ### Rendering
 
@@ -284,7 +287,10 @@ The primary aim of `htmy` is to be an **async**, pure-Python rendering engine, w
 
 ## Dependencies
 
-The library has **no dependencies**.
+The library aims to minimze its dependencies. Currently the following dependencies are required:
+
+- `anyio`: for async file operations and networking.
+- `markdown`: for markdown parsing.
 
 ## Development
 

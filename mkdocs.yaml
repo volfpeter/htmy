@@ -44,10 +44,14 @@ markdown_extensions:
 nav:
   - index.md
   - Examples:
+      - Examples: examples/index.md
       - examples/fastapi-htmx-tailwind-daisyui.md
+      - examples/markdown.md
   - API Reference:
       - api/core.md
       - api/renderer.md
-      - api/html.md
+      - HTML: api/html.md
+      - Markdown: api/md.md
       - api/utils.md
       - api/typing.md
+      - api/etree.md

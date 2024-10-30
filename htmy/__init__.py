@@ -5,10 +5,12 @@ from .core import Formatter as Formatter
 from .core import Fragment as Fragment
 from .core import SafeStr as SafeStr
 from .core import SkipProperty as SkipProperty
-from .core import StandaloneTag as StandaloneTag
+from .core import Snippet as Snippet
 from .core import Tag as Tag
 from .core import TagConfig as TagConfig
 from .core import TagWithProps as TagWithProps
+from .core import Text as Text
+from .core import WildcardTag as WildcardTag
 from .core import WithContext as WithContext
 from .core import XBool as XBool
 from .core import component as component

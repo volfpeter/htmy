@@ -44,7 +44,7 @@ RendererFunction = Callable[[Component], Awaitable[HTMLResponse]]
 def render(request: Request) -> RendererFunction:
     """FastAPI dependency that returns an HTMY renderer function."""
 
-    async def exec(component: Component):
+    async def exec(component: Component) -> HTMLResponse:
         # Note that we add the result of `make_htmy_context()` as the default context to the
         # `HTMY` renderer. This way wherever this function is used for rendering in routes,
         # every rendered component will be able to access the current request and user.

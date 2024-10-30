@@ -11,7 +11,6 @@ from htmy import (
     Context,
     ErrorBoundary,
     Formatter,
-    StandaloneTag,
     Tag,
     TagWithProps,
     WithContext,
@@ -49,7 +48,7 @@ class Page:
 
         class a_main(Tag): ...
 
-        class img(StandaloneTag): ...
+        class img(TagWithProps): ...
 
         class tp(TagWithProps): ...
 
@@ -113,7 +112,7 @@ class Page:
             (
                 '<a_main p-1="int:123" p-2="fls" p-3="true">',
                 '<img src="/example.png"/>',
-                '<tp x="x1" y="y1" checked="" required="" ></tp>',
+                '<tp x="x1" y="y1" checked="" required="" />',
                 "sync_fc-int:987321",
                 "async_fc-int:456",
                 "<a_main >",

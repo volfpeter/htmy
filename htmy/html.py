@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .core import SafeStr, StandaloneTag, Tag, TagConfig, TagWithProps
+from .core import SafeStr, Tag, TagConfig, TagWithProps
 from .typing import PropertyValue
 
 
@@ -45,7 +45,7 @@ class body(Tag):
     __slots__ = ()
 
 
-class base(StandaloneTag):
+class base(TagWithProps):
     """
     `<base>` element.
 
@@ -70,7 +70,7 @@ class title(Tag):
         super().__init__(text, **props)
 
 
-class link(StandaloneTag):
+class link(TagWithProps):
     """
     `<link>` element.
 
@@ -84,7 +84,7 @@ class link(StandaloneTag):
         return cls(rel="stylesheet", type="text/css", href=href)
 
 
-class meta(StandaloneTag):
+class meta(TagWithProps):
     """
     `<meta>` element.
 
@@ -215,7 +215,7 @@ class div(Tag):
     __slots__ = ()
 
 
-class embed(StandaloneTag):
+class embed(TagWithProps):
     """
     `<embed>` element.
 
@@ -275,7 +275,7 @@ class hgroup(Tag):
     __slots__ = ()
 
 
-class hr(StandaloneTag):
+class hr(TagWithProps):
     """
     `<hr>` element.
 
@@ -365,6 +365,8 @@ class pre(Tag):
     """
 
     __slots__ = ()
+
+    tag_config = _DefaultTagConfig.inline_children
 
 
 class section(Tag):
@@ -457,7 +459,7 @@ class fieldset(Tag):
     __slots__ = ()
 
 
-class input_(StandaloneTag):
+class input_(TagWithProps):
     """
     `<input>` element.
 
@@ -466,8 +468,7 @@ class input_(StandaloneTag):
 
     __slots__ = ()
 
-    @property
-    def _htmy_name(self) -> str:
+    def _get_htmy_name(self) -> str:
         return "input"
 
 
@@ -611,7 +612,7 @@ class bdo(Tag):
     tag_config = _DefaultTagConfig.inline_children
 
 
-class br(StandaloneTag):
+class br(TagWithProps):
     """
     `<br>` element.
 
@@ -668,8 +669,7 @@ class del_(Tag):
 
     tag_config = _DefaultTagConfig.inline_children
 
-    @property
-    def _htmy_name(self) -> str:
+    def _get_htmy_name(self) -> str:
         return "del"
 
 
@@ -719,7 +719,7 @@ class picture(Tag):
     __slots__ = ()
 
 
-class img(StandaloneTag):
+class img(TagWithProps):
     """
     `<img>` element.
 
@@ -729,7 +729,7 @@ class img(StandaloneTag):
     __slots__ = ()
 
 
-class source(StandaloneTag):
+class source(TagWithProps):
     """
     `<source>` element.
 
@@ -1043,7 +1043,7 @@ class td(Tag):
     tag_config = _DefaultTagConfig.inline_children
 
 
-class colgroup(StandaloneTag):
+class colgroup(TagWithProps):
     """
     `<colgroup>` element.
 
@@ -1053,7 +1053,7 @@ class colgroup(StandaloneTag):
     __slots__ = ()
 
 
-class col(StandaloneTag):
+class col(TagWithProps):
     """
     `<col>` element.
 
@@ -1179,7 +1179,7 @@ class video(Tag):
     __slots__ = ()
 
 
-class track(StandaloneTag):
+class track(TagWithProps):
     """
     `<track>` element.
 
@@ -1199,7 +1199,7 @@ class canvas(Tag):
     __slots__ = ()
 
 
-class area(StandaloneTag):
+class area(TagWithProps):
     """
     `<area>` element.
 
