@@ -17,6 +17,7 @@
 - **Powerful**, React-like **context support**, so you can avoid prop-drilling.
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
+- **Markdown** support with tools for customization.
 - Built-in, easy to use `ErrorBoundary` component for graceful error handling.
 - **Unopinionated**: use the backend, CSS, and JS frameworks of your choice, the way you want to use them.
 - Everything is **easily customizable**, from the rendering engine to components, formatting and context management.

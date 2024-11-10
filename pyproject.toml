@@ -30,6 +30,9 @@ build-backend = "poetry.core.masonry.api"
 strict = true
 show_error_codes = true
 
+[tool.pytest.ini_options]
+addopts = "--random-order"
+
 [tool.ruff]
 line-length = 108
 exclude = [
@@ -60,7 +63,7 @@ format = "ruff format ."
 lint = "ruff check ."
 lint-fix = "ruff . --fix"
 mypy = "mypy ."
-test = "python -m pytest tests --random-order"
+test = "python -m pytest tests"
 static-checks.sequence = ["lint", "check-format", "mypy"]
 static-checks.ignore_fail = "return_non_zero"
 serve-docs = "mkdocs serve"
