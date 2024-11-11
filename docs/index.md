@@ -18,6 +18,7 @@
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
 - **Markdown** support with tools for customization.
+- Async, JSON based **internationalization**.
 - Built-in, easy to use `ErrorBoundary` component for graceful error handling.
 - **Unopinionated**: use the backend, CSS, and JS frameworks of your choice, the way you want to use them.
 - Everything is **easily customizable**, from the rendering engine to components, formatting and context management.
@@ -141,10 +142,11 @@ user_table = html.table(
 `htmy` has a rich set of built-in utilities and components for both HTML and other use-cases:
 
 - `html` module: a complete set of [baseline HTML tags](https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility).
+- `md`: `MarkdownParser` utility and `MD` component for loading, parsing, converting, and rendering markdown content.
+- `i18n`: utilities for async, JSON based internationalization.
 - `BaseTag`, `TagWithProps`, `Tag`, `WildcardTag`: base classes for custom XML tags.
 - `ErrorBoundary`, `Fragment`, `SafeStr`, `WithContext`: utilities for error handling, component wrappers, context providers, and formatting.
 - `Snippet`: utility class for loading and customizing document snippets from the file system.
-- `md`: `MarkdownParser` utility and `MD` component for loading, parsing, converting, and rendering markdown content.
 - `etree.ETreeConverter`: utility that converts XML to a component tree with support for custom HTMY components.
 
 ### Rendering
@@ -291,6 +293,7 @@ The primary aim of `htmy` is to be an **async**, pure-Python rendering engine, w
 The library aims to minimze its dependencies. Currently the following dependencies are required:
 
 - `anyio`: for async file operations and networking.
+- `async-lru`: for async caching.
 - `markdown`: for markdown parsing.
 
 ## Development
