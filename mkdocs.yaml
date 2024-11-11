@@ -47,6 +47,7 @@ nav:
       - Examples: examples/index.md
       - examples/fastapi-htmx-tailwind-daisyui.md
       - examples/markdown.md
+      - examples/internationalization.md
   - API Reference:
       - api/core.md
       - api/renderer.md

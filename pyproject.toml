@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "htmy"
-version = "0.2.0"
+version = "0.3.0"
 description = "Async, pure-Python rendering engine."
 authors = ["Peter Volf <do.volfp@gmail.com>"]
 license = "MIT"
@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 anyio = "^4.6.2.post1"
+async-lru = "^2.0.4"
 markdown = "^3.7"
 
 [tool.poetry.group.dev.dependencies]
