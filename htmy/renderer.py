@@ -37,12 +37,17 @@ class HTMY:
 
         Arguments:
             component: The component to render.
-            context: An optional rendering context. If `None`, the renderer's default context will be used.
+            context: An optional rendering context.
 
         Returns:
             The rendered string.
         """
-        return await self._render(component, self._default_context if context is None else context)
+        return await self._render(
+            component,
+            # Type ignore: ChainMap expects mutable mappings,
+            # but mutation is not supported by the Context typing.
+            self._default_context if context is None else ChainMap(context, self._default_context),  # type: ignore[arg-type]
+        )
 
     async def _render(self, component: Component, context: Context) -> str:
         """
