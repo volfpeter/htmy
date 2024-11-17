@@ -1,6 +1,6 @@
 import asyncio
 from collections.abc import Callable
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 import pytest
@@ -81,7 +81,7 @@ class Page:
                             AsyncText("sd<fs> df"),
                             h1(
                                 AsyncText("sdfds"),
-                                created_at=datetime(2024, 10, 3, 4, 42, 2, 71, tzinfo=UTC),
+                                created_at=datetime(2024, 10, 3, 4, 42, 2, 71, tzinfo=timezone.utc),
                                 on_day_=date(2024, 10, 3),
                             ),
                             dp_1=123,

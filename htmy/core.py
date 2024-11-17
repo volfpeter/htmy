@@ -5,8 +5,10 @@ import asyncio
 import enum
 from collections.abc import Callable, Container
 from pathlib import Path
-from typing import Any, ClassVar, Generic, Self, TypedDict, cast, overload
+from typing import Any, ClassVar, Generic, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
+
+from typing_extensions import Self
 
 from .io import open_file
 from .typing import (

@@ -1,5 +1,7 @@
 from collections.abc import Callable
-from typing import Any, NotRequired, TypeAlias, TypedDict
+from typing import Any, TypeAlias, TypedDict
+
+from typing_extensions import NotRequired
 
 from htmy.typing import Component
 
