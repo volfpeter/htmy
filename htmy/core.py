@@ -5,10 +5,8 @@ import asyncio
 import enum
 from collections.abc import Callable, Container
 from pathlib import Path
-from typing import Any, ClassVar, Generic, TypedDict, cast, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
-
-from typing_extensions import Self
 
 from .io import open_file
 from .typing import (
@@ -25,6 +23,11 @@ from .typing import (
     is_component_sequence,
 )
 from .utils import join_components
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+else:
+    Self = Any
 
 # -- Utility components
 
@@ -240,7 +243,7 @@ class ContextAware:
         if isinstance(result, cls):
             return result
 
-        raise TypeError("Incorrectly context data type.")
+        raise TypeError(f"Invalid context data type for {cls.__name__}.")
 
 
 # -- Function components
