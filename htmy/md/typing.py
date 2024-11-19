@@ -1,9 +1,12 @@
 from collections.abc import Callable
-from typing import Any, TypeAlias, TypedDict
-
-from typing_extensions import NotRequired
+from typing import TYPE_CHECKING, Any, TypeAlias, TypedDict
 
 from htmy.typing import Component
+
+if TYPE_CHECKING:
+    from typing_extensions import NotRequired
+else:
+    from typing import Optional as NotRequired
 
 MarkdownMetadataDict: TypeAlias = dict[str, Any]
 

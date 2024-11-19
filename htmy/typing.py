@@ -1,4 +1,4 @@
-from collections.abc import Callable, Coroutine, Mapping
+from collections.abc import Callable, Coroutine, Mapping, MutableMapping
 from typing import Any, Protocol, TypeAlias, TypeGuard, TypeVar, runtime_checkable
 
 T = TypeVar("T")
@@ -22,6 +22,14 @@ ContextValue: TypeAlias = Any
 
 Context: TypeAlias = Mapping[ContextKey, ContextValue]
 """Context mapping."""
+
+MutableContext: TypeAlias = MutableMapping[ContextKey, ContextValue]
+"""
+Mutable context mapping.
+
+It can be helpful when the created context should be marked as mutable for static type analysis
+(usually the created context is a plain `dict`).
+"""
 
 # -- Components
 

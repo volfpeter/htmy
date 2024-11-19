@@ -28,6 +28,7 @@ from .typing import ContextProvider as ContextProvider
 from .typing import ContextValue as ContextValue
 from .typing import FunctionComponent as FunctionComponent
 from .typing import HTMYComponentType as HTMYComponentType
+from .typing import MutableContext as MutableContext
 from .typing import Properties as Properties
 from .typing import PropertyValue as PropertyValue
 from .typing import SyncComponent as SyncComponent
