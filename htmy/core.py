@@ -7,6 +7,7 @@ from collections.abc import Callable, Container
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
+from xml.sax.saxutils import quoteattr as xml_quoteattr
 
 from .io import open_file
 from .typing import (
@@ -429,7 +430,7 @@ class Formatter(ContextAware):
         See `SkipProperty` for more information.
         """
         try:
-            return f'{self.format_name(name)}="{self.format_value(value)}"'
+            return f"{self.format_name(name)}={xml_quoteattr(self.format_value(value))}"
         except SkipProperty:
             return ""
 
