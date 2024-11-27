@@ -276,6 +276,12 @@ If a component executes a potentially "long-running" synchronous call, it is str
 
 In all other cases, it's best to use sync components.
 
+## Framework integrations
+
+FastAPI:
+
+- [FastHX](https://github.com/volfpeter/fasthx)
+
 ## Why
 
 At one end of the spectrum, there are the complete application frameworks that combine the server (Python) and client (JavaScript) applications with the entire state management and synchronization into a single Python (an in some cases an additional JavaScript) package. Some of the most popular examples are: [Reflex](https://github.com/reflex-dev/reflex), [NiceGUI](https://github.com/zauberzeug/nicegui/), [ReactPy](https://github.com/reactive-python/reactpy), and [FastUI](https://github.com/pydantic/FastUI).
