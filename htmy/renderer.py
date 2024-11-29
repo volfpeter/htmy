@@ -85,13 +85,14 @@ class HTMY:
         if isinstance(component, str):
             return self._string_formatter(component)
         else:  # hasattr(component, "htmy"):  # isinstance() is too expensive.
-            child_context = context
+            child_context: Context = context
             if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
-                extra_context = component.htmy_context()
+                extra_context: Context | Awaitable[Context] = component.htmy_context()
                 if isinstance(extra_context, Awaitable):
                     extra_context = await extra_context
 
-                child_context = ChainMap(extra_context, context) if len(extra_context) else context
+                if len(extra_context):
+                    child_context = ChainMap(extra_context, context)
 
             try:
                 children = component.htmy(child_context)
