@@ -84,7 +84,7 @@ class HTMY:
         """
         if isinstance(component, str):
             return self._string_formatter(component)
-        else:  # hasattr(component, "htmy"):  # isinstance() is too expensive.
+        else:
             child_context: Context = context
             if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
                 extra_context: Context | Awaitable[Context] = component.htmy_context()
