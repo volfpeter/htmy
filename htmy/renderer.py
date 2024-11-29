@@ -92,7 +92,8 @@ class HTMY:
                     extra_context = await extra_context
 
                 if len(extra_context):
-                    child_context = ChainMap(extra_context, context)
+                    # Context must not be mutated, so we can ignore that ChainMap expext mutable mappings.
+                    child_context = ChainMap(extra_context, context)  # type: ignore[[arg-type]]
 
             try:
                 children = component.htmy(child_context)
