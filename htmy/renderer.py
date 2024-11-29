@@ -5,7 +5,7 @@ from collections import ChainMap
 from collections.abc import Awaitable, Callable, Iterable
 
 from .core import ErrorBoundary, xml_format_string
-from .typing import Component, ComponentType, Context, ContextProvider, HTMYComponentType
+from .typing import Component, ComponentType, Context
 
 
 class HTMY:
@@ -82,15 +82,19 @@ class HTMY:
         Returns:
             The rendered string.
         """
-        child_context = context
-        if isinstance(component, ContextProvider):
-            extra_context = component.htmy_context()
-            if isinstance(extra_context, Awaitable):
-                extra_context = await extra_context
+        if isinstance(component, str):
+            return self._string_formatter(component)
+        else:
+            child_context: Context = context
+            if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
+                extra_context: Context | Awaitable[Context] = component.htmy_context()
+                if isinstance(extra_context, Awaitable):
+                    extra_context = await extra_context
 
-            child_context = ChainMap(extra_context, context)
+                if len(extra_context):
+                    # Context must not be mutated, so we can ignore that ChainMap expext mutable mappings.
+                    child_context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
-        if isinstance(component, HTMYComponentType):
             try:
                 children = component.htmy(child_context)
                 if isinstance(children, Awaitable):
@@ -102,7 +106,3 @@ class HTMY:
                     return await self._render_one(component.fallback_component(e), context)
 
                 raise e
-        elif isinstance(component, str):
-            return self._string_formatter(component)
-        else:
-            raise TypeError("Unknown component type.")
