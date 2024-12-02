@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import asyncio
 import enum
-from collections.abc import Callable, Container
+from collections.abc import Awaitable, Callable, Container
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
@@ -21,6 +21,7 @@ from .typing import (
     PropertyValue,
     SyncFunctionComponent,
     T,
+    TextProcessor,
     is_component_sequence,
 )
 from .utils import join_components
@@ -130,21 +131,34 @@ class Snippet:
     Base component that can load its content from a file.
     """
 
-    __slots__ = ("_path_or_text",)
+    __slots__ = ("_path_or_text", "_text_processor")
 
-    def __init__(self, path_or_text: Text | str | Path) -> None:
+    def __init__(
+        self,
+        path_or_text: Text | str | Path,
+        *,
+        text_processor: TextProcessor | None = None,
+    ) -> None:
         """
         Initialization.
 
         Arguments:
             path_or_text: The path from where the content should be loaded or a `Text`
                 instance if this value should be rendered directly.
+            text_processor: An optional text processors that can be used to process the text
+                content before rendering. It can be used for example for token replacement or
+                string formatting.
         """
         self._path_or_text = path_or_text
+        self._text_processor = text_processor
 
     async def htmy(self, context: Context) -> Component:
         """Renders the component."""
         text = await self._get_text_content()
+        if self._text_processor is not None:
+            processed = self._text_processor(text, context)
+            text = (await processed) if isinstance(processed, Awaitable) else processed
+
         return self._render_text(text, context)
 
     async def _get_text_content(self) -> str:

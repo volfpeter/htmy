@@ -4,15 +4,27 @@ from pathlib import Path
 
 import pytest
 
-from htmy import HTMY, Component, ComponentType, PropertyValue, Text, etree, html, is_component_sequence, md
+from htmy import (
+    HTMY,
+    Component,
+    ComponentType,
+    PropertyValue,
+    SafeStr,
+    Text,
+    etree,
+    html,
+    is_component_sequence,
+    md,
+)
+from htmy.typing import TextProcessor
 
 from .utils import tests_root
 
-_blog_post = """---
+_blog_post_format_string = """---
 title: Markdown
 ---
 
-# Essential reading
+# {title}
 
 ```python
 import this
@@ -35,8 +47,9 @@ Inline `code` is **also** _fine_.
 - First
 - Second
 - Third
-
 """
+
+_blog_post = _blog_post_format_string.format(title="Essential reading")
 
 _parsed_blog_post = """<h1>Essential reading</h1>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">this</span>
@@ -127,61 +140,87 @@ def _md_renderer(children: Component, metadata: md.MarkdownMetadataDict | None) 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("path_or_text", "expected"),
+    ("path_or_text", "text_processor", "expected"),
     (
-        ("tests/data/blog-post.md", _parsed_blog_post),
-        (tests_root / "data" / "blog-post.md", _parsed_blog_post),
-        (Text(_blog_post), _parsed_blog_post),
+        ("tests/data/blog-post.md", None, _parsed_blog_post),
+        (tests_root / "data" / "blog-post.md", None, _parsed_blog_post),
+        (Text(_blog_post), None, _parsed_blog_post),
+        (
+            Text(_blog_post_format_string),
+            lambda text, context: text.format(title="Essential reading"),
+            _parsed_blog_post,
+        ),
     ),
 )
-async def test_parsing(path_or_text: Text | str | Path, expected: str) -> None:
-    md_component = md.MD(path_or_text)
+async def test_parsing(
+    path_or_text: Text | str | Path, text_processor: TextProcessor, expected: str
+) -> None:
+    md_component = md.MD(path_or_text, text_processor=text_processor)
     rendered = await HTMY().render(md_component)
+    assert isinstance(rendered, SafeStr)
     assert rendered == expected
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("path_or_text", "components", "expected"),
+    ("path_or_text", "components", "text_processor", "expected"),
     (
-        ("tests/data/blog-post.md", {}, _parsed_blog_post),
-        (tests_root / "data" / "blog-post.md", {}, _parsed_blog_post),
-        (Text(_blog_post), {}, _parsed_blog_post),
+        ("tests/data/blog-post.md", {}, None, _parsed_blog_post),
+        (tests_root / "data" / "blog-post.md", {}, None, _parsed_blog_post),
+        (Text(_blog_post), {}, None, _parsed_blog_post),
         (
             "tests/data/blog-post.md",
             {"invalid": lambda _: "<invalid />"},
+            None,
             _etree_converted_blogpost,
         ),
         (
             tests_root / "data" / "blog-post.md",
             {"invalid": lambda _: "<invalid />"},
+            None,
             _etree_converted_blogpost,
         ),
         (
             Text(_blog_post),
             {"invalid": lambda _: "<invalid />"},
+            None,
             _etree_converted_blogpost,
         ),
-        ("tests/data/blog-post.md", ConverterRules.rules(), _etree_converted_blogpost_with_extra_classes),
+        (
+            "tests/data/blog-post.md",
+            ConverterRules.rules(),
+            None,
+            _etree_converted_blogpost_with_extra_classes,
+        ),
         (
             tests_root / "data" / "blog-post.md",
             ConverterRules.rules(),
+            None,
             _etree_converted_blogpost_with_extra_classes,
         ),
-        (Text(_blog_post), ConverterRules.rules(), _etree_converted_blogpost_with_extra_classes),
+        (Text(_blog_post), ConverterRules.rules(), None, _etree_converted_blogpost_with_extra_classes),
+        (
+            Text(_blog_post_format_string),
+            ConverterRules.rules(),
+            lambda text, context: text.format(title="Essential reading"),
+            _etree_converted_blogpost_with_extra_classes,
+        ),
     ),
 )
 async def test_parsing_and_conversion(
     path_or_text: Text | str | Path,
     components: dict[str, Callable[..., ComponentType]],
+    text_processor: TextProcessor,
     expected: str,
 ) -> None:
     converter = etree.ETreeConverter(components)
-    md_component = md.MD(path_or_text, converter=converter.convert)
+    md_component = md.MD(path_or_text, converter=converter.convert, text_processor=text_processor)
     rendered = await HTMY().render(md_component)
     assert rendered == expected
 
-    md_component_with_renderer = md.MD(path_or_text, converter=converter.convert, renderer=_md_renderer)
+    md_component_with_renderer = md.MD(
+        path_or_text, converter=converter.convert, renderer=_md_renderer, text_processor=text_processor
+    )
     rendered = await HTMY().render(md_component_with_renderer)
     assert rendered == "\n".join(
         (
