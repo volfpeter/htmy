@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar
 from markdown import Markdown
 
 from htmy.core import ContextAware, SafeStr, Snippet, Text
+from htmy.typing import TextProcessor
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -90,6 +91,7 @@ class MD(Snippet):
         *,
         converter: Callable[[str], Component] | None = None,
         renderer: MarkdownRenderFunction | None = None,
+        text_processor: TextProcessor | None = None,
     ) -> None:
         """
         Initialization.
@@ -100,8 +102,11 @@ class MD(Snippet):
                 into an HTMY component.
             renderer: Function that get the parsed and converted content and the metadata (if it exists)
                 and turns them into an HTMY component.
+            text_processor: An optional text processors that can be used to process the text
+                content before rendering. It can be used for example for token replacement or
+                string formatting.
         """
-        super().__init__(path_or_text)
+        super().__init__(path_or_text, text_processor=text_processor)
         self._converter: Callable[[str], Component] = SafeStr if converter is None else converter
         self._renderer = renderer
 

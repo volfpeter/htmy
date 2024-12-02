@@ -103,3 +103,9 @@ class AsyncContextProvider(Protocol):
 
 ContextProvider: TypeAlias = SyncContextProvider | AsyncContextProvider
 """Context provider type."""
+
+
+# -- Text processors
+
+TextProcessor: TypeAlias = Callable[[str, Context], str | Coroutine[Any, Any, str]]
+"""Callable type that expects a string and a context, and returns a processed string."""
