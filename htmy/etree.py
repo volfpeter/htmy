@@ -17,7 +17,7 @@ from htmy.core import Fragment, SafeStr, WildcardTag
 
 class ETreeConverter:
     """
-    Utility for converting XML strings to custom HTMY components.
+    Utility for converting XML strings to custom components.
     """
 
     __slots__ = ("_rules",)
@@ -33,12 +33,12 @@ class ETreeConverter:
         Initialization.
 
         Arguments:
-            rules: Tag-name to HTMY component conversion rules.
+            rules: Tag-name to component conversion rules.
         """
         self._rules = rules
 
     def convert(self, element: str) -> ComponentType:
-        """Converts the given (possible multi-root) XML string to an HTMY component."""
+        """Converts the given (possibly multi-root) XML string to a component."""
         if len(self._rules) == 0:
             return SafeStr(element)
 
@@ -46,7 +46,7 @@ class ETreeConverter:
         return self.convert_element(ET.fromstring(element))  # noqa: S314 # Only use from XML strings from a trusted source.
 
     def convert_element(self, element: Element) -> ComponentType:
-        """Converts the given `Element` to an HTMY component."""
+        """Converts the given `Element` to a component."""
         rules = self._rules
         if len(rules) == 0:
             return SafeStr(ET.tostring(element))
@@ -67,7 +67,7 @@ class ETreeConverter:
 
     def _convert_properties(self, element: Element) -> Properties:
         """
-        Converts the attributes of the given `Element` to an HTMY `Properties` mapping.
+        Converts the attributes of the given `Element` to a `Properties` mapping.
 
         This method should not alter property names in any way.
         """
@@ -75,8 +75,8 @@ class ETreeConverter:
 
     def _convert_children(self, element: Element) -> Generator[ComponentType, None, None]:
         """
-        Generator that converts all (text and `Element`) children of the given `Element`
-        into an HTMY component."""
+        Generator that converts all (text and `Element`) children of the given `Element` to a component.
+        """
         if text := self._process_text(element.text):
             yield text
 

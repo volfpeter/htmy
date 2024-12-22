@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "htmy"
-version = "0.3.6"
+version = "0.4.0"
 description = "Async, pure-Python rendering engine."
 authors = ["Peter Volf <do.volfp@gmail.com>"]
 license = "MIT"
@@ -47,13 +47,13 @@ exclude = [
     "docs",
 ]
 lint.select = [
+    "B",  # flake8-bugbear
+    "C",  # flake8-comprehensions
     "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
     "F",  # pyflakes
     "I",  # isort
     "S",  # flake8-bandit - we must ignore these rules in tests
-    "C",  # flake8-comprehensions
-    "B",  # flake8-bugbear
+    "W",  # pycodestyle warnings
 ]
 
 [tool.ruff.lint.per-file-ignores]

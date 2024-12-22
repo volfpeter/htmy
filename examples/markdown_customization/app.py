@@ -1,6 +1,6 @@
 import asyncio
 
-from htmy import HTMY, Component, ComponentType, Context, PropertyValue, etree, html, md
+from htmy import Component, ComponentType, Context, PropertyValue, Renderer, etree, html, md
 
 
 class Page:
@@ -34,7 +34,7 @@ class Page:
 
 
 class PostInfo:
-    """HTMY component for post info rendering."""
+    """Component for post info rendering."""
 
     def __init__(self, author: str, published_at: str) -> None:
         self.author = author
@@ -91,7 +91,7 @@ async def render_post() -> None:
         converter=md_converter.convert,  # And make it use our element converter's conversion method.
     )
     page = Page(md_post)  # Wrap the post in a Page component.
-    rendered = await HTMY().render(page)  # Render the MD component.
+    rendered = await Renderer().render(page)  # Render the MD component.
     print(rendered)  # Print the result.
 
 

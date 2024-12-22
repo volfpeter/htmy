@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from htmy import HTMY, Context, SafeStr, Snippet, Text
+from htmy import Context, Renderer, Snippet, Text
 from htmy.typing import TextProcessor
 
 from .utils import tests_root
@@ -56,6 +56,6 @@ async def test_snippet(
     path_or_text: Text | str | Path, text_processor: TextProcessor, expected: str
 ) -> None:
     snippet = Snippet(path_or_text, text_processor=text_processor)
-    rendered = await HTMY().render(snippet)
-    assert isinstance(rendered, SafeStr)
+    rendered = await Renderer().render(snippet)
+    assert isinstance(rendered, str)
     assert rendered == expected

@@ -15,7 +15,7 @@ from .core import WithContext as WithContext
 from .core import XBool as XBool
 from .core import component as component
 from .core import xml_format_string as xml_format_string
-from .renderer import HTMY as HTMY
+from .renderer import Renderer as Renderer
 from .typing import AsyncComponent as AsyncComponent
 from .typing import AsyncContextProvider as AsyncContextProvider
 from .typing import AsyncFunctionComponent as AsyncFunctionComponent
@@ -36,3 +36,6 @@ from .typing import SyncContextProvider as SyncContextProvider
 from .typing import SyncFunctionComponent as SyncFunctionComponent
 from .typing import is_component_sequence as is_component_sequence
 from .utils import join_components as join_components
+
+HTMY = Renderer
+"""Deprecated alias for `Renderer`."""

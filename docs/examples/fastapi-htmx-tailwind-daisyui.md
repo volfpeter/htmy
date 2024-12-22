@@ -18,7 +18,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
 
-from htmy import HTMY, Component, ComponentType, Context, component, html, is_component_sequence
+from htmy import Component, ComponentType, Context, Renderer, component, html, is_component_sequence
 
 
 @dataclass
@@ -30,7 +30,7 @@ class User:
 
 
 def make_htmy_context(request: Request) -> Context:
-    """Creates the base HTMY context for rendering."""
+    """Creates the base htmy context for rendering."""
     # The context will map the `Request` type to the current request and the User class
     # to the current user. This is similar to what the `ContextAware` utility does, but
     # simpler. With this context, components will be able to easily access the request
@@ -42,14 +42,14 @@ RendererFunction = Callable[[Component], Awaitable[HTMLResponse]]
 
 
 def render(request: Request) -> RendererFunction:
-    """FastAPI dependency that returns an HTMY renderer function."""
+    """FastAPI dependency that returns an htmy renderer function."""
 
     async def exec(component: Component) -> HTMLResponse:
-        # Note that we add the result of `make_htmy_context()` as the default context to the
-        # `HTMY` renderer. This way wherever this function is used for rendering in routes,
+        # Note that we add the result of `make_htmy_context()` as the default context to
+        # the renderer. This way wherever this function is used for rendering in routes,
         # every rendered component will be able to access the current request and user.
-        htmy = HTMY(make_htmy_context(request))
-        return HTMLResponse(await htmy.render(component))
+        renderer = Renderer(make_htmy_context(request))
+        return HTMLResponse(await renderer.render(component))
 
     return exec
 

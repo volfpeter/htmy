@@ -5,17 +5,17 @@ from pathlib import Path
 import pytest
 
 from htmy import (
-    HTMY,
     Component,
     ComponentType,
     PropertyValue,
-    SafeStr,
+    Renderer,
     Text,
     etree,
     html,
     is_component_sequence,
     md,
 )
+from htmy.renderer import RecursiveRenderer
 from htmy.typing import TextProcessor
 
 from .utils import tests_root
@@ -156,8 +156,12 @@ async def test_parsing(
     path_or_text: Text | str | Path, text_processor: TextProcessor, expected: str
 ) -> None:
     md_component = md.MD(path_or_text, text_processor=text_processor)
-    rendered = await HTMY().render(md_component)
-    assert isinstance(rendered, SafeStr)
+    rendered = await Renderer().render(md_component)
+    assert isinstance(rendered, str)
+    assert rendered == expected
+
+    rendered = await RecursiveRenderer().render(md_component)
+    assert isinstance(rendered, str)
     assert rendered == expected
 
 
@@ -215,13 +219,26 @@ async def test_parsing_and_conversion(
 ) -> None:
     converter = etree.ETreeConverter(components)
     md_component = md.MD(path_or_text, converter=converter.convert, text_processor=text_processor)
-    rendered = await HTMY().render(md_component)
+    rendered = await Renderer().render(md_component)
+    assert rendered == expected
+
+    rendered = await RecursiveRenderer().render(md_component)
     assert rendered == expected
 
     md_component_with_renderer = md.MD(
         path_or_text, converter=converter.convert, renderer=_md_renderer, text_processor=text_processor
     )
-    rendered = await HTMY().render(md_component_with_renderer)
+    rendered = await Renderer().render(md_component_with_renderer)
+    assert rendered == "\n".join(
+        (
+            "<div >",
+            "<h1 >Markdown</h1>",
+            expected,
+            "</div>",
+        )
+    )
+
+    rendered = await RecursiveRenderer().render(md_component_with_renderer)
     assert rendered == "\n".join(
         (
             "<div >",

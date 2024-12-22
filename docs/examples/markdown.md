@@ -41,12 +41,12 @@ Then we can create the most minimal version of `app.py` that will be responsible
 ```python
 import asyncio
 
-from htmy import HTMY, md
+from htmy import Renderer, md
 
 
 async def render_post() -> None:
     md_post = md.MD("post.md")  # Create an htmy.md.MD component.
-    rendered = await HTMY().render(md_post)  # Render the MD component.
+    rendered = await Renderer().render(md_post)  # Render the MD component.
     print(rendered)  # Print the result.
 
 
@@ -65,7 +65,7 @@ The `post.md` file can remain the same as above, but `app.py` will change quite 
 First of all we need a few more import (although some only for typing):
 
 ```python
-from htmy import HTMY, Component, ComponentType, Context, PropertyValue, etree, html, md
+from htmy import Component, ComponentType, Context, PropertyValue, Renderer, etree, html, md
 ```
 
 Next we need a `Page` component that defines the base HTML structure of the webpage:
@@ -156,7 +156,7 @@ async def render_post() -> None:
         converter=md_converter.convert,  # And make it use our element converter's conversion method.
     )
     page = Page(md_post)  # Wrap the post in a Page component.
-    rendered = await HTMY().render(page)  # Render the MD component.
+    rendered = await Renderer().render(page)  # Render the MD component.
     print(rendered)  # Print the result.
 ```
 
@@ -202,7 +202,7 @@ Then we can create the `PostInfo` `htmy` component:
 
 ```python
 class PostInfo:
-    """HTMY component for post info rendering."""
+    """Component for post info rendering."""
 
     def __init__(self, author: str, published_at: str) -> None:
         self.author = author

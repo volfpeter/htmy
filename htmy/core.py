@@ -122,7 +122,7 @@ class WithContext(Fragment):
         self._context = context
 
     def htmy_context(self) -> Context:
-        """Returns an HTMY context for child rendering."""
+        """Returns the context for child rendering."""
         return self._context
 
 
@@ -174,7 +174,7 @@ class Snippet:
     def _render_text(self, text: str, context: Context) -> Component:
         """
         Render function that takes the text that must be rendered and the current rendering context,
-        and returns the corresponding HTMY component.
+        and returns the corresponding component.
         """
         return SafeStr(text)
 
@@ -523,7 +523,7 @@ class BaseTag(abc.ABC):
 
     @abc.abstractmethod
     def htmy(self, context: Context) -> Component:
-        """Abstract base method for HTMY rendering."""
+        """Abstract base component implementation."""
         ...
 
     def _get_htmy_name(self) -> str:

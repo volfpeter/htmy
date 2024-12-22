@@ -1,11 +1,11 @@
 import asyncio
 
-from htmy import HTMY, md
+from htmy import Renderer, md
 
 
 async def render_post() -> None:
     md_post = md.MD("post.md")  # Create an htmy.md.MD component.
-    rendered = await HTMY().render(md_post)  # Render the MD component.
+    rendered = await Renderer().render(md_post)  # Render the MD component.
     print(rendered)  # Print the result.
 
 

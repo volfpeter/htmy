@@ -88,7 +88,7 @@ class SyncContextProvider(Protocol):
     """Protocol definition for sync context providers."""
 
     def htmy_context(self) -> Context:
-        """Returns an HTMY context for child rendering."""
+        """Returns a context for child rendering."""
         ...
 
 
@@ -97,7 +97,7 @@ class AsyncContextProvider(Protocol):
     """Protocol definition for async context providers."""
 
     async def htmy_context(self) -> Context:
-        """Returns an HTMY context for child rendering."""
+        """Returns a context for child rendering."""
         ...
 
 

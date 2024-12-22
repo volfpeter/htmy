@@ -6,7 +6,6 @@ from typing import Any
 import pytest
 
 from htmy import (
-    HTMY,
     Component,
     Context,
     ErrorBoundary,
@@ -17,6 +16,7 @@ from htmy import (
     XBool,
     component,
 )
+from htmy.renderer import RecursiveRenderer, Renderer
 
 
 class Page:
@@ -137,11 +137,21 @@ class Page:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("htmy", "page", "context", "expected"),
-    ((HTMY(), Page.page(), None, Page.rendered()),),
+    ("page", "context", "expected"),
+    (
+        (Page.page(), None, Page.rendered()),
+        (Page.page(), None, Page.rendered()),
+    ),
 )
 async def test_complex_page_rendering(
-    htmy: HTMY, page: Component, context: Context | None, expected: str
+    default_renderer: Renderer,
+    recursive_renderer: RecursiveRenderer,
+    page: Component,
+    context: Context | None,
+    expected: str,
 ) -> None:
-    result = await htmy.render(page, context)
+    result = await default_renderer.render(page, context)
+    assert result == expected
+
+    result = await recursive_renderer.render(page, context)
     assert result == expected
