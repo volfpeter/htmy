@@ -106,7 +106,7 @@ class _ComponentRenderer:
         """
         Processes a single node whose component is an `ErrorBoundary`.
         """
-        component: ErrorBoundary = node.component
+        component: ErrorBoundary = node.component  # type: ignore[assignment]
         if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
             context = await self._extend_context(component, context)
 
@@ -160,18 +160,17 @@ class _ComponentRenderer:
 
                 last.next = node
                 last = node
+        elif isinstance(component, str):
+            parent_node.component = string_formatter(component)
         else:
-            if isinstance(component, str):
-                parent_node.component = string_formatter(component)
-            else:
-                parent_node.component = component
-                schedule_node(parent_node, context)
+            parent_node.component = component  # type: ignore[assignment]
+            schedule_node(parent_node, context)
 
     async def _process_async_node(self, node: _Node, context: Context) -> None:
         """
         Processes the given node. `node.component` must be an async component.
         """
-        result = await node.component.htmy(context)
+        result = await node.component.htmy(context)  # type: ignore[misc,union-attr]
         self._process_node_result(node, result, context)
 
     def _schedule_node(self, node: _Node, child_context: Context) -> None:
@@ -181,7 +180,7 @@ class _ComponentRenderer:
         `node.component` must be an `HTMYComponentType` (single component and not `str`).
         """
         component = node.component
-        if asyncio.iscoroutinefunction(component.htmy):
+        if asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
             self._async_todos.append((node, child_context))
         elif isinstance(component, ErrorBoundary):
             self._error_boundary_todos.append((node, child_context))
@@ -200,12 +199,12 @@ class _ComponentRenderer:
                 node, child_context = sync_todos.pop()
                 component = node.component
                 if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
-                    child_context = await self._extend_context(component, child_context)
+                    child_context = await self._extend_context(component, child_context)  # type: ignore[arg-type]
 
-                if asyncio.iscoroutinefunction(node.component.htmy):
-                    async_todos.append(node, child_context)
+                if asyncio.iscoroutinefunction(node.component.htmy):  # type: ignore[union-attr]
+                    async_todos.append((node, child_context))
                 else:
-                    result = node.component.htmy(child_context)
+                    result: Component = node.component.htmy(child_context)  # type: ignore[assignment,union-attr]
                     process_node_result(node, result, child_context)
 
             if async_todos:
@@ -217,7 +216,7 @@ class _ComponentRenderer:
                 *(self._process_error_boundary(n, ctx) for n, ctx in self._error_boundary_todos)
             )
 
-        return "".join(node.component for node in self._root.iter_nodes())
+        return "".join(node.component for node in self._root.iter_nodes())  # type: ignore[misc]
 
 
 async def _render_component(
@@ -234,7 +233,7 @@ async def _render_component(
         renderers = (_ComponentRenderer(c, context, string_formatter=string_formatter) for c in component)
         return "".join(await asyncio.gather(*(r.run() for r in renderers)))
     else:
-        return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()
+        return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()  # type: ignore[arg-type]
 
 
 class Renderer:
@@ -277,7 +276,7 @@ class Renderer:
             The rendered string.
         """
         # Type ignore: ChainMap expects mutable mappings, but context mutation is not allowed so don't care.
-        context: Context = (
+        context = (
             self._default_context if context is None else ChainMap(context, self._default_context)  # type: ignore[arg-type]
         )
         return await _render_component(component, context=context, string_formatter=self._string_formatter)
