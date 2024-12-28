@@ -1,6 +1,6 @@
 import pytest
 
-from htmy.renderer import RecursiveRenderer, Renderer
+from htmy.renderer import BaselineRenderer, Renderer
 
 
 @pytest.fixture(scope="session")
@@ -9,5 +9,5 @@ def default_renderer() -> Renderer:
 
 
 @pytest.fixture(scope="session")
-def recursive_renderer() -> RecursiveRenderer:
-    return RecursiveRenderer()
+def baseline_renderer() -> BaselineRenderer:
+    return BaselineRenderer()

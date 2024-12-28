@@ -16,7 +16,7 @@ from htmy import (
     XBool,
     component,
 )
-from htmy.renderer import RecursiveRenderer, Renderer
+from htmy.renderer import BaselineRenderer, Renderer
 
 
 class Page:
@@ -145,7 +145,7 @@ class Page:
 )
 async def test_complex_page_rendering(
     default_renderer: Renderer,
-    recursive_renderer: RecursiveRenderer,
+    baseline_renderer: BaselineRenderer,
     page: Component,
     context: Context | None,
     expected: str,
@@ -153,5 +153,5 @@ async def test_complex_page_rendering(
     result = await default_renderer.render(page, context)
     assert result == expected
 
-    result = await recursive_renderer.render(page, context)
+    result = await baseline_renderer.render(page, context)
     assert result == expected

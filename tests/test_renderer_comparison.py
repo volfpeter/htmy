@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from htmy import ErrorBoundary, Fragment, Renderer, component, html
-from htmy.renderer import RecursiveRenderer
+from htmy.renderer import BaselineRenderer
 
 if TYPE_CHECKING:
     from htmy import Component, ComponentType, Context
@@ -119,8 +119,8 @@ async def test_renderers(
     *,
     component: Component,
     default_renderer: Renderer,
-    recursive_renderer: RecursiveRenderer,
+    baseline_renderer: BaselineRenderer,
 ) -> None:
     default_renderer_result = await default_renderer.render(component)
-    recursive_renderer_result = await recursive_renderer.render(component)
-    assert default_renderer_result == recursive_renderer_result
+    baseline_renderer_result = await baseline_renderer.render(component)
+    assert default_renderer_result == baseline_renderer_result

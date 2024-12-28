@@ -15,7 +15,7 @@ from htmy import (
     is_component_sequence,
     md,
 )
-from htmy.renderer import RecursiveRenderer
+from htmy.renderer import BaselineRenderer
 from htmy.typing import TextProcessor
 
 from .utils import tests_root
@@ -160,7 +160,7 @@ async def test_parsing(
     assert isinstance(rendered, str)
     assert rendered == expected
 
-    rendered = await RecursiveRenderer().render(md_component)
+    rendered = await BaselineRenderer().render(md_component)
     assert isinstance(rendered, str)
     assert rendered == expected
 
@@ -222,7 +222,7 @@ async def test_parsing_and_conversion(
     rendered = await Renderer().render(md_component)
     assert rendered == expected
 
-    rendered = await RecursiveRenderer().render(md_component)
+    rendered = await BaselineRenderer().render(md_component)
     assert rendered == expected
 
     md_component_with_renderer = md.MD(
@@ -238,7 +238,7 @@ async def test_parsing_and_conversion(
         )
     )
 
-    rendered = await RecursiveRenderer().render(md_component_with_renderer)
+    rendered = await BaselineRenderer().render(md_component_with_renderer)
     assert rendered == "\n".join(
         (
             "<div >",

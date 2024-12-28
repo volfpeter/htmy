@@ -1,8 +1,8 @@
+from .baseline import Renderer as _BaselineRenderer
 from .default import Renderer as _DefaultRenderer
-from .recursive import Renderer as _RecursiveRenderer
 
 Renderer = _DefaultRenderer
 """The default renderer."""
 
-RecursiveRenderer = _RecursiveRenderer
-"""A simple recursive renderer."""
+BaselineRenderer = _BaselineRenderer
+"""The baseline renderer."""

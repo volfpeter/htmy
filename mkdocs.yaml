@@ -52,7 +52,7 @@ nav:
       - api/core.md
       - Renderer:
           - api/renderer/default.md
-          - api/renderer/recursive.md
+          - api/renderer/baseline.md
       - HTML: api/html.md
       - Markdown: api/md.md
       - I18n: api/i18n.md

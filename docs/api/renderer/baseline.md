@@ -1,4 +1,4 @@
-# ::: htmy.renderer.recursive
+# ::: htmy.renderer.baseline
 
     options:
         show_root_heading: true

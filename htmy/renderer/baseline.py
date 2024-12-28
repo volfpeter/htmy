@@ -10,7 +10,7 @@ from htmy.typing import Component, ComponentType, Context
 
 class Renderer:
     """
-    Recursive component renderer.
+    The baseline component renderer.
 
     Because of the simple, recursive implementation, this renderer is the easiest to reason about.
     Therefore it is useful for validating component correctness before bug reporting (if another
