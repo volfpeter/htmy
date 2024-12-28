@@ -4,7 +4,7 @@ The focus of this example is using the built-in `I18n` utility for international
 
 First of all, we must create some translation resources (plain JSON files). Let's do this by creating the `locale/en/page` folder structure and adding a `hello.json` in the `page` folder with the following content: `{ "message": "Hey {name}" }`. Notice the Python format string in the value for the `"message"` key, such strings can be automatically formatted by `I18n`, see the details in the docs and in the usage example below.
 
-Using `I18n` consists of only two steps: create an `I18n` instance, and include it in the `HTMY` rendering context so it can be accessed by components in their `htmy()` (render) method.
+Using `I18n` consists of only two steps: create an `I18n` instance, and include it in the rendering context so it can be accessed by components in their `htmy()` (render) method.
 
 With the translation resource in place, we can create the `app.py` file and implement our translated components like this:
 
@@ -12,12 +12,12 @@ With the translation resource in place, we can create the `app.py` file and impl
 import asyncio
 from pathlib import Path
 
-from htmy import HTMY, Component, Context, html
+from htmy import Component, Context, Renderer, html
 from htmy.i18n import I18n
 
 
 class TranslatedComponent:
-    """HTMY component with translated content."""
+    """Component with translated content."""
 
     async def htmy(self, context: Context) -> Component:
         # Get the I18n instance from the rendering context.
@@ -39,14 +39,14 @@ base_folder = Path(__file__).parent
 
 i18n = I18n(base_folder / "locale" / "en")
 """
-The `I18n` instance that we can add to the `HTMY` rendering context.
+The `I18n` instance that we can add to the rendering context.
 
 It takes translations from the `locale/en` folder.
 """
 
 
 async def render_hello() -> None:
-    rendered = await HTMY().render(
+    rendered = await Renderer().render(
         # Render a TranslatedComponent.
         TranslatedComponent(),
         # Include the created I18n instance in the rendering context.

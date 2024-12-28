@@ -151,16 +151,16 @@ user_table = html.table(
 
 ### Rendering
 
-`htmy.HTMY` is the built-in, default renderer of the library.
+`htmy.Renderer` is the built-in, default renderer of the library.
 
-If you're using the library in an async web framework like [FastAPI](https://fastapi.tiangolo.com/), then you're already in an async environment, so you can render components as simply as this: `await HTMY().render(my_root_component)`.
+If you're using the library in an async web framework like [FastAPI](https://fastapi.tiangolo.com/), then you're already in an async environment, so you can render components as simply as this: `await Renderer().render(my_root_component)`.
 
 If you're trying to run the renderer in a sync environment, like a local script or CLI, then you first need to wrap the renderer in an async task and execute that task with `asyncio.run()`:
 
 ```python
 import asyncio
 
-from htmy import HTMY, html
+from htmy import Renderer, html
 
 async def render_page() -> None:
     page = (
@@ -173,7 +173,7 @@ async def render_page() -> None:
         )
     )
 
-    result = await HTMY().render(page)
+    result = await Renderer().render(page)
     print(result)
 
 
@@ -194,7 +194,7 @@ Here's an example context provider and consumer implementation:
 ```python
 import asyncio
 
-from htmy import HTMY, Component, ComponentType, Context, component, html
+from htmy import Component, ComponentType, Context, Renderer, component, html
 
 class UserContext:
     def __init__(self, *children: ComponentType, username: str, theme: str) -> None:
@@ -240,7 +240,7 @@ async def render_welcome_page() -> None:
         theme="dark",
     )
 
-    result = await HTMY().render(page)
+    result = await Renderer().render(page)
     print(result)
 
 if __name__ == "__main__":
@@ -251,7 +251,7 @@ You can of course rely on the built-in context related utilities like the `Conte
 
 ### Formatter
 
-As mentioned before, the built-in `Formatter` class is responsible for tag attribute name and value formatting. You can completely override or extend the built-in formatting behavior simply by extending this class or adding new rules to an instance of it, and then adding the custom instance to the context, either directly in `HTMY` or `HTMY.render()`, or in a context provider component.
+As mentioned before, the built-in `Formatter` class is responsible for tag attribute name and value formatting. You can completely override or extend the built-in formatting behavior simply by extending this class or adding new rules to an instance of it, and then adding the custom instance to the context, either directly in `Renderer` or `Renderer.render()`, or in a context provider component.
 
 These are default tag attribute formatting rules:
 

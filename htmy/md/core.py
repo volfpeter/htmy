@@ -99,9 +99,9 @@ class MD(Snippet):
         Arguments:
             path_or_text: The path where the markdown file is located or a markdown `Text`.
             converter: Function that converts an HTML string (the parsed and processed markdown text)
-                into an HTMY component.
-            renderer: Function that get the parsed and converted content and the metadata (if it exists)
-                and turns them into an HTMY component.
+                into a component.
+            renderer: Function that gets the parsed and converted content and the metadata (if it exists)
+                and turns them into a component.
             text_processor: An optional text processors that can be used to process the text
                 content before rendering. It can be used for example for token replacement or
                 string formatting.

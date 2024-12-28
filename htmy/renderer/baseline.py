@@ -4,12 +4,21 @@ import asyncio
 from collections import ChainMap
 from collections.abc import Awaitable, Callable, Iterable
 
-from .core import ErrorBoundary, xml_format_string
-from .typing import Component, ComponentType, Context
+from htmy.core import ErrorBoundary, xml_format_string
+from htmy.typing import Component, ComponentType, Context
 
 
-class HTMY:
-    """HTMY component renderer."""
+class Renderer:
+    """
+    The baseline component renderer.
+
+    Because of the simple, recursive implementation, this renderer is the easiest to reason about.
+    Therefore it is useful for validating component correctness before bug reporting (if another
+    renderer implementation fails), testing and debugging alternative implementations, and it can
+    also serve as the baseline for benchmarking optimized renderers.
+
+    The performance of this renderer is not production quality.
+    """
 
     __slots__ = ("_default_context", "_string_formatter")
 

@@ -50,7 +50,9 @@ nav:
       - examples/internationalization.md
   - API Reference:
       - api/core.md
-      - api/renderer.md
+      - Renderer:
+          - api/renderer/default.md
+          - api/renderer/baseline.md
       - HTML: api/html.md
       - Markdown: api/md.md
       - I18n: api/i18n.md
