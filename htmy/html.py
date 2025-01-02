@@ -863,7 +863,7 @@ class svg(Tag):
     """
     `<svg>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/svg.
+    See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg.
     """
 
     __slots__ = ()
