@@ -859,6 +859,16 @@ class sup(Tag):
     tag_config = _DefaultTagConfig.inline_children
 
 
+class svg(Tag):
+    """
+    `<svg>` element.
+
+    See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg.
+    """
+
+    __slots__ = ()
+
+
 class u(Tag):
     """
     `<u>` element.
