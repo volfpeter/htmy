@@ -52,7 +52,7 @@ Inline `code` is **also** _fine_.
 _blog_post = _blog_post_format_string.format(title="Essential reading")
 
 _parsed_blog_post = """<h1>Essential reading</h1>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">this</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">this</span>
 </code></pre></div>
 
 <p>Also available <a href="https://peps.python.org/pep-0020/">here</a>.</p>
@@ -97,7 +97,7 @@ class ConverterRules:
 
 
 _base_etree_converted_blogpost = """<h1 {h1_attrs}>Essential reading</h1>
-<div class="codehilite"><pre ><span ></span><code ><span class="kn">import</span> <span class="nn">this</span>
+<div class="codehilite"><pre ><span ></span><code ><span class="kn">import</span><span class="w"> </span><span class="nn">this</span>
 </code></pre></div>
 
 <p >Also available <a href="https://peps.python.org/pep-0020/">here</a>.</p>
