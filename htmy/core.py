@@ -27,8 +27,9 @@ from .typing import (
 from .utils import join_components
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing_extensions import Never, Self
 else:
+    Never = Any
     Self = Any
 
 # -- Utility components
@@ -348,6 +349,11 @@ class SkipProperty(Exception):
 
     ...
 
+    @classmethod
+    def format_property(cls, _: Any) -> Never:
+        """Property formatter that raises a `SkipProperty` error regardless of the received value."""
+        raise cls("skip-property")
+
 
 class Text(str):
     """Marker class for differentiating text content from other strings."""
@@ -484,6 +490,7 @@ class Formatter(ContextAware):
             date: lambda d: cast(date, d).isoformat(),
             datetime: lambda d: cast(datetime, d).isoformat(),
             XBool: lambda v: cast(XBool, v).format(),
+            type(None): SkipProperty.format_property,
         }
 
 

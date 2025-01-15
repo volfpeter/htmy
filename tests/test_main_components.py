@@ -86,6 +86,7 @@ class Page:
                             ),
                             dp_1=123,
                             _class="w-full",
+                            none=None,
                         )
                     ),
                     ErrorBoundary(
@@ -116,7 +117,7 @@ class Page:
                 "sync_fc-int:987321",
                 "async_fc-int:456",
                 "<a_main >",
-                '<div dp-1="123" class="w-full">',
+                '<div dp-1="123" class="w-full" >',
                 "sd&lt;fs&gt; df",
                 '<h1 created-at="2024-10-03T04:42:02.000071+00:00" on_day="2024-10-03">sdfds</h1>',
                 "</div>",
