@@ -17,6 +17,7 @@
 - **Powerful**, React-like **context support**, so you can avoid prop-drilling.
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
+- Support for **native HTML/XML** documents with dynamic formatting and **slot rendering**.
 - **Markdown** support with tools for customization.
 - Async, JSON based **internationalization**.
 - Built-in, easy to use `ErrorBoundary` component for graceful error handling.
