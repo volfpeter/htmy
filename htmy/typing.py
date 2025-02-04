@@ -1,5 +1,5 @@
 from collections.abc import Callable, Coroutine, Mapping, MutableMapping
-from typing import Any, Protocol, TypeAlias, TypeGuard, TypeVar, runtime_checkable
+from typing import Any, Protocol, TypeAlias, TypeVar, runtime_checkable
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -66,11 +66,6 @@ Component: TypeAlias = ComponentType | ComponentSequence
 """Component type: a single component or a sequence of components."""
 
 
-def is_component_sequence(obj: Any) -> TypeGuard[ComponentSequence]:
-    """Returns whether the given object is a component sequence."""
-    return isinstance(obj, (list, tuple))
-
-
 SyncFunctionComponent: TypeAlias = Callable[[T, Context], Component]
 """Protocol definition for sync function components."""
 
@@ -104,8 +99,25 @@ class AsyncContextProvider(Protocol):
 ContextProvider: TypeAlias = SyncContextProvider | AsyncContextProvider
 """Context provider type."""
 
-
 # -- Text processors
 
 TextProcessor: TypeAlias = Callable[[str, Context], str | Coroutine[Any, Any, str]]
 """Callable type that expects a string and a context, and returns a processed string."""
+
+
+class TextResolver(Protocol):
+    """
+    Protocol definition for resolvers that convert a string to a component.
+    """
+
+    def resolve_text(self, text: str) -> Component:
+        """
+        Returns the resolved component for the given text.
+
+        Arguments:
+            text: The text to resolve.
+
+        Raises:
+            KeyError: If the text cannot be resolved to a component.
+        """
+        ...
