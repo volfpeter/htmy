@@ -142,11 +142,11 @@ user_table = html.table(
 `htmy` has a rich set of built-in utilities and components for both HTML and other use-cases:
 
 - `html` module: a complete set of [baseline HTML tags](https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility).
+- `Snippet`: utility for creating dynamic, customizable document snippets in their native file format (HTML, XML, Markdown, etc.), with slot support.
 - `md`: `MarkdownParser` utility and `MD` component for loading, parsing, converting, and rendering markdown content.
 - `i18n`: utilities for async, JSON based internationalization.
 - `BaseTag`, `TagWithProps`, `Tag`, `WildcardTag`: base classes for custom XML tags.
 - `ErrorBoundary`, `Fragment`, `SafeStr`, `WithContext`: utilities for error handling, component wrappers, context providers, and formatting.
-- `Snippet`: utility class for loading and customizing document snippets from the file system.
 - `etree.ETreeConverter`: utility that converts XML to a component tree with support for custom HTMY components.
 
 ### Rendering

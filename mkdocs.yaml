@@ -54,6 +54,7 @@ nav:
           - api/renderer/default.md
           - api/renderer/baseline.md
       - HTML: api/html.md
+      - Snippet: api/snippet.md
       - Markdown: api/md.md
       - I18n: api/i18n.md
       - api/utils.md

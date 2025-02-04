@@ -9,10 +9,11 @@ from htmy import (
     ComponentType,
     PropertyValue,
     Renderer,
+    Slots,
     Text,
+    as_component_sequence,
     etree,
     html,
-    is_component_sequence,
     md,
 )
 from htmy.renderer import BaselineRenderer
@@ -31,7 +32,7 @@ import this
 ```
 
 Also available [here](https://peps.python.org/pep-0020/).
-
+{slot}
 Inline `code` is **also** _fine_.
 
 # Lists
@@ -49,14 +50,16 @@ Inline `code` is **also** _fine_.
 - Third
 """
 
-_blog_post = _blog_post_format_string.format(title="Essential reading")
+_blog_post = _blog_post_format_string.format(title="Essential reading", slot="")
 
-_parsed_blog_post = """<h1>Essential reading</h1>
+# Paragraphs in line "Also available..." line are on 1 line in the format string, because
+# the renderer simply concatenates strings when everythin is resolved, and there won't be
+# a new line of an actual slot is rendered there.
+_parsed_blog_post_format_string = """<h1>{title}</h1>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">this</span>
 </code></pre></div>
 
-<p>Also available <a href="https://peps.python.org/pep-0020/">here</a>.</p>
-<p>Inline <code>code</code> is <strong>also</strong> <em>fine</em>.</p>
+<p>Also available <a href="https://peps.python.org/pep-0020/">here</a>.</p>{slot}<p>Inline <code>code</code> is <strong>also</strong> <em>fine</em>.</p>
 <h1>Lists</h1>
 <h2>Ordered</h2>
 <ol>
@@ -70,6 +73,9 @@ _parsed_blog_post = """<h1>Essential reading</h1>
 <li>Second</li>
 <li>Third</li>
 </ul>"""
+
+# See the comment of _parsed_blog_post_format_string for why slot is `\n` by default.
+_parsed_blog_post = _parsed_blog_post_format_string.format(title="Essential reading", slot="\n")
 
 
 class ConverterRules:
@@ -132,9 +138,22 @@ def _md_renderer(children: Component, metadata: md.MarkdownMetadataDict | None) 
     title = metadata.get("title")
     assert isinstance(title, list)  # Items in the parsed metadata are an array.
     assert len(title) == 1
-    return html.div(
-        html.h1(title[0]),
-        *(children if is_component_sequence(children) else [children]),  # type: ignore[list-item]
+    return html.div(html.h1(title[0]), *as_component_sequence(children))
+
+
+@pytest.mark.asyncio
+async def test_md_with_slot() -> None:
+    md_component = md.MD(
+        Text(_blog_post_format_string),
+        Slots({"comment": html.p("Comment slot resolved.")}),
+        text_processor=lambda text, _: text.format(
+            title="Essential reading", slot="<!-- slot[comment] -->"
+        ),
+    )
+    rendered = await Renderer().render(md_component)
+    assert rendered == _parsed_blog_post_format_string.format(
+        title="Essential reading",
+        slot="<p >Comment slot resolved.</p>",
     )
 
 
@@ -147,7 +166,7 @@ def _md_renderer(children: Component, metadata: md.MarkdownMetadataDict | None) 
         (Text(_blog_post), None, _parsed_blog_post),
         (
             Text(_blog_post_format_string),
-            lambda text, context: text.format(title="Essential reading"),
+            lambda text, _: text.format(title="Essential reading", slot=""),
             _parsed_blog_post,
         ),
     ),
@@ -206,7 +225,7 @@ async def test_parsing(
         (
             Text(_blog_post_format_string),
             ConverterRules.rules(),
-            lambda text, context: text.format(title="Essential reading"),
+            lambda text, _: text.format(title="Essential reading", slot=""),
             _etree_converted_blogpost_with_extra_classes,
         ),
     ),

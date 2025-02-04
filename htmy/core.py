@@ -3,13 +3,11 @@ from __future__ import annotations
 import abc
 import asyncio
 import enum
-from collections.abc import Awaitable, Callable, Container
-from pathlib import Path
+from collections.abc import Callable, Container
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypedDict, cast, overload
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr as xml_quoteattr
 
-from .io import open_file
 from .typing import (
     AsyncFunctionComponent,
     Component,
@@ -21,10 +19,8 @@ from .typing import (
     PropertyValue,
     SyncFunctionComponent,
     T,
-    TextProcessor,
-    is_component_sequence,
 )
-from .utils import join_components
+from .utils import as_component_type, join_components
 
 if TYPE_CHECKING:
     from typing_extensions import Never, Self
@@ -97,11 +93,7 @@ class ErrorBoundary(Fragment):
         if not (self._errors is None or any(e in self._errors for e in type(error).mro())):
             raise error
 
-        return (
-            Fragment(*self._fallback)
-            if is_component_sequence(self._fallback)
-            else cast(ComponentType, self._fallback)
-        )
+        return as_component_type(self._fallback)
 
 
 class WithContext(Fragment):
@@ -125,59 +117,6 @@ class WithContext(Fragment):
     def htmy_context(self) -> Context:
         """Returns the context for child rendering."""
         return self._context
-
-
-class Snippet:
-    """
-    Base component that can load its content from a file.
-    """
-
-    __slots__ = ("_path_or_text", "_text_processor")
-
-    def __init__(
-        self,
-        path_or_text: Text | str | Path,
-        *,
-        text_processor: TextProcessor | None = None,
-    ) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            path_or_text: The path from where the content should be loaded or a `Text`
-                instance if this value should be rendered directly.
-            text_processor: An optional text processors that can be used to process the text
-                content before rendering. It can be used for example for token replacement or
-                string formatting.
-        """
-        self._path_or_text = path_or_text
-        self._text_processor = text_processor
-
-    async def htmy(self, context: Context) -> Component:
-        """Renders the component."""
-        text = await self._get_text_content()
-        if self._text_processor is not None:
-            processed = self._text_processor(text, context)
-            text = (await processed) if isinstance(processed, Awaitable) else processed
-
-        return self._render_text(text, context)
-
-    async def _get_text_content(self) -> str:
-        """Returns the plain text content that should be rendered."""
-        path_or_text = self._path_or_text
-
-        if isinstance(path_or_text, Text):
-            return path_or_text
-        else:
-            async with await open_file(path_or_text, "r") as f:
-                return await f.read()
-
-    def _render_text(self, text: str, context: Context) -> Component:
-        """
-        Render function that takes the text that must be rendered and the current rendering context,
-        and returns the corresponding component.
-        """
-        return SafeStr(text)
 
 
 # -- Context utilities

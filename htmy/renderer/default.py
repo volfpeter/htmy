@@ -6,7 +6,8 @@ from collections.abc import Awaitable, Callable, Iterator
 from typing import TypeAlias
 
 from htmy.core import ErrorBoundary, xml_format_string
-from htmy.typing import Component, ComponentType, Context, ContextProvider, is_component_sequence
+from htmy.typing import Component, ComponentType, Context, ContextProvider
+from htmy.utils import is_component_sequence
 
 
 class _Node:

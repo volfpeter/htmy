@@ -4,8 +4,9 @@ from typing import TYPE_CHECKING, ClassVar
 
 from markdown import Markdown
 
-from htmy.core import ContextAware, SafeStr, Snippet, Text
-from htmy.typing import TextProcessor
+from htmy.core import ContextAware, SafeStr, Text
+from htmy.snippet import Snippet
+from htmy.typing import TextProcessor, TextResolver
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -78,7 +79,17 @@ class MarkdownParser(ContextAware):
 
 
 class MD(Snippet):
-    """Component for reading, customizing, and rendering markdown documents."""
+    """
+    Component for reading, customizing, and rendering markdown documents.
+
+    It supports all the processing utilities of `Snippet`, including `text_resolver` and
+    `text_processor` for formatting, token replacement, and slot conversion to components.
+
+    One note regaring slot convesion (`text_resolver`): it is executed before markdown parsing,
+    and all string segments of the resulting component sequence are parsed individually by the
+    markdown parser. As a consequence, you should only use slots in places where the preceding
+    and following texts individually result in valid markdown.
+    """
 
     __slots__ = (
         "_converter",
@@ -88,6 +99,7 @@ class MD(Snippet):
     def __init__(
         self,
         path_or_text: Text | str | Path,
+        text_resolver: TextResolver | None = None,
         *,
         converter: Callable[[str], Component] | None = None,
         renderer: MarkdownRenderFunction | None = None,
@@ -98,6 +110,8 @@ class MD(Snippet):
 
         Arguments:
             path_or_text: The path where the markdown file is located or a markdown `Text`.
+            text_resolver: An optional `TextResolver` (e.g. `Slots`) that converts the processed
+                text into a component.
             converter: Function that converts an HTML string (the parsed and processed markdown text)
                 into a component.
             renderer: Function that gets the parsed and converted content and the metadata (if it exists)
@@ -106,7 +120,7 @@ class MD(Snippet):
                 content before rendering. It can be used for example for token replacement or
                 string formatting.
         """
-        super().__init__(path_or_text, text_processor=text_processor)
+        super().__init__(path_or_text, text_resolver, text_processor=text_processor)
         self._converter: Callable[[str], Component] = SafeStr if converter is None else converter
         self._renderer = renderer
 
