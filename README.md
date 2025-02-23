@@ -17,7 +17,7 @@
 - **Powerful**, React-like **context support**, so you can avoid prop-drilling.
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
-- Support for **native HTML/XML** documents with dynamic formatting and **slot rendering**.
+- Support for **native HTML/XML** documents with dynamic formatting and **slot rendering**, **without custom syntax**.
 - **Markdown** support with tools for customization.
 - Async, JSON based **internationalization**.
 - Built-in, easy to use `ErrorBoundary` component for graceful error handling.
@@ -25,6 +25,10 @@
 - Everything is **easily customizable**, from the rendering engine to components, formatting and context management.
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
 - **Fully-typed**.
+
+## Support
+
+Consider supporting the development and maintenance of the project through [sponsoring](https://buymeacoffee.com/volfpeter), or reach out for [consulting](https://www.volfp.com/contact?subject=Consulting%20-%20HTMY) so you can get the most out of the library.
 
 ## Installation
 
@@ -287,13 +291,13 @@ FastAPI:
 
 At one end of the spectrum, there are the complete application frameworks that combine the server (Python) and client (JavaScript) applications with the entire state management and synchronization into a single Python (an in some cases an additional JavaScript) package. Some of the most popular examples are: [Reflex](https://github.com/reflex-dev/reflex), [NiceGUI](https://github.com/zauberzeug/nicegui/), [ReactPy](https://github.com/reactive-python/reactpy), and [FastUI](https://github.com/pydantic/FastUI).
 
-The main benefit of these frameworks is rapid application prototyping and a very convenient developer experience (at least as long as you stay within the built-in feature set of the framework). In exchange for that, they are very opinionated (from components to frontend tooling and state management), the underlying engineering is very complex, deployment and scaling can be hard or costly, and they can be hard to migrate away from. Even with these caveats, they can be a very good choice for internal tools and application prototyping.
+The main benefit of these frameworks is rapid application prototyping and a very convenient developer experience, at least as long as you stay within the built-in feature set of the framework. In exchange for that, they are very opinionated (from components to frontend tooling and state management), the underlying engineering is very complex, deployment and scaling can be hard or costly, and they can be hard to migrate away from. Even with these caveats, they can be a very good choice for internal tools and application prototyping.
 
-The other end of spectrum -- plain rendering engines -- is dominated by the [Jinja](https://jinja.palletsprojects.com) templating engine, which is a safe choice as it has been and will be around for a long time. The main drawbacks with Jinja are the lack of good IDE support, the complete lack of static code analysis support, and the (subjectively) ugly syntax.
+The other end of spectrum -- plain rendering engines -- is dominated by the [Jinja](https://jinja.palletsprojects.com) templating engine, which is a safe choice as it has been and will be around for a long time. The main drawbacks with Jinja are the lack of good IDE support, the complete lack of static code analysis support, and the (subjectively) ugly custom template syntax.
 
 Then there are tools that aim for the middleground, usually by providing most of the benefits and drawbacks of complete application frameworks while leaving state management, client-server communication, and dynamic UI updates for the user to solve, often with some level of [HTMX](https://htmx.org/) support. This group includes libraries like [FastHTML](https://github.com/answerdotai/fasthtml) and [Ludic](https://github.com/getludic/ludic).
 
-The primary aim of `htmy` is to be an **async**, pure-Python rendering engine, which is as **simple**, **maintainable**, and **customizable** as possible, while still providing all the building blocks for (conveniently) creating complex and maintainable applications.
+The primary aim of `htmy` is to be a `Jinja` alternative that is similarly powerful and flexible, while also providing the benefits of full IDE support, static code analysis, and native Python (and HTML, XML, markdown) syntax. Additionally, `htmy` is **async-first**, so it works great with modern async Python frameworks such as [FastAPI](https://fastapi.tiangolo.com). The library was designed to be as **simple**, **maintainable**, and **customizable** as possible, while still providing all the building blocks for creating complex web applications.
 
 ## Dependencies
 
@@ -311,7 +315,13 @@ The documentation is built with `mkdocs-material` and `mkdocstrings`.
 
 ## Contributing
 
-All contributions are welcome, including more documentation, examples, code, and tests. Even questions.
+We welcome contributions from the community to help improve the project! Whether you're an experienced developer or just starting out, there are many ways you can contribute:
+
+- **Discuss**: Join our [Discussion Board](https://github.com/volfpeter/htmy/discussions) to ask questions, share ideas, provide feedback, and engage with the community.
+- **Document**: Help improve the documentation by fixing typos, adding examples, and updating guides to make it easier for others to use the project.
+- **Develop**: Prototype requested features or pick up issues from the issue tracker.
+- **Share**: Share your own project by adding a link to it in the documentation, helping others discover and benefit from your work.
+- **Test**: Write tests to improve coverage and enhance reliability.
 
 ## License - MIT
 
