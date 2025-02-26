@@ -15,14 +15,16 @@ markdown = "^3.7"
 [tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.5.39"
 mkdocstrings = {extras = ["python"], version = "^0.26.1"}
-mypy = "^1.14.1"
+mypy = "^1.15.0"
 poethepoet = "^0.29.0"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
 pytest-random-order = "^1.1.1"
-ruff = "^0.6.8"
+ruff = "^0.9.0"
 types-markdown = "^3.7.0.20240822"
 typing-extensions = "^4.12.2"
+fastapi = "^0.115.8"
+fasthx = "^2.2.1"
 
 [build-system]
 requires = ["poetry-core"]
