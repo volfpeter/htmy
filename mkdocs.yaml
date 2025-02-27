@@ -43,6 +43,7 @@ markdown_extensions:
 
 nav:
   - index.md
+  - components-guide.md
   - Examples:
       - Examples: examples/index.md
       - examples/snippet-slots-fastapi.md
