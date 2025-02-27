@@ -11,6 +11,8 @@
 
 **Async**, **pure-Python** rendering engine.
 
+Unleash your creativity with the full power and Python, without the hassle of learning a new templating language or dealing with its limitations!
+
 ## Key features
 
 - **Async**-first, to let you make the best use of [modern async tools](https://github.com/timofurrer/awesome-asyncio).
@@ -46,9 +48,9 @@ Also, the library doesn't rely on advanced Python features such as metaclasses o
 
 ### Components
 
-Every class with a sync or async `htmy(context: Context) -> Component` method is an `htmy` component (technically an `HTMYComponentType`). Strings are also components, as well as lists or tuples of `HTMYComponentType` or string objects.
+Every object with a sync or async `htmy(context: Context) -> Component` method is an `htmy` component (technically an `HTMYComponentType`). Strings are also components, as well as lists or tuples of `HTMYComponentType` or string objects. In many cases though, you don't even need to create components, simple functions that return components will be sufficient -- you can find out more about this in the [Components guide](components-guide.md) of the documentation.
 
-Using this method name enables the conversion of any of your business objects (from `TypedDicts`s or `pydantic` models to ORM classes) into components without the fear of name collision with other tools.
+Using the `htmy()` method name enables the conversion of any of your pre-existing business objects (from `TypedDicts`s or `pydantic` models to ORM classes) into components without the fear of name collision or compatibility issues with other tools.
 
 Async support makes it possible to load data or execute async business logic right in your components. This can reduce the amount of boilerplate you need to write in some cases, and also gives you the freedom to split the rendering and non-rendering logic in any way you see fit.
 
