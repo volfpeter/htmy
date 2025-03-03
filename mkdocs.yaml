@@ -50,15 +50,16 @@ nav:
       - examples/fastapi-htmx-tailwind-daisyui.md
       - examples/markdown.md
       - examples/internationalization.md
-  - API Reference:
+  - API reference:
       - api/core.md
-      - Renderer:
-          - api/renderer/default.md
-          - api/renderer/baseline.md
       - HTML: api/html.md
       - Snippet: api/snippet.md
       - Markdown: api/md.md
+      - api/function_component.md
       - I18n: api/i18n.md
+      - Renderer:
+          - api/renderer/default.md
+          - api/renderer/baseline.md
       - api/utils.md
       - api/typing.md
       - api/etree.md
