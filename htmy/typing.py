@@ -65,16 +65,6 @@ ComponentSequence: TypeAlias = list[ComponentType] | tuple[ComponentType, ...]
 Component: TypeAlias = ComponentType | ComponentSequence
 """Component type: a single component or a sequence of components."""
 
-
-SyncFunctionComponent: TypeAlias = Callable[[T, Context], Component]
-"""Protocol definition for sync function components."""
-
-AsyncFunctionComponent: TypeAlias = Callable[[T, Context], Coroutine[Any, Any, Component]]
-"""Protocol definition for async function components."""
-
-FunctionComponent: TypeAlias = SyncFunctionComponent[T] | AsyncFunctionComponent[T]
-"""Function component type."""
-
 # -- Context providers
 
 
@@ -97,7 +87,12 @@ class AsyncContextProvider(Protocol):
 
 
 ContextProvider: TypeAlias = SyncContextProvider | AsyncContextProvider
-"""Context provider type."""
+"""
+Sync or async context provider type.
+
+Components can implement this protocol to add extra data to the rendering context
+of their entire component subtree (including themselves).
+"""
 
 # -- Text processors
 
