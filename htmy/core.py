@@ -1,25 +1,13 @@
 from __future__ import annotations
 
 import abc
-import asyncio
 import enum
 from collections.abc import Callable, Container
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypedDict, cast, overload
+from typing import TYPE_CHECKING, Any, ClassVar, TypedDict, cast
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr as xml_quoteattr
 
-from .typing import (
-    AsyncFunctionComponent,
-    Component,
-    ComponentType,
-    Context,
-    ContextKey,
-    ContextValue,
-    FunctionComponent,
-    PropertyValue,
-    SyncFunctionComponent,
-    T,
-)
+from .typing import Component, ComponentType, Context, ContextKey, ContextValue, PropertyValue, T
 from .utils import as_component_type, join_components
 
 if TYPE_CHECKING:
@@ -199,85 +187,6 @@ class ContextAware:
             return result
 
         raise TypeError(f"Invalid context data type for {cls.__name__}.")
-
-
-# -- Function components
-
-
-class SyncFunctionComponentWrapper(Generic[T]):
-    """Base class `FunctionComponent` wrappers."""
-
-    __slots__ = ("_props",)
-
-    _wrapped_function: SyncFunctionComponent[T]
-
-    def __init__(self, props: T) -> None:
-        self._props = props
-
-    def __init_subclass__(cls, *, func: SyncFunctionComponent[T]) -> None:
-        cls._wrapped_function = func
-
-    def htmy(self, context: Context) -> Component:
-        """Renders the component."""
-        # type(self) is necessary, otherwise the wrapped function would be called
-        # with an extra self argument...
-        return type(self)._wrapped_function(self._props, context)
-
-
-class AsyncFunctionComponentWrapper(Generic[T]):
-    """Base class `FunctionComponent` wrappers."""
-
-    __slots__ = ("_props",)
-
-    _wrapped_function: AsyncFunctionComponent[T]
-
-    def __init__(self, props: T) -> None:
-        self._props = props
-
-    def __init_subclass__(cls, *, func: AsyncFunctionComponent[T]) -> None:
-        cls._wrapped_function = func
-
-    async def htmy(self, context: Context) -> Component:
-        """Renders the component."""
-        # type(self) is necessary, otherwise the wrapped function would be called
-        # with an extra self argument...
-        return await type(self)._wrapped_function(self._props, context)
-
-
-@overload
-def component(func: SyncFunctionComponent[T]) -> type[SyncFunctionComponentWrapper[T]]: ...
-
-
-@overload
-def component(func: AsyncFunctionComponent[T]) -> type[AsyncFunctionComponentWrapper[T]]: ...
-
-
-def component(
-    func: FunctionComponent[T],
-) -> type[SyncFunctionComponentWrapper[T]] | type[AsyncFunctionComponentWrapper[T]]:
-    """
-    Decorator that converts the given function into a component.
-
-    Internally this is achieved by wrapping the function in a pre-configured
-    `FunctionComponentWrapper` subclass.
-
-    Arguments:
-        func: The decorated function component.
-
-    Returns:
-        A pre-configured `FunctionComponentWrapper` subclass.
-    """
-
-    if asyncio.iscoroutinefunction(func):
-
-        class AsyncFCW(AsyncFunctionComponentWrapper[T], func=func): ...
-
-        return AsyncFCW
-    else:
-
-        class SyncFCW(SyncFunctionComponentWrapper[T], func=func): ...  # type: ignore[arg-type]
-
-        return SyncFCW
 
 
 # -- Formatting

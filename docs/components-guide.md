@@ -4,7 +4,7 @@
 
 Every object with a sync or async `htmy(context: Context) -> Component` method is an `htmy` component (technically an `HTMYComponentType`). Strings are also components, as well as lists or tuples of `HTMYComponentType` or string objects.
 
-Using the `htmy()` method name enables the conversion of any of your pre-existing business objects (from `TypedDicts`s or `pydantic` models to ORM classes) into components without the fear of name collision or compatibility issues with other tools.
+Using the `htmy()` method name enables the conversion of any of your pre-existing business objects and Python utilities -- from `TypedDicts`s or `pydantic` models to ORM classes, and even advanced constructs like descriptors -- into components without the fear of name collision or compatibility issues with other tools.
 
 (Note: while many code examples in the documentation use `dataclasses` to create components, the only reason for this is that `dataclasses` save a lot of boilerplate code and make the examples more readable.)
 
@@ -163,6 +163,8 @@ def section(title: str, text: str) -> html.div:
         paragraph(text), # Calling a component factory here as well.
     )
 ```
+
+Of course, instance, class, and static methods, even properties or more advanced Python constructs like descriptors can also act as component factories, giving you a lot of flexibility in how you add `htmy` rendering support to your codebase.
 
 Component factories come with some advantages, mainly simplicity and somewhat better performance. The performance benefit comes from the fact these functions are executed instantly, and the `htmy` renderer only needs to resolve the resulting component tree, which will be smaller than the one that uses components for everything.
 

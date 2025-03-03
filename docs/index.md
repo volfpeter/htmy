@@ -192,7 +192,7 @@ if __name__ == "__main__":
 
 As you could see from the code examples above, every component has a `context: Context` argument, which we haven't used so far. Context is a way to share data with the entire subtree of a component without "prop drilling".
 
-The context (technically a `Mapping`) is entirely managed by the renderer. Context provider components (any class with a sync or async `htmy_context() -> Context` method) add new data to the context to make it available to components in their subtree, and components can simply take what they need from the context.
+The context (technically a `Mapping`) is entirely managed by the renderer. Context provider components (any class with a sync or async `htmy_context() -> Context` method) add new data to the context to make it available to components in their subtree (including themselves), and components can simply take what they need from the context.
 
 There is no restriction on what can be in the context, it can be used for anything the application needs, for example making the current user, UI preferences, themes, or formatters available to components. In fact, built-in components get their `Formatter` from the context if it contains one, to make it possible to customize tag property name and value formatting.
 
