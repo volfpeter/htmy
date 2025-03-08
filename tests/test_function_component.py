@@ -1,4 +1,5 @@
 import asyncio
+from dataclasses import dataclass
 from datetime import date
 from time import perf_counter
 
@@ -9,7 +10,7 @@ from htmy.renderer import BaselineRenderer
 
 async_delay = 0.16
 rendering_context: Context = {"date": date(2025, 3, 14)}
-message = "Hello, world!"
+message = "Hello!"
 date_string = rendering_context["date"].isoformat()
 date_and_message = f"<p >{date_string}: {message}</p>"
 
@@ -61,6 +62,41 @@ async def async_context_only_function_component(ctx: Context) -> html.p:
     return html.p(dt.isoformat(), ": ", message)
 
 
+# -- Method components.
+
+
+@dataclass
+class Data:
+    goodbye: str
+
+    @component.method
+    def sync_method_component(self, msg: str, ctx: Context) -> html.p:
+        dt: date = ctx["date"]
+        return html.p(dt.isoformat(), ": ", msg, " ", self.goodbye)
+
+    @component.method
+    async def async_method_component(self, msg: str, ctx: Context) -> html.p:
+        await asyncio.sleep(async_delay)
+        dt: date = ctx["date"]
+        return html.p(dt.isoformat(), ": ", msg, " ", self.goodbye)
+
+    @component.context_only_method
+    def sync_context_only_method_component(self, ctx: Context) -> html.p:
+        dt: date = ctx["date"]
+        return html.p(dt.isoformat(), ": ", self.goodbye)
+
+    @component.context_only_method
+    async def async_context_only_method_component(self, ctx: Context) -> html.p:
+        await asyncio.sleep(async_delay)
+        dt: date = ctx["date"]
+        return html.p(dt.isoformat(), ": ", self.goodbye)
+
+
+data = Data("Goodbye!")
+
+# -- Fixtures
+
+
 @pytest.fixture(scope="session")
 def renderer() -> Renderer:
     return Renderer(rendering_context)
@@ -71,11 +107,14 @@ def baseline_renderer() -> BaselineRenderer:
     return BaselineRenderer(rendering_context)
 
 
+# -- Tests
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("comp", "expected", "min_duration"),
     (
-        # -- Function component
+        # -- Function component.
         (
             sync_function_component(message),
             date_and_message,
@@ -86,6 +125,7 @@ def baseline_renderer() -> BaselineRenderer:
             date_and_message,
             async_delay,
         ),
+        # -- Function component with alias.
         (
             sync_function_component_with_function_alias(message),
             date_and_message,
@@ -116,6 +156,28 @@ def baseline_renderer() -> BaselineRenderer:
         (
             async_context_only_function_component,
             date_and_message,
+            async_delay,
+        ),
+        # -- Method component.
+        (
+            data.sync_method_component(message),
+            f"<p >{date_string}: {message} Goodbye!</p>",
+            0,
+        ),
+        (
+            data.async_method_component(message),
+            f"<p >{date_string}: {message} Goodbye!</p>",
+            async_delay,
+        ),
+        # -- Context only method component.
+        (
+            data.sync_context_only_method_component(),
+            f"<p >{date_string}: Goodbye!</p>",
+            0,
+        ),
+        (
+            data.async_context_only_method_component(),
+            f"<p >{date_string}: Goodbye!</p>",
             async_delay,
         ),
     ),
