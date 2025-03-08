@@ -97,7 +97,7 @@ user_table = html.table(
 )
 ```
 
-`htmy` also provides a `@component` decorator that can be used on sync or async `my_component(props: MyProps, context: Context) -> Component` functions to convert them into components (preserving the `props` typing).
+`htmy` also provides a powerful `@component` decorator that can be used on sync or async `my_component(props: MyProps, context: Context) -> Component` functions and methods to convert them into components (preserving the `props` typing). You can find out more about this feature in the [Function components](https://volfpeter.github.io/htmy/function-components/) guide.
 
 Here is the same example as above, but with function components:
 
