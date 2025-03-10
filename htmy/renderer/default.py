@@ -209,8 +209,9 @@ class _ComponentRenderer:
                     process_node_result(node, result, child_context)
 
             if async_todos:
-                await asyncio.gather(*(process_async_node(n, ctx) for n, ctx in async_todos))
-                async_todos.clear()
+                current_async_todos = async_todos
+                self._async_todos = async_todos = deque()
+                await asyncio.gather(*(process_async_node(n, ctx) for n, ctx in current_async_todos))
 
         if self._error_boundary_todos:
             await asyncio.gather(
