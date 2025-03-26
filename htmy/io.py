@@ -1,6 +1,11 @@
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from anyio import open_file as open_file
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 async def load_text_file(path: str | Path) -> str:

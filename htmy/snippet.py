@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import re
 from collections.abc import Awaitable, Iterator, Mapping
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from async_lru import alru_cache
 
@@ -14,6 +16,9 @@ from .typing import (
     TextResolver,
 )
 from .utils import as_component_sequence, as_component_type, is_component_sequence
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # -- Components and utilities
 
