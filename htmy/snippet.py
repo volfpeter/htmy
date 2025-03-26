@@ -2,8 +2,10 @@ import re
 from collections.abc import Awaitable, Iterator, Mapping
 from pathlib import Path
 
+from async_lru import alru_cache
+
 from .core import SafeStr, Text
-from .io import open_file
+from .io import load_text_file
 from .typing import (
     Component,
     ComponentType,
@@ -248,8 +250,7 @@ class Snippet:
         if isinstance(path_or_text, Text):
             return path_or_text
         else:
-            async with await open_file(path_or_text, "r") as f:
-                return await f.read()
+            return await Snippet._load_text_file(path_or_text)
 
     def _render_text(self, text: str, context: Context) -> Component:
         """
@@ -257,3 +258,9 @@ class Snippet:
         and returns the corresponding component.
         """
         return SafeStr(text)
+
+    @staticmethod
+    @alru_cache()
+    async def _load_text_file(path: str | Path) -> str:
+        """Async text loader with an LRU cache."""
+        return await load_text_file(path)

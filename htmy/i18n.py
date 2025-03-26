@@ -112,7 +112,7 @@ class I18n(ContextAware):
         return result
 
 
-@alru_cache(8)
+@alru_cache()
 async def load_translation_resource(path: Path) -> TranslationResource:
     """
     Loads the translation resource from the given path.
