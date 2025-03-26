@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "htmy"
-version = "0.7.1"
+version = "0.7.2"
 description = "Async, pure-Python rendering engine."
 authors = ["Peter Volf <do.volfp@gmail.com>"]
 license = "MIT"
@@ -14,7 +14,7 @@ markdown = "^3.7"
 
 [tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.5.39"
-mkdocstrings = {extras = ["python"], version = "^0.26.1"}
+mkdocstrings = { extras = ["python"], version = "^0.26.1" }
 mypy = "^1.15.0"
 poethepoet = "^0.29.0"
 pytest = "^8.3.3"
@@ -49,17 +49,17 @@ exclude = [
     "docs",
 ]
 lint.select = [
-    "B",  # flake8-bugbear
-    "C",  # flake8-comprehensions
-    "E",  # pycodestyle errors
-    "F",  # pyflakes
-    "I",  # isort
-    "S",  # flake8-bandit - we must ignore these rules in tests
-    "W",  # pycodestyle warnings
+    "B", # flake8-bugbear
+    "C", # flake8-comprehensions
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "I", # isort
+    "S", # flake8-bandit - we must ignore these rules in tests
+    "W", # pycodestyle warnings
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*" = ["S101"]  # S101: use of assert detected
+"tests/**/*" = ["S101"] # S101: use of assert detected
 
 [tool.poe.tasks]
 check-format = "ruff format --check ."

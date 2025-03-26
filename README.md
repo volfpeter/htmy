@@ -266,6 +266,7 @@ These are default tag attribute formatting rules:
 - `bool` attribute values are converted to strings (`"true"` and `"false"`).
 - `XBool.true` attributes values are converted to an empty string, and `XBool.false` values are skipped (only the attribute name is rendered).
 - `date` and `datetime` attribute values are converted to ISO strings.
+- Complex values such as lists, dictionaries, tuples, and sets are JSON serialized.
 
 ### Error boundary
 

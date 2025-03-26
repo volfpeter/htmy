@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import enum
+import json
 from collections.abc import Callable, Container
 from typing import TYPE_CHECKING, Any, ClassVar, TypedDict, cast
 from xml.sax.saxutils import escape as xml_escape
@@ -251,6 +252,9 @@ class Formatter(ContextAware):
     """
     The default, context-aware property name and value formatter.
 
+    The formatter supports both primitive and (many) complex values, such as lists,
+    dictionaries, tuples, and sets. Complex values are JSON-serialized by default.
+
     Important: the default implementation looks up the formatter for a given value by checking
     its type, but it doesn't do this check with the base classes of the encountered type. For
     example the formatter will know how to format `datetime` object, but it won't know how to
@@ -258,7 +262,7 @@ class Formatter(ContextAware):
 
     One reason for this is efficiency: always checking the base classes of every single value is a
     lot of unnecessary calculation. The other reason is customizability: this way you could use
-    subclassing for fomatter selection, e.g. with `LocaleDatetime(datetime)`-like classes.
+    subclassing for formatter selection, e.g. with `LocaleDatetime(datetime)`-like classes.
 
     Property name and value formatters may raise a `SkipProperty` error if a property should be skipped.
     """
@@ -337,6 +341,10 @@ class Formatter(ContextAware):
             bool: lambda v: "true" if v else "false",
             date: lambda d: cast(date, d).isoformat(),
             datetime: lambda d: cast(datetime, d).isoformat(),
+            dict: lambda v: json.dumps(v),
+            list: lambda v: json.dumps(v),
+            tuple: lambda v: json.dumps(v),
+            set: lambda v: json.dumps(tuple(v)),
             XBool: lambda v: cast(XBool, v).format(),
             type(None): SkipProperty.format_property,
         }
