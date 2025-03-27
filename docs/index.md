@@ -9,7 +9,7 @@
 
 # `htmy`
 
-**Async**, **pure-Python** rendering engine.
+**Async**, **pure-Python** server-side rendering engine.
 
 Unleash your creativity with the full power and Python, without the hassle of learning a new templating language or dealing with its limitations!
 

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "htmy"
-version = "0.7.2"
-description = "Async, pure-Python rendering engine."
+version = "0.7.3"
+description = "Async, pure-Python server-side rendering engine."
 authors = ["Peter Volf <do.volfp@gmail.com>"]
 license = "MIT"
 readme = "README.md"
