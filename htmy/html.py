@@ -285,7 +285,7 @@ class hr(TagWithProps):
     __slots__ = ()
 
 
-class iframe(TagWithProps):
+class iframe(Tag):
     """
     `<iframe>` element.
 
