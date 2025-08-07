@@ -28,7 +28,7 @@ Unleash your creativity with the full power and Python, without the hassle of le
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
 - **Fully-typed**.
 
-## Opinions
+## Testimonials
 
 - "Thank you for your work on `fasthx`, as well as `htmy`! I've never had an easier time developing with another stack." ([ref](https://github.com/volfpeter/fasthx/discussions/77))
 - "One of the main parts of the `FastAPI` -> `fasthx` -> `htmy` integration I'm falling in love with is its explicitness, and not too much magic happening." ([ref](https://github.com/volfpeter/fasthx/issues/54))
