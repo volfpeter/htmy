@@ -28,6 +28,15 @@ Unleash your creativity with the full power and Python, without the hassle of le
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
 - **Fully-typed**.
 
+## Opinions
+
+- "Thank you for your work on `fasthx`, as well as `htmy`! I've never had an easier time developing with another stack." ([ref](https://github.com/volfpeter/fasthx/discussions/77))
+- "One of the main parts of the `FastAPI` -> `fasthx` -> `htmy` integration I'm falling in love with is its explicitness, and not too much magic happening." ([ref](https://github.com/volfpeter/fasthx/issues/54))
+- "Thank you for your work on `htmy` and `fasthx`, both have been very pleasant to use, and the APIs are both intuitive and simple. Great work." ([ref](https://github.com/volfpeter/fasthx/issues/54))
+- "I love that the language-embedded HTML generation library approach is becoming more popular." ([ref](https://www.reddit.com/r/programming/comments/1h1a0dx/comment/lzd3phw/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button))
+- "Neat approach and it naturally solves the partial templates problem 👍" ([ref](https://www.reddit.com/r/Python/comments/1gp3mww/comment/lwqj4fc/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button))
+- "Great API design!" ([ref](https://www.reddit.com/r/Python/comments/1gp3mww/comment/lwpdyq9/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button))
+
 ## Support
 
 Consider supporting the development and maintenance of the project through [sponsoring](https://buymeacoffee.com/volfpeter), or reach out for [consulting](https://www.volfp.com/contact?subject=Consulting%20-%20HTMY) so you can get the most out of the library.
