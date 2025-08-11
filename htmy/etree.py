@@ -28,7 +28,10 @@ class ETreeConverter:
     but if `lxml` is installed, it will be used instead.
 
     Installing `lxml` is recommended for better performance and additional features,
-    like performance and support for broken HTML fragments.
+    like performance and support for broken HTML fragments. **Important:** `lxml` is
+    far more lenient and flexible than the standard library, so having it installed is
+    not only a performance boost, but it may also slightly change the element conversion
+    behavior in certain edge-cases!
     """
 
     __slots__ = ("_rules",)
