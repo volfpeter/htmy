@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, ClassVar
 from xml.sax.saxutils import unescape
 
 try:
+    from lxml.etree import _Element as Element
     from lxml.etree import tostring as etree_to_string
-    from lxml.etree._element import _Element as Element
     from lxml.html import fragment_fromstring as etree_from_string
 except ImportError:
     from xml.etree.ElementTree import Element  # type: ignore[assignment]
@@ -57,13 +57,13 @@ class ETreeConverter:
             return SafeStr(element)
 
         element = f"<{self._htmy_fragment}>{element}</{self._htmy_fragment}>"
-        return self.convert_element(etree_from_string(element))  # noqa: S314 # Only use from XML strings from a trusted source.
+        return self.convert_element(etree_from_string(element))  # noqa: S314 # Only use XML strings from a trusted source.
 
     def convert_element(self, element: Element) -> ComponentType:
         """Converts the given `Element` to a component."""
         rules = self._rules
         if len(rules) == 0:
-            return SafeStr(etree_to_string(element))
+            return SafeStr(etree_to_string(element, encoding="unicode"))
 
         tag: str = element.tag  # type: ignore[assignment]
         component = Fragment if tag == self._htmy_fragment else rules.get(tag)
