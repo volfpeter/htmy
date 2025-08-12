@@ -56,7 +56,7 @@ $ pip install htmy
 
 The package has the following optional dependencies:
 
-- `lxml` *(recommended)*: It is prioritized over `xml.etree.ElementTree` if installed, and provides more secure, faster, and more flexible HTML and XML processing. Used for example for markdown processing. Install with `pip install htmy[lxml]`.
+- `lxml` *(recommended)*: When installed, it is prioritized over `xml.etree.ElementTree` and provides more secure, faster, and more flexible HTML and XML processing. It is used, for example, for Markdown processing. Install with: `pip install "htmy[lxml]"`.
 
 ## Concepts
 
