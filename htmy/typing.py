@@ -65,6 +65,27 @@ ComponentSequence: TypeAlias = list[ComponentType] | tuple[ComponentType, ...]
 Component: TypeAlias = ComponentType | ComponentSequence
 """Component type: a single component or a sequence of components."""
 
+
+# -- Renderer
+
+
+class RendererType(Protocol):
+    """Protocol definition for `htmy` renderers."""
+
+    async def render(self, component: Component, context: Context | None = None) -> str:
+        """
+        Renders the given component.
+
+        Arguments:
+            component: The component to render.
+            context: An optional rendering context.
+
+        Returns:
+            The rendered string.
+        """
+        ...
+
+
 # -- Context providers
 
 

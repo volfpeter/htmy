@@ -270,6 +270,8 @@ class Renderer:
         """
         Renders the given component.
 
+        Implements `htmy.typing.RendererType`.
+
         Arguments:
             component: The component to render.
             context: An optional rendering context.
