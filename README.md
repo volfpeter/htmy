@@ -54,6 +54,10 @@ The package is available on PyPI and can be installed with:
 $ pip install htmy
 ```
 
+The package has the following optional dependencies:
+
+- `lxml` *(recommended)*: It is prioritized over `xml.etree.ElementTree` if installed, and provides more secure, faster, and more flexible HTML and XML processing. Used for example for markdown processing. Install with `pip install htmy[lxml]`.
+
 ## Concepts
 
 The entire library -- from the rendering engine itself to the built-in components -- is built around a few simple protocols and a handful of simple utility classes. This means that you can easily customize, extend, or replace basically everything in the library. Yes, even the rendering engine. The remaining parts will keep working as expected.

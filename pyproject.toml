@@ -11,11 +11,14 @@ python = "^3.10"
 anyio = "^4.6.2.post1"
 async-lru = "^2.0.4"
 markdown = "^3.8"
+lxml = { version = ">=6.0.0", optional = true }
+
+[tool.poetry.extras]
+lxml = ["lxml"]
 
 [tool.poetry.group.dev.dependencies]
 fastapi = "^0.116.0"
 fasthx = "^2.3.3"
-lxml = "^6.0.0"
 mkdocs-material = "^9.6.16"
 mkdocstrings = { extras = ["python"], version = "^0.30.0" }
 mypy = "^1.17.0"
