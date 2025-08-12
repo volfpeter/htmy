@@ -1,23 +1,37 @@
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
-from collections.abc import Callable, Generator
 from typing import TYPE_CHECKING, ClassVar
 from xml.sax.saxutils import unescape
 
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-    from xml.etree.ElementTree import Element
+try:
+    from lxml.etree import _Element as Element
+    from lxml.etree import tostring as etree_to_string
+    from lxml.html import fragment_fromstring as etree_from_string
+except ImportError:
+    from xml.etree.ElementTree import Element  # type: ignore[assignment]
+    from xml.etree.ElementTree import fromstring as etree_from_string  # type: ignore[assignment]
+    from xml.etree.ElementTree import tostring as etree_to_string  # type: ignore[no-redef]
 
-    from htmy.typing import ComponentType, Properties
-
-
+from htmy import ComponentType, Properties
 from htmy.core import Fragment, SafeStr, WildcardTag
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Generator, Mapping
 
 
 class ETreeConverter:
     """
     Utility for converting XML strings to custom components.
+
+    By default the converter uses the standard library's `xml.etree.ElementTree`
+    module for string to element tree, and element tree to string conversion,
+    but if `lxml` is installed, it will be used instead.
+
+    Installing `lxml` is recommended for better performance and additional features,
+    like performance and support for broken HTML fragments. **Important:** `lxml` is
+    far more lenient and flexible than the standard library, so having it installed is
+    not only a performance boost, but it may also slightly change the element conversion
+    behavior in certain edge-cases!
     """
 
     __slots__ = ("_rules",)
@@ -43,15 +57,15 @@ class ETreeConverter:
             return SafeStr(element)
 
         element = f"<{self._htmy_fragment}>{element}</{self._htmy_fragment}>"
-        return self.convert_element(ET.fromstring(element))  # noqa: S314 # Only use from XML strings from a trusted source.
+        return self.convert_element(etree_from_string(element))  # noqa: S314 # Only use XML strings from a trusted source.
 
     def convert_element(self, element: Element) -> ComponentType:
         """Converts the given `Element` to a component."""
         rules = self._rules
         if len(rules) == 0:
-            return SafeStr(ET.tostring(element))
+            return SafeStr(etree_to_string(element, encoding="unicode"))
 
-        tag: str = element.tag
+        tag: str = element.tag  # type: ignore[assignment]
         component = Fragment if tag == self._htmy_fragment else rules.get(tag)
         children = self._convert_children(element)
         properties = self._convert_properties(element)
