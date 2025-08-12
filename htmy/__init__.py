@@ -30,6 +30,7 @@ from .typing import HTMYComponentType as HTMYComponentType
 from .typing import MutableContext as MutableContext
 from .typing import Properties as Properties
 from .typing import PropertyValue as PropertyValue
+from .typing import RendererType as RendererType
 from .typing import SyncComponent as SyncComponent
 from .typing import SyncContextProvider as SyncContextProvider
 from .utils import as_component_sequence as as_component_sequence
