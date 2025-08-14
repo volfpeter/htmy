@@ -71,12 +71,17 @@ lint.select = [
 "tests/**/*" = ["S101"] # S101: use of assert detected
 
 [tool.poe.tasks]
-check-format = "ruff format --check ."
-format = "ruff format ."
+format = "ruff format --check ."
+format-fix = "ruff format ."
+
 lint = "ruff check ."
 lint-fix = "ruff . --fix"
+
 mypy = "mypy ."
+
+check.sequence = ["format", "lint", "mypy"]
+check.ignore_fail = "return_non_zero"
+
 test = "python -m pytest tests"
-static-checks.sequence = ["lint", "check-format", "mypy"]
-static-checks.ignore_fail = "return_non_zero"
+
 serve-docs = "mkdocs serve"
