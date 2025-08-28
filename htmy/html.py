@@ -709,6 +709,18 @@ class i(Tag):
     tag_config = _DefaultTagConfig.inline_children
 
 
+class kbd(Tag):
+    """
+    `<kbd>` element.
+
+    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd.
+    """
+
+    __slots__ = ()
+
+    tag_config = _DefaultTagConfig.inline_children
+
+
 class picture(Tag):
     """
     `<picture>` element.
