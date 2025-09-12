@@ -22,7 +22,7 @@ class MarkdownParser(ContextAware):
     Context-aware markdown parser.
 
     By default, this class uses the `markdown` library with a sensible set of
-    [extensions](https://python-markdown.github.io/extensions/) including code highlighing.
+    [extensions](https://python-markdown.github.io/extensions/) including code highlighting.
     """
 
     __slots__ = ("_md",)
@@ -85,15 +85,14 @@ class MD(Snippet):
     It supports all the processing utilities of `Snippet`, including `text_resolver` and
     `text_processor` for formatting, token replacement, and slot conversion to components.
 
-    One note regaring slot convesion (`text_resolver`): it is executed before markdown parsing,
+    One note regarding slot conversion (`text_resolver`): it is executed before markdown parsing,
     and all string segments of the resulting component sequence are parsed individually by the
     markdown parser. As a consequence, you should only use slots in places where the preceding
     and following texts individually result in valid markdown.
 
-    **Important:** The component assumes that the processed markdown text is secure and
-    does not contain any malicious code! When dealing with untrusted inputs, ensure it
-    is safely escaped (using for example `htmy.xml_format_string`) before passing it
-    to this component. Failing to do so leads to XSS vulnerabilities.
+    **Warning:** The component treats its input as trusted. If any part of the input comes from
+    untrusted sources, ensure it is safely escaped (using for example `htmy.xml_format_string`)!
+    Passing untrusted input to this component leads to XSS vulnerabilities.
     """
 
     __slots__ = (
