@@ -4,6 +4,8 @@ The focus of this example is markdown rendering and customization. As such, all 
 
 There's one important thing to know about markdown in relation to this tutorial and the markdown support in `htmy`: markdown can include [HTML](https://daringfireball.net/projects/markdown/syntax#html) (well, XML). Looking at this from another perspective, most HTML/XML snippets can be parsed by markdown parsers without issues. This means that while the below examples work with text files with markdown syntax, those file could also contain plain HTML snippets with no "markdown" at all. You will start to see the full power of this concept by the end of this article.
 
+**Important:** the `MD` component assumes that the processed markdown text is secure and does not contain any malicious code! When dealing with untrusted inputs, ensure it is safely escaped (using for example `htmy.xml_format_string`) before passing it to this component! Failing to do so leads to XSS vulnerabilities.
+
 ## Essentials
 
 The entire example will consist of two files: `post.md` and `app.py` which should be located next to each other in the same directory.

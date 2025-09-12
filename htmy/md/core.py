@@ -89,6 +89,11 @@ class MD(Snippet):
     and all string segments of the resulting component sequence are parsed individually by the
     markdown parser. As a consequence, you should only use slots in places where the preceding
     and following texts individually result in valid markdown.
+
+    **Important:** The component assumes that the processed markdown text is secure and
+    does not contain any malicious code! When dealing with untrusted inputs, ensure it
+    is safely escaped (using for example `htmy.xml_format_string`) before passing it
+    to this component. Failing to do so leads to XSS vulnerabilities.
     """
 
     __slots__ = (
