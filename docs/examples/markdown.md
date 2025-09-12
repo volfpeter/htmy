@@ -4,6 +4,8 @@ The focus of this example is markdown rendering and customization. As such, all 
 
 There's one important thing to know about markdown in relation to this tutorial and the markdown support in `htmy`: markdown can include [HTML](https://daringfireball.net/projects/markdown/syntax#html) (well, XML). Looking at this from another perspective, most HTML/XML snippets can be parsed by markdown parsers without issues. This means that while the below examples work with text files with markdown syntax, those file could also contain plain HTML snippets with no "markdown" at all. You will start to see the full power of this concept by the end of this article.
 
+**Warning:** The `MD` component treats its input as trusted. If any part of the input comes from untrusted sources, ensure it is safely escaped (using for example `htmy.xml_format_string`)! Passing untrusted input to the `MD` component leads to XSS vulnerabilities.
+
 ## Essentials
 
 The entire example will consist of two files: `post.md` and `app.py` which should be located next to each other in the same directory.
@@ -62,7 +64,7 @@ In this section we will extend the above example by adding custom rendering rule
 
 The `post.md` file can remain the same as above, but `app.py` will change quite a bit.
 
-First of all we need a few more import (although some only for typing):
+First of all we need a few more imports (although some only for typing):
 
 ```python
 from htmy import Component, ComponentType, Context, PropertyValue, Renderer, etree, html, md
@@ -164,7 +166,7 @@ If you run the app with `python app.py` now, you will see that the result is a c
 
 ## Custom components in markdown
 
-In the example above, you may have noticed that while we only defined custom conversion rules for HTML tags, we could have done the same for an other tag name, for example `"PostInfo"`. You can also have any XML in markdown files, for example `<PostInfo author="John" published_at="1971-10-11" />`. Obviously the browser will not know what to do with this tag if we blindly keep it, but with `htmy` we can process it in any way we want.
+In the example above, you may have noticed that while we only defined custom conversion rules for HTML tags, we could have done the same for another tag name, for example `"PostInfo"`. You can also have any XML in markdown files, for example `<PostInfo author="John" published_at="1971-10-11" />`. Obviously the browser will not know what to do with this tag if we blindly keep it, but with `htmy` we can process it in any way we want.
 
 Building on the code from the previous section, as an example, let's add this `PostInfo` tag to `post.md` and create a custom `htmy` component for it.
 
