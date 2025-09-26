@@ -15,7 +15,7 @@ Unleash your creativity with the full power and Python, without the hassle of le
 
 ## Key features
 
-- **Async**-first, to let you make the best use of [modern async tools](https://github.com/timofurrer/awesome-asyncio).
+- **Async**-first, to let you make the best use of modern async tools.
 - **Powerful**, React-like **context support**, so you can avoid prop-drilling.
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
@@ -26,6 +26,7 @@ Unleash your creativity with the full power and Python, without the hassle of le
 - **Unopinionated**: use the backend, CSS, and JS frameworks of your choice, the way you want to use them.
 - Everything is **easily customizable**, from the rendering engine to components, formatting and context management.
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
+- **Compatible** with any other templating library through wrappers.
 - **Fully-typed**.
 
 ## Testimonials
@@ -301,6 +302,20 @@ In general, a component should be async if it must await some async call inside.
 If a component executes a potentially "long-running" synchronous call, it is strongly recommended to delegate that call to a worker thread an await it (thus making the component async). This can be done for example with `anyio`'s `to_thread` [utility](https://anyio.readthedocs.io/en/stable/threads.html), `starlette`'s (or `fastapi`'s) `run_in_threadpool()`, and so on. The goal here is to avoid blocking the asyncio event loop, as that can lead to performance issues.
 
 In all other cases, it's best to use sync components.
+
+## AI assistance
+
+The library is registered at [Context7](https://context7.com/volfpeter).
+
+To get good AI assistance, all you need to do is register the Context7 MCP server in your coding tool and tell the agent to use it.
+
+Because of the similarity with native HTML, JSX, and React, you can expect good results, both for vibe coding or inline completion.
+
+## Compatibility and performance
+
+By design, `htmy` is compatible with any other Python templating library, for example Jinja, through wrappers. A wrapper is simply a custom `htmy` component that internally offloads rendering to another templating framework. This makes it possible to easily combine `htmy` with other libraries, to gradually adopt it, and even to enjoy the benefits of multiple frameworks.
+
+Performance strongly depends on how you use `htmy`. The `Snippet` component for example makes it possible to reach almost Python string formatting performance, while rendering large, deep component trees is noticeably slower than Jinja for example. Wrapping another templating library for certain use-cases, or pre-rendering components and later using `Snippet` to fill in the dynamic content can be beneficial for performance.
 
 ## Framework integrations
 
