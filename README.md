@@ -321,8 +321,8 @@ Performance strongly depends on how you use `htmy`. The `Snippet` component for 
 
 FastAPI:
 
-- [FastHX](https://github.com/volfpeter/fasthx)
-- [holm](https://github.com/volfpeter/holm)
+- [holm](https://github.com/volfpeter/holm): Web development framework that brings the Next.js developer experience to Python, built on FastAPI, htmy, and FastHX.
+- [FastHX](https://github.com/volfpeter/fasthx): Declarative server-side rendering utility for FastAPI with built-in HTMX support.
 
 ## External examples
 
