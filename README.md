@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/volfpeter-htmy-badge.png)](https://mseep.ai/app/volfpeter-htmy)
+
 ![Tests](https://github.com/volfpeter/htmy/actions/workflows/tests.yml/badge.svg)
 ![Linters](https://github.com/volfpeter/htmy/actions/workflows/linters.yml/badge.svg)
 ![Documentation](https://github.com/volfpeter/htmy/actions/workflows/build-docs.yml/badge.svg)
