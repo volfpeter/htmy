@@ -158,6 +158,10 @@ class Snippet:
     """
     Component that renders text, which may be asynchronously loaded from a file.
 
+    **Warning:** The component treats its input as trusted. If any part of the input comes from
+    untrusted sources, ensure it is safely escaped (using for example `htmy.xml_format_string`)!
+    Passing untrusted input to this component leads to XSS vulnerabilities.
+
     The entire snippet processing pipeline consists of the following steps:
 
     1. The text content is loaded from a file or passed directly as a `Text` instance.
