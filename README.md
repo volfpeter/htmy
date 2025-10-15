@@ -303,6 +303,15 @@ If a component executes a potentially "long-running" synchronous call, it is str
 
 In all other cases, it's best to use sync components.
 
+## XSS prevention
+
+`htmy` does XML/HTML escaping by default. This means user input is normally sanitized and rendered safely.
+
+There are a couple of notable exceptions to this, where components by design allow XML/HTML inputs and assume they are safe:
+
+- `Snippet`: The primary use-case is to efficiently render XML/HTML templates, filling in placeholders with dynamic content. In this case you must ensure that the input template itself is safe!
+- `MD`: This component builds on `Snippet` to support markdown inputs, and doing automatic markdown to HTML conversion. You must ensure that the input text is safe!
+
 ## AI assistance
 
 The library is registered at [Context7](https://context7.com/volfpeter).
