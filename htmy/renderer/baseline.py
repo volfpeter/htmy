@@ -73,16 +73,18 @@ class Renderer:
         """
         if isinstance(component, str):
             return self._string_formatter(component)
+        elif component is None:
+            return ""
         elif isinstance(component, Iterable):
             rendered_children = await asyncio.gather(
-                *(self._render_one(comp, context) for comp in component)
+                *(self._render_one(comp, context) for comp in component if comp is not None)
             )
 
-            return "".join(rendered_children)
+            return "".join(child for child in rendered_children if child is not None)
         else:
-            return await self._render_one(component, context)
+            return await self._render_one(component, context) or ""
 
-    async def _render_one(self, component: ComponentType, context: Context) -> str:
+    async def _render_one(self, component: ComponentType, context: Context) -> str | None:
         """
         Renders a single component.
 
@@ -95,6 +97,8 @@ class Renderer:
         """
         if isinstance(component, str):
             return self._string_formatter(component)
+        elif component is None:
+            return None
         else:
             child_context: Context = context
             if hasattr(component, "htmy_context"):  # isinstance() is too expensive.

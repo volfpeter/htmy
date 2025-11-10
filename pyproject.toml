@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "htmy"
-version = "0.8.2"
+version = "0.9.0"
 description = "Async, pure-Python server-side rendering engine."
 authors = ["Peter Volf <do.volfp@gmail.com>"]
 license = "MIT"
@@ -21,12 +21,12 @@ fastapi = "^0.116.0"
 fasthx = "^2.3.3"
 mkdocs-material = "^9.6.16"
 mkdocstrings = { extras = ["python"], version = "^0.30.0" }
-mypy = "^1.17.0"
+mypy = "^1.18.2"
 poethepoet = "^0.37.0"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
 pytest-random-order = "^1.1.1"
-ruff = "^0.12.0"
+ruff = "^0.14.4"
 types-markdown = "^3.8.0.20250809"
 typing-extensions = "^4.12.2"
 types-lxml = "^2025.3.30"

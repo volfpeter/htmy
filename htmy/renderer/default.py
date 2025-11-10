@@ -181,7 +181,9 @@ class _ComponentRenderer:
         `node.component` must be an `HTMYComponentType` (single component and not `str`).
         """
         component = node.component
-        if asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
+        if component is None:
+            pass  # Just skip the node
+        elif asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
             self._async_todos.append((node, child_context))
         elif isinstance(component, ErrorBoundary):
             self._error_boundary_todos.append((node, child_context))
@@ -199,13 +201,16 @@ class _ComponentRenderer:
             while sync_todos:
                 node, child_context = sync_todos.pop()
                 component = node.component
+                if component is None:
+                    continue
+
                 if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
                     child_context = await self._extend_context(component, child_context)  # type: ignore[arg-type]
 
-                if asyncio.iscoroutinefunction(node.component.htmy):  # type: ignore[union-attr]
+                if asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
                     async_todos.append((node, child_context))
                 else:
-                    result: Component = node.component.htmy(child_context)  # type: ignore[assignment,union-attr]
+                    result: Component = component.htmy(child_context)  # type: ignore[assignment,union-attr]
                     process_node_result(node, result, child_context)
 
             if async_todos:
@@ -218,7 +223,7 @@ class _ComponentRenderer:
                 *(self._process_error_boundary(n, ctx) for n, ctx in self._error_boundary_todos)
             )
 
-        return "".join(node.component for node in self._root.iter_nodes())  # type: ignore[misc]
+        return "".join(node.component for node in self._root.iter_nodes() if node.component is not None)  # type: ignore[misc]
 
 
 async def _render_component(
