@@ -31,12 +31,16 @@ from .typing import MutableContext as MutableContext
 from .typing import Properties as Properties
 from .typing import PropertyValue as PropertyValue
 from .typing import RendererType as RendererType
+from .typing import StrictComponentType as StrictComponentType
 from .typing import SyncComponent as SyncComponent
 from .typing import SyncContextProvider as SyncContextProvider
 from .utils import as_component_sequence as as_component_sequence
 from .utils import as_component_type as as_component_type
 from .utils import is_component_sequence as is_component_sequence
+from .utils import join
 from .utils import join_components as join_components
+
+join_classes = join
 
 HTMY = Renderer
 """Deprecated alias for `Renderer`."""

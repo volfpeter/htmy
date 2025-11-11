@@ -55,7 +55,10 @@ class AsyncComponent(Protocol):
 HTMYComponentType: TypeAlias = SyncComponent | AsyncComponent
 """Sync or async `htmy` component type."""
 
-ComponentType: TypeAlias = HTMYComponentType | str
+StrictComponentType: TypeAlias = HTMYComponentType | str
+"""Type definition for a single component that's not `None`."""
+
+ComponentType: TypeAlias = StrictComponentType | None
 """Type definition for a single component."""
 
 # Omit strings from this type to simplify checks.

@@ -70,12 +70,14 @@ class Page:
             return f"async_fc-{Formatter.from_context(context).format_value(props)}"
 
         return WithContext(
+            None,
             a_main(
                 img(src="/example.png"),
                 tp(x="x1", y="y1", checked=XBool.true, required=XBool(True), value_skipped=XBool(False)),
                 sync_fc(987321),
                 async_fc(456),
                 a_main(
+                    None,
                     Formatter().in_context(
                         div(
                             AsyncText("sd<fs> df"),
@@ -89,21 +91,24 @@ class Page:
                             none=None,
                         )
                     ),
+                    None,
                     ErrorBoundary(
                         div(
+                            None,
                             ARaise(),
                         ),
-                        fallback=h1("Fallback after rendering error."),
+                        fallback=h1("Fallback after rendering error.", None),
                         errors={TypeError, ValueError},
                     ),
                 ),
-                div(),
+                div(ErrorBoundary(ARaise(), fallback=None)),
                 a_h2("something"),
                 div(AsyncText("something else"), div(AsyncText("inner something else"))),
                 p_1=123,
                 p_2="fls",
                 p_3=True,
             ),
+            None,
             context={**CustomTagFormatter().to_context(), "aio-sleep": 1},
         )
 
@@ -111,19 +116,22 @@ class Page:
     def rendered() -> str:
         return "\n".join(
             (
+                # \n-s in this tuple mark places where None children are ignored
+                # but still slightly mess up the output. The reason for not fixing
+                # these is because stricted None checks would impact performance.
                 '<a_main p-1="int:123" p-2="fls" p-3="true">',
                 '<img src="/example.png"/>',
                 '<tp x="x1" y="y1" checked="" required="" />',
                 "sync_fc-int:987321",
                 "async_fc-int:456",
-                "<a_main >",
+                "<a_main >\n",
                 '<div dp-1="123" class="w-full" >',
                 "sd&lt;fs&gt; df",
                 '<h1 created-at="2024-10-03T04:42:02.000071+00:00" on_day="2024-10-03">sdfds</h1>',
-                "</div>",
+                "</div>\n",
                 "<h1 >Fallback after rendering error.</h1>",
                 "</a_main>",
-                "<div ></div>",
+                "<div >\n\n</div>",
                 "<a_h2 >something</a_h2>",
                 "<div >",
                 "something else",
