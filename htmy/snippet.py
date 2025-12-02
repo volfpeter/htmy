@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Awaitable, Iterator, Mapping
+from collections.abc import Iterator, Mapping
+from inspect import isawaitable
 from typing import TYPE_CHECKING
 
 from async_lru import alru_cache
@@ -242,7 +243,7 @@ class Snippet:
         text = await self._get_text_content()
         if self._text_processor is not None:
             processed = self._text_processor(text, context)
-            text = (await processed) if isinstance(processed, Awaitable) else processed
+            text = (await processed) if isawaitable(processed) else processed
 
         if self._text_resolver is None:
             return self._render_text(text, context)

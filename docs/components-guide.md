@@ -144,15 +144,15 @@ Unleash your creativity, and have fun building your next web application! And of
 So far we only talked about components, but often you do not need to create full-fledged `htmy` components, all you need is a function that accepts some arguments and returns a component. Such functions are called component factories.
 
 ```python
-def heading(text: str) -> html.h1:
+def heading(text: str) -> Component:
     """Heading component factory."""
     return html.h1(text)
 
-def paragraph(text: str) -> html.p:
+def paragraph(text: str) -> Component:
     """Paragraph component factory."""
     return html.p(text)
 
-def section(title: str, text: str) -> html.div:
+def section(title: str, text: str) -> Component:
     """
     This is not a component, just a factory that is evaluated to a component
     immediately when called. The renderer will only need to resolve the inner

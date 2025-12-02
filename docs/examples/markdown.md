@@ -90,8 +90,8 @@ class Page:
                 html.head(
                     # Some metadata
                     html.title("Markdown example"),
-                    html.meta.charset(),
-                    html.meta.viewport(),
+                    html.Meta.charset(),
+                    html.Meta.viewport(),
                     # TailwindCSS import
                     html.script(src="https://cdn.tailwindcss.com"),
                 ),

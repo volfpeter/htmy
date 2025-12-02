@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from .core import SafeStr, Tag, TagConfig, TagWithProps
-from .typing import PropertyValue
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .typing import ComponentType
 
 
-class _DefaultTagConfig:
-    inline_children: TagConfig = {"child_separator": None}
+from .core import SafeStr
+from .tag import Tag, TagWithProps
 
 
 class DOCTYPE:
@@ -15,1240 +17,815 @@ class DOCTYPE:
     """HTML document type."""
 
 
-class html(Tag):
-    """
-    `<html>` element.
+html = Tag("html")
+"""
+`<html>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html.
+"""
 
-    __slots__ = ()
+head = Tag("head")
+"""
+`<head>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head.
+"""
 
-class head(Tag):
-    """
-    `<head>` element.
+body = Tag("body")
+"""
+`<body>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body.
+"""
 
-    __slots__ = ()
+base = TagWithProps("base")
+"""
+`<base>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base.
+"""
 
-class body(Tag):
-    """
-    `<body>` element.
+title = Tag("title", child_separator=None)  # TODO: allow only a single str child.
+"""
+`<title>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title.
+"""
 
-    __slots__ = ()
+link = TagWithProps("link")
+"""
+`<link>` element.
 
-
-class base(TagWithProps):
-    """
-    `<base>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base.
-    """
-
-    __slots__ = ()
-
-
-class title(Tag):
-    """
-    `<title>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-    def __init__(self, text: str, **props: PropertyValue) -> None:
-        super().__init__(text, **props)
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link.
+"""
 
 
-class link(TagWithProps):
-    """
-    `<link>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link.
-    """
-
-    __slots__ = ()
+class Link:
+    """`link` tag factories."""
 
     @classmethod
-    def css(cls, href: str) -> link:
-        return cls(rel="stylesheet", type="text/css", href=href)
+    def css(cls, href: str) -> ComponentType:
+        return link(rel="stylesheet", type="text/css", href=href)
 
 
-class meta(TagWithProps):
-    """
-    `<meta>` element.
+meta = TagWithProps("meta")
+"""
+`<meta>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta.
+"""
 
-    __slots__ = ()
 
-    @classmethod
-    def author(cls, content: str) -> meta:
-        return cls(name="author", content=content)
+class Meta:
+    """`meta` tag factories."""
 
-    @classmethod
-    def charset(cls, charset: str = "utf-8") -> meta:
-        return cls(charset=charset)
+    @staticmethod
+    def author(content: str) -> ComponentType:
+        return meta(name="author", content=content)
 
-    @classmethod
-    def description(cls, content: str) -> meta:
-        return cls(name="description", content=content)
+    @staticmethod
+    def charset(charset: str = "utf-8") -> ComponentType:
+        return meta(charset=charset)
 
-    @classmethod
-    def keywords(cls, content: str) -> meta:
-        return cls(name="keywords", content=content)
+    @staticmethod
+    def description(content: str) -> ComponentType:
+        return meta(name="description", content=content)
 
-    @classmethod
-    def viewport(cls, content: str = "width=device-width, initial-scale=1.0") -> meta:
-        return cls(name="viewport", content=content)
+    @staticmethod
+    def keywords(content: str) -> ComponentType:
+        return meta(name="keywords", content=content)
 
+    @staticmethod
+    def viewport(content: str = "width=device-width, initial-scale=1.0") -> ComponentType:
+        return meta(name="viewport", content=content)
 
-class script(Tag):
-    """
-    `<script>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script.
-    """
+script = Tag("script")  # TODO: allow only a single str child.
+"""
+`<script>` element.
 
-    __slots__ = ()
+The script tag should have only one child, the script content. If it's not
+empty, it should be a `SafeStr` for HTML and plain `str` for XHTML.
 
-    def __init__(self, text: str = "", **props: PropertyValue) -> None:
-        """
-        Initialization.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script.
+"""
 
-        Arguments:
-            text: The inner content of the tag. If not empty, it should be a
-                `SafeStr` for HTML and plain `str` for XHTML.
-            **props: Tag attributes.
-        """
-        super().__init__(text, **props)
+style = Tag("style")  # TODO: only allow a single str child, automatically convert plain str to SafeStr.
+"""
+`<style>` element.
 
+The style tag should have only one child, the style content. If it's not
+empty, it should be a `SafeStr` to avoid XML escaping.
 
-class style(Tag):
-    """
-    `<style>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style.
-    """
+dialog = Tag("dialog")
+"""
+`<dialog>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog.
+"""
 
-    def __init__(self, content: str, **props: PropertyValue) -> None:
-        """
-        Initialization.
+address = Tag("address")
+"""
+`<address>` element.
 
-        Arguments:
-            content: The content of the tag. It is automatically converted to a `SafeStr`.
-            **props: Tag attributes.
-        """
-        super().__init__(SafeStr(content), **props)
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address.
+"""
 
+article = Tag("article")
+"""
+`<article>` element.
 
-class dialog(Tag):
-    """
-    `<dialog>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog.
-    """
+aside = Tag("aside")
+"""
+`<aside>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside.
+"""
 
+blockquote = Tag("blockquote")
+"""
+`<blockquote>` element.
 
-class address(Tag):
-    """
-    `<address>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address.
-    """
+div = Tag("div")
+"""
+`<div>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div.
+"""
 
+embed = TagWithProps("embed")
+"""
+`<embed>` element.
 
-class article(Tag):
-    """
-    `<article>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article.
-    """
+figure = Tag("figure")
+"""
+`<figure>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure.
+"""
 
+figcaption = Tag("figcaption")
+"""
+`<figcaption>` element.
 
-class aside(Tag):
-    """
-    `<aside>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside.
-    """
+footer = Tag("footer")
+"""
+`<footer>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer.
+"""
 
+header = Tag("header")
+"""
+`<header>` element.
 
-class blockquote(Tag):
-    """
-    `<blockquote>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote.
-    """
+hgroup = Tag("hgroup")
+"""
+`<hgroup>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup.
+"""
 
+hr = TagWithProps("hr")
+"""
+`<hr>` element.
 
-class div(Tag):
-    """
-    `<div>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div.
-    """
+iframe = Tag("iframe")
+"""
+`<iframe>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe.
+"""
 
+main = Tag("main")
+"""
+`<main>` element.
 
-class embed(TagWithProps):
-    """
-    `<embed>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed.
-    """
+details = Tag("details")
+"""
+`<details>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details.
+"""
 
+summary = Tag("summary", child_separator=None)
+"""
+`<summary>` element.
 
-class figure(Tag):
-    """
-    `<figure>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure.
-    """
+nav = Tag("nav")
+"""
+`<nav>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav.
+"""
 
+menu = Tag("menu")
+"""
+`<menu>` element.
 
-class figcaption(Tag):
-    """
-    `<figcaption>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption.
-    """
+noscript = Tag("noscript")
+"""
+`<noscript>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript.
+"""
 
+pre = Tag("pre", child_separator=None)
+"""
+`<pre>` element.
 
-class footer(Tag):
-    """
-    `<footer>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer.
-    """
+section = Tag("section")
+"""
+`<section>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section.
+"""
 
+template = Tag("template")
+"""
+`<template>` element.
 
-class header(Tag):
-    """
-    `<header>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header.
-    """
+form = Tag("form")
+"""
+`<form>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form.
+"""
 
+search = Tag("search")
+"""
+`<search>` element.
 
-class hgroup(Tag):
-    """
-    `<hgroup>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup.
-    """
+button = Tag("button")
+"""
+`<button>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button.
+"""
 
+option = Tag("option")
+"""
+`<option>` element.
 
-class hr(TagWithProps):
-    """
-    `<hr>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr.
-    """
+optgroup = Tag("optgroup")
+"""
+`<optgroup>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup.
+"""
 
+datalist = Tag("datalist")
+"""
+`<datalist>` element.
 
-class iframe(Tag):
-    """
-    `<iframe>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe.
-    """
+fieldset = Tag("fieldset")
+"""
+`<fieldset>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset.
+"""
 
+input_ = TagWithProps("input")
+"""
+`<input>` element.
 
-class main(Tag):
-    """
-    `<main>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main.
-    """
+label = Tag("label")
+"""
+`<label>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label.
+"""
 
+legend = Tag("legend")
+"""
+`<legend>` element.
 
-class details(Tag):
-    """
-    `<details>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details.
-    """
+meter = Tag("meter")
+"""
+`<meter>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter.
+"""
 
+object = Tag("object")
+"""
+`<object>` element.
 
-class summary(Tag):
-    """
-    `<summary>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary.
-    """
+output = Tag("output")
+"""
+`<output>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output.
+"""
 
-    tag_config = _DefaultTagConfig.inline_children
+progress = Tag("progress")
+"""
+`<progress>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress.
+"""
 
-class nav(Tag):
-    """
-    `<nav>` element.
+select = Tag("select")
+"""
+`<select>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select.
+"""
 
-    __slots__ = ()
+textarea = Tag("textarea")
+"""
+`<textarea>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea.
+"""
 
-class menu(Tag):
-    """
-    `<menu>` element.
+a = Tag("a", child_separator=None)
+"""
+`<a>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a.
+"""
 
-    __slots__ = ()
+abbr = Tag("abbr", child_separator=None)
+"""
+`<abbr>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr.
+"""
 
-class noscript(Tag):
-    """
-    `<noscript>` element.
+b = Tag("b", child_separator=None)
+"""
+`<b>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b.
+"""
 
-    __slots__ = ()
+bdi = Tag("bdi", child_separator=None)
+"""
+`<bdi>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi.
+"""
 
-class pre(Tag):
-    """
-    `<pre>` element.
+bdo = Tag("bdo", child_separator=None)
+"""
+`<bdo>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo.
+"""
 
-    __slots__ = ()
+br = TagWithProps("br")
+"""
+`<br>` element.
 
-    tag_config = _DefaultTagConfig.inline_children
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br.
+"""
 
+cite = Tag("cite", child_separator=None)
+"""
+`<cite>` element.
 
-class section(Tag):
-    """
-    `<section>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section.
-    """
+code = Tag("code", child_separator=None)
+"""
+`<code>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code.
+"""
 
+data = Tag("data", child_separator=None)
+"""
+`<data>` element.
 
-class template(Tag):
-    """
-    `<>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template.
-    """
+del_ = Tag("del", child_separator=None)
+"""
+`<del>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del.
+"""
 
+dfn = Tag("dfn", child_separator=None)
+"""
+`<dfn>` element.
 
-class form(Tag):
-    """
-    `<form>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form.
-    """
+em = Tag("em", child_separator=None)
+"""
+`<em>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em.
+"""
 
+i = Tag("i", child_separator=None)
+"""
+`<i>` element.
 
-class search(Tag):
-    """
-    `<search>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search.
-    """
+kbd = Tag("kbd", child_separator=None)
+"""
+`<kbd>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd.
+"""
 
+picture = Tag("picture")
+"""
+`<picture>` element.
 
-class button(Tag):
-    """
-    `<button>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button.
-    """
+img = TagWithProps("img")
+"""
+`<img>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img.
+"""
 
+source = TagWithProps("source")
+"""
+`<source>` element.
 
-class option(Tag):
-    """
-    `<option>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option.
-    """
+ins = Tag("ins", child_separator=None)
+"""
+`<ins>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins.
+"""
 
+mark = Tag("mark", child_separator=None)
+"""
+`<mark>` element.
 
-class optgroup(Tag):
-    """
-    `<optgroup>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup.
-    """
+q = Tag("q", child_separator=None)
+"""
+`<q>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q.
+"""
 
+s = Tag("s", child_separator=None)
+"""
+`<s>` element.
 
-class datalist(Tag):
-    """
-    `<datalist>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist.
-    """
+samp = Tag("samp", child_separator=None)
+"""
+`<samp>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp.
+"""
 
+small = Tag("small", child_separator=None)
+"""
+`<small>` element.
 
-class fieldset(Tag):
-    """
-    `<fieldset>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset.
-    """
+span = Tag("span", child_separator=None)
+"""
+`<span>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span.
+"""
 
+strong = Tag("strong", child_separator=None)
+"""
+`<strong>` element.
 
-class input_(TagWithProps):
-    """
-    `<input>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input.
-    """
+sub = Tag("sub", child_separator=None)
+"""
+`<sub>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub.
+"""
 
-    def _get_htmy_name(self) -> str:
-        return "input"
+sup = Tag("sup", child_separator=None)
+"""
+`<sup>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup.
+"""
 
-class label(Tag):
-    """
-    `<label>` element.
+svg = Tag("svg", child_separator=None)
+"""
+`<svg>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg.
+"""
 
-    __slots__ = ()
+u = Tag("u", child_separator=None)
+"""
+`<u>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u.
+"""
 
-class legend(Tag):
-    """
-    `<legend>` element.
+var = Tag("var", child_separator=None)
+"""
+`<var>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var.
+"""
 
-    __slots__ = ()
+wbr = Tag("wbr", child_separator=None)
+"""
+`<wbr>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr.
+"""
 
-class meter(Tag):
-    """
-    `<meter>` element.
+li = Tag("li", child_separator=None)
+"""
+`<li>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li.
+"""
 
-    __slots__ = ()
+ol = Tag("ol")
+"""
+`<ol>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol.
+"""
 
-class object(Tag):
-    """
-    `<object>` element.
+ul = Tag("ul")
+"""
+`<ul>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul.
+"""
 
-    __slots__ = ()
+dl = Tag("dl")
+"""
+`<dl>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl.
+"""
 
-class output(Tag):
-    """
-    `<output>` element.
+dt = Tag("dt", child_separator=None)
+"""
+`<dt>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt.
+"""
 
-    __slots__ = ()
+dd = Tag("dd")
+"""
+`<dd>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd.
+"""
 
-class progress(Tag):
-    """
-    `<progress>` element.
+caption = Tag("caption")
+"""
+`<caption>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption.
+"""
 
-    __slots__ = ()
+table = Tag("table")
+"""
+`<table>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table.
+"""
 
-class select(Tag):
-    """
-    `<select>` element.
+thead = Tag("thead")
+"""
+`<thead>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead.
+"""
 
-    __slots__ = ()
+tbody = Tag("tbody")
+"""
+`<tbody>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody.
+"""
 
-class textarea(Tag):
-    """
-    `<textarea>` element.
+tfoot = Tag("tfoot")
+"""
+`<tfoot>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot.
+"""
 
-    __slots__ = ()
+tr = Tag("tr")
+"""
+`<tr>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr.
+"""
 
-class a(Tag):
-    """
-    `<a>` element.
+th = Tag("th", child_separator=None)
+"""
+`<th>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th.
+"""
 
-    __slots__ = ()
+td = Tag("td", child_separator=None)
+"""
+`<td>` element.
 
-    tag_config = _DefaultTagConfig.inline_children
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td.
+"""
 
+colgroup = TagWithProps("colgroup")
+"""
+`<colgroup>` element.
 
-class abbr(Tag):
-    """
-    `<abbr>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr.
-    """
+col = TagWithProps("col")
+"""
+`<col>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col.
+"""
 
-    tag_config = _DefaultTagConfig.inline_children
+h1 = Tag("h1", child_separator=None)
+"""
+`<h1>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1.
+"""
 
-class b(Tag):
-    """
-    `<b>` element.
+h2 = Tag("h2", child_separator=None)
+"""
+`<h2>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2.
+"""
 
-    __slots__ = ()
+h3 = Tag("h3", child_separator=None)
+"""
+`<h3>` element.
 
-    tag_config = _DefaultTagConfig.inline_children
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3.
+"""
 
+h4 = Tag("h4", child_separator=None)
+"""
+`<h4>` element.
 
-class bdi(Tag):
-    """
-    `<bdi>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi.
-    """
+h5 = Tag("h5", child_separator=None)
+"""
+`<h5>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5.
+"""
 
-    tag_config = _DefaultTagConfig.inline_children
+h6 = Tag("h6", child_separator=None)
+"""
+`<h6>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6.
+"""
 
-class bdo(Tag):
-    """
-    `<bdo>` element.
+p = Tag("p", child_separator=None)
+"""
+`<p>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p.
+"""
 
-    __slots__ = ()
+time = Tag("time", child_separator=None)
+"""
+`<time>` element.
 
-    tag_config = _DefaultTagConfig.inline_children
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time.
+"""
 
+audio = Tag("audio")
+"""
+`<audio>` element.
 
-class br(TagWithProps):
-    """
-    `<br>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br.
-    """
+video = Tag("video")
+"""
+`<video>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video.
+"""
 
+track = TagWithProps("track")
+"""
+`<track>` element.
 
-class cite(Tag):
-    """
-    `<cite>` element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track.
+"""
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite.
-    """
+canvas = Tag("canvas")
+"""
+`<canvas>` element.
 
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas.
+"""
 
-    tag_config = _DefaultTagConfig.inline_children
+area = TagWithProps("area")
+"""
+`<area>` element.
 
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area.
+"""
 
-class code(Tag):
-    """
-    `<code>` element.
+map = Tag("map")
+"""
+`<map>` element.
 
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code.
-    """
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map.
+"""
 
-    __slots__ = ()
+slot = Tag("slot")
+"""
+`<slot>` element.
 
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class data(Tag):
-    """
-    `<data>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class del_(Tag):
-    """
-    `<del>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-    def _get_htmy_name(self) -> str:
-        return "del"
-
-
-class dfn(Tag):
-    """
-    `<dfn>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class em(Tag):
-    """
-    `<em>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class i(Tag):
-    """
-    `<i>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class kbd(Tag):
-    """
-    `<kbd>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class picture(Tag):
-    """
-    `<picture>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture.
-    """
-
-    __slots__ = ()
-
-
-class img(TagWithProps):
-    """
-    `<img>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img.
-    """
-
-    __slots__ = ()
-
-
-class source(TagWithProps):
-    """
-    `<source>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source.
-    """
-
-    __slots__ = ()
-
-
-class ins(Tag):
-    """
-    `<ins>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class mark(Tag):
-    """
-    `<mark>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class q(Tag):
-    """
-    `<q>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class s(Tag):
-    """
-    `<s>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class samp(Tag):
-    """
-    `<samp>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class small(Tag):
-    """
-    `<small>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class span(Tag):
-    """
-    `<span>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class strong(Tag):
-    """
-    `<strong>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class sub(Tag):
-    """
-    `<sub>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class sup(Tag):
-    """
-    `<sup>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class svg(Tag):
-    """
-    `<svg>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg.
-    """
-
-    __slots__ = ()
-
-
-class u(Tag):
-    """
-    `<u>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class var(Tag):
-    """
-    `<var>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class wbr(Tag):
-    """
-    `<>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class li(Tag):
-    """
-    `<li>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class ol(Tag):
-    """
-    `<ol>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol.
-    """
-
-    __slots__ = ()
-
-
-class ul(Tag):
-    """
-    `<ul>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul.
-    """
-
-    __slots__ = ()
-
-
-class dl(Tag):
-    """
-    `<dl>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl.
-    """
-
-    __slots__ = ()
-
-
-class dt(Tag):
-    """
-    `<dt>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class dd(Tag):
-    """
-    `<dd>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd.
-    """
-
-    __slots__ = ()
-
-
-class caption(Tag):
-    """
-    `<caption>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption.
-    """
-
-    __slots__ = ()
-
-
-class table(Tag):
-    """
-    `<table>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table.
-    """
-
-    __slots__ = ()
-
-
-class thead(Tag):
-    """
-    `<thead>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead.
-    """
-
-    __slots__ = ()
-
-
-class tbody(Tag):
-    """
-    `<tbody>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody.
-    """
-
-    __slots__ = ()
-
-
-class tfoot(Tag):
-    """
-    `<tfoot>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot.
-    """
-
-    __slots__ = ()
-
-
-class tr(Tag):
-    """
-    `<tr>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr.
-    """
-
-    __slots__ = ()
-
-
-class th(Tag):
-    """
-    `<th>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class td(Tag):
-    """
-    `<td>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class colgroup(TagWithProps):
-    """
-    `<colgroup>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup.
-    """
-
-    __slots__ = ()
-
-
-class col(TagWithProps):
-    """
-    `<col>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col.
-    """
-
-    __slots__ = ()
-
-
-class h1(Tag):
-    """
-    `<h1>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class h2(Tag):
-    """
-    `<h2>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class h3(Tag):
-    """
-    `<h3>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class h4(Tag):
-    """
-    `<h4>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class h5(Tag):
-    """
-    `<h5>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class h6(Tag):
-    """
-    `<h6>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class p(Tag):
-    """
-    `<p>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class time(Tag):
-    """
-    `<time>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time.
-    """
-
-    __slots__ = ()
-
-    tag_config = _DefaultTagConfig.inline_children
-
-
-class audio(Tag):
-    """
-    `<audio>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio.
-    """
-
-    __slots__ = ()
-
-
-class video(Tag):
-    """
-    `<video>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video.
-    """
-
-    __slots__ = ()
-
-
-class track(TagWithProps):
-    """
-    `<track>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track.
-    """
-
-    __slots__ = ()
-
-
-class canvas(Tag):
-    """
-    `<canvas>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas.
-    """
-
-    __slots__ = ()
-
-
-class area(TagWithProps):
-    """
-    `<area>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area.
-    """
-
-    __slots__ = ()
-
-
-class map(Tag):
-    """
-    `<map>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map.
-    """
-
-    __slots__ = ()
-
-
-class slot(Tag):
-    """
-    `<slot>` element.
-
-    See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot.
-    """
-
-    __slots__ = ()
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot.
+"""
 
 
 class entity:

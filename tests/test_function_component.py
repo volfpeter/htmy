@@ -5,7 +5,7 @@ from time import perf_counter
 
 import pytest
 
-from htmy import Component, Context, Renderer, component, html
+from htmy import Component, ComponentType, Context, Renderer, component, html
 from htmy.renderer import BaselineRenderer
 
 async_delay = 0.16
@@ -18,13 +18,13 @@ date_and_message = f"<p >{date_string}: {message}</p>"
 
 
 @component
-def sync_function_component(msg: str, ctx: Context) -> html.p:
+def sync_function_component(msg: str, ctx: Context) -> ComponentType:
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
 
 
 @component
-async def async_function_component(msg: str, ctx: Context) -> html.p:
+async def async_function_component(msg: str, ctx: Context) -> ComponentType:
     await asyncio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
@@ -34,13 +34,13 @@ async def async_function_component(msg: str, ctx: Context) -> html.p:
 
 
 @component.function
-def sync_function_component_with_function_alias(msg: str, ctx: Context) -> html.p:
+def sync_function_component_with_function_alias(msg: str, ctx: Context) -> ComponentType:
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
 
 
 @component.function
-async def async_function_component_with_function_alias(msg: str, ctx: Context) -> html.p:
+async def async_function_component_with_function_alias(msg: str, ctx: Context) -> ComponentType:
     await asyncio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
@@ -50,13 +50,13 @@ async def async_function_component_with_function_alias(msg: str, ctx: Context) -
 
 
 @component.context_only
-def sync_context_only_function_component(ctx: Context) -> html.p:
+def sync_context_only_function_component(ctx: Context) -> ComponentType:
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", message)
 
 
 @component.context_only
-async def async_context_only_function_component(ctx: Context) -> html.p:
+async def async_context_only_function_component(ctx: Context) -> ComponentType:
     await asyncio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", message)
@@ -70,23 +70,23 @@ class Data:
     goodbye: str
 
     @component.method
-    def sync_method_component(self, msg: str, ctx: Context) -> html.p:
+    def sync_method_component(self, msg: str, ctx: Context) -> ComponentType:
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", msg, " ", self.goodbye)
 
     @component.method
-    async def async_method_component(self, msg: str, ctx: Context) -> html.p:
+    async def async_method_component(self, msg: str, ctx: Context) -> ComponentType:
         await asyncio.sleep(async_delay)
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", msg, " ", self.goodbye)
 
     @component.context_only_method
-    def sync_context_only_method_component(self, ctx: Context) -> html.p:
+    def sync_context_only_method_component(self, ctx: Context) -> ComponentType:
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", self.goodbye)
 
     @component.context_only_method
-    async def async_context_only_method_component(self, ctx: Context) -> html.p:
+    async def async_context_only_method_component(self, ctx: Context) -> ComponentType:
         await asyncio.sleep(async_delay)
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", self.goodbye)
