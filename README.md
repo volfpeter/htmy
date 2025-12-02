@@ -171,7 +171,7 @@ user_table = html.table(
 - `Snippet` and `Slots`: utilities for creating dynamic, customizable document snippets in their native file format (HTML, XML, Markdown, etc.), with slot rendering support.
 - `md`: `MarkdownParser` utility and `MD` component for loading, parsing, converting, and rendering markdown content.
 - `i18n`: utilities for async, JSON based internationalization.
-- `BaseTag`, `TagWithProps`, `Tag`, `WildcardTag`: base classes for custom XML tags.
+- `Tag`, `TagWithProps`, and `wildcard_tag`: base classes and utilities for creating custom XML tags.
 - `ErrorBoundary`, `Fragment`, `SafeStr`, `WithContext`: utilities for error handling, component wrappers, context providers, and formatting.
 - `etree.ETreeConverter`: utility that converts XML to a component tree with support for custom HTMY components.
 

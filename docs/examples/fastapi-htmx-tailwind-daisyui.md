@@ -72,11 +72,11 @@ def page(content: ComponentType, context: Context) -> Component:
             html.head(
                 # Some metadata
                 html.title("Demo"),
-                html.meta.charset(),
-                html.meta.viewport(),
+                html.Meta.charset(),
+                html.Meta.viewport(),
                 # TailwindCSS and DaisyUI
                 html.script(src="https://cdn.tailwindcss.com"),
-                html.link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
+                html.Link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
                 # HTMX
                 html.script(src="https://unpkg.com/htmx.org@2.0.2"),
             ),

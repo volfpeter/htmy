@@ -47,7 +47,7 @@ import asyncio
 from dataclasses import dataclass
 from typing import Callable
 
-from htmy import Context, Renderer, component, html
+from htmy import ComponentType, Context, Renderer, component, html
 
 @dataclass
 class User:
@@ -83,7 +83,7 @@ First let's create a component that renders a user as a styled list item. The "p
 
 ```python
 @component
-def user_list_item(user: User, context: Context) -> html.li:
+def user_list_item(user: User, context: Context) -> ComponentType:
     """
     Function component that renders a user as a list item.
     """
@@ -98,7 +98,7 @@ Next we create a component renders a list of users. This component is implemente
 
 ```python
 @component.function  # @component.function is just an alias for @component
-async def user_list(users: list[User], context: Context) -> html.ul:
+async def user_list(users: list[User], context: Context) -> ComponentType:
     """
     Function component that renders the given list of users.
     """
@@ -118,7 +118,7 @@ Finally, let's also create a context-only component. This will show a styled pag
 
 ```python
 @component.context_only
-def users_page(context: Context) -> html.div:
+def users_page(context: Context) -> ComponentType:
     """
     Context-only function component that renders the users page.
     """
@@ -162,7 +162,7 @@ class EnhancedUser(User):
     """
 
     @component.method
-    def profile_page(self, navbar: html.nav, context: Context) -> html.div:
+    def profile_page(self, navbar: html.nav, context: Context) -> ComponentType:
         """
         Method component that renders the user's profile page.
         """
@@ -182,7 +182,7 @@ class EnhancedUser(User):
         )
 
     @component.context_only_method
-    def table_row(self, context: Context) -> html.tr:
+    def table_row(self, context: Context) -> ComponentType:
         """
         Context-only method component that renders the user as a table row.
         """
@@ -193,7 +193,7 @@ class EnhancedUser(User):
             html.td(self.status),
         )
 
-    def htmy(self, context: Context) -> html.li:
+    def htmy(self, context: Context) -> ComponentType:
         """
         Renders the user as a styled list item.
         """

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import asyncio
+from asyncio import gather as asyncio_gather
 from collections import ChainMap, deque
 from collections.abc import Awaitable, Callable, Iterator
+from inspect import isawaitable, iscoroutinefunction
 from typing import TypeAlias
 
 from htmy.core import ErrorBoundary, xml_format_string
@@ -93,7 +94,7 @@ class _ComponentRenderer:
             context: The current rendering context.
         """
         extra_context: Context | Awaitable[Context] = component.htmy_context()
-        if isinstance(extra_context, Awaitable):
+        if isawaitable(extra_context):
             extra_context = await extra_context
 
         return (
@@ -138,7 +139,12 @@ class _ComponentRenderer:
         """
         schedule_node = self._schedule_node
         string_formatter = self._string_formatter
-        if is_component_sequence(component):
+        if hasattr(component, "htmy"):
+            parent_node.component = component
+            schedule_node(parent_node, context)
+        elif isinstance(component, str):
+            parent_node.component = string_formatter(component)
+        elif is_component_sequence(component):
             if len(component) == 0:
                 parent_node.component = ""
                 return
@@ -161,11 +167,8 @@ class _ComponentRenderer:
 
                 last.next = node
                 last = node
-        elif isinstance(component, str):
-            parent_node.component = string_formatter(component)
         else:
-            parent_node.component = component  # type: ignore[assignment]
-            schedule_node(parent_node, context)
+            raise ValueError("Invalid component type.")
 
     async def _process_async_node(self, node: _Node, context: Context) -> None:
         """
@@ -183,7 +186,7 @@ class _ComponentRenderer:
         component = node.component
         if component is None:
             pass  # Just skip the node
-        elif asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
+        elif iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
             self._async_todos.append((node, child_context))
         elif isinstance(component, ErrorBoundary):
             self._error_boundary_todos.append((node, child_context))
@@ -207,7 +210,7 @@ class _ComponentRenderer:
                 if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
                     child_context = await self._extend_context(component, child_context)  # type: ignore[arg-type]
 
-                if asyncio.iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
+                if iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
                     async_todos.append((node, child_context))
                 else:
                     result: Component = component.htmy(child_context)  # type: ignore[assignment,union-attr]
@@ -216,10 +219,10 @@ class _ComponentRenderer:
             if async_todos:
                 current_async_todos = async_todos
                 self._async_todos = async_todos = deque()
-                await asyncio.gather(*(process_async_node(n, ctx) for n, ctx in current_async_todos))
+                await asyncio_gather(*(process_async_node(n, ctx) for n, ctx in current_async_todos))
 
         if self._error_boundary_todos:
-            await asyncio.gather(
+            await asyncio_gather(
                 *(self._process_error_boundary(n, ctx) for n, ctx in self._error_boundary_todos)
             )
 
@@ -233,14 +236,16 @@ async def _render_component(
     string_formatter: Callable[[str], str],
 ) -> str:
     """Renders the given component with the given settings."""
-    if is_component_sequence(component):
+    if hasattr(component, "htmy"):
+        return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()
+    elif is_component_sequence(component):
         if len(component) == 0:
             return ""
 
         renderers = (_ComponentRenderer(c, context, string_formatter=string_formatter) for c in component)
-        return "".join(await asyncio.gather(*(r.run() for r in renderers)))
+        return "".join(await asyncio_gather(*(r.run() for r in renderers)))
     else:
-        return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()  # type: ignore[arg-type]
+        raise ValueError("Invalid component type.")
 
 
 class Renderer:
