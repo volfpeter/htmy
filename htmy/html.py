@@ -63,8 +63,8 @@ See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link.
 class Link:
     """`link` tag factories."""
 
-    @classmethod
-    def css(cls, href: str) -> ComponentType:
+    @staticmethod
+    def css(href: str) -> ComponentType:
         return link(rel="stylesheet", type="text/css", href=href)
 
 
@@ -603,7 +603,7 @@ var = Tag("var", child_separator=None)
 See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var.
 """
 
-wbr = Tag("wbr", child_separator=None)
+wbr = TagWithProps("wbr")
 """
 `<wbr>` element.
 
@@ -708,7 +708,7 @@ td = Tag("td", child_separator=None)
 See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td.
 """
 
-colgroup = TagWithProps("colgroup")
+colgroup = Tag("colgroup")
 """
 `<colgroup>` element.
 

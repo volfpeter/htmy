@@ -1,5 +1,5 @@
 from collections.abc import Callable, Coroutine, Mapping, MutableMapping
-from typing import Any, Protocol, TypeAlias, TypeVar, runtime_checkable
+from typing import Any, Protocol, TypeAlias, TypeVar
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -34,7 +34,6 @@ It can be helpful when the created context should be marked as mutable for stati
 # -- Components
 
 
-@runtime_checkable
 class SyncComponent(Protocol):
     """Protocol definition for sync `htmy` components."""
 
@@ -43,7 +42,6 @@ class SyncComponent(Protocol):
         ...
 
 
-@runtime_checkable
 class AsyncComponent(Protocol):
     """Protocol definition for async `htmy` components."""
 
@@ -92,7 +90,6 @@ class RendererType(Protocol):
 # -- Context providers
 
 
-@runtime_checkable
 class SyncContextProvider(Protocol):
     """Protocol definition for sync context providers."""
 
@@ -101,7 +98,6 @@ class SyncContextProvider(Protocol):
         ...
 
 
-@runtime_checkable
 class AsyncContextProvider(Protocol):
     """Protocol definition for async context providers."""
 
