@@ -2,19 +2,16 @@ from __future__ import annotations
 
 import enum
 import json
-from collections.abc import Callable, Container
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr as xml_quoteattr
 
-from .typing import Component, ComponentType, Context, ContextKey, ContextValue, T
-from .utils import as_component_type
-
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from typing_extensions import Never, Self
-else:
-    Never = Any
-    Self = Any
+
+    from .typing import Component, ComponentType, Context, ContextKey, ContextValue, T
 
 # -- Utility components
 
@@ -36,52 +33,6 @@ class Fragment:
     def htmy(self, context: Context) -> Component:
         """Renders the component."""
         return self._children
-
-
-class ErrorBoundary(Fragment):
-    """
-    Error boundary component for graceful error handling.
-
-    If an error occurs during the rendering of the error boundary's subtree,
-    the fallback component will be rendered instead.
-    """
-
-    __slots__ = ("_errors", "_fallback")
-
-    def __init__(
-        self,
-        *children: ComponentType,
-        fallback: Component | None = None,
-        errors: Container[type[Exception]] | None = None,
-    ) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            *children: The wrapped children components.
-            fallback: The fallback component to render in case an error occurs during children rendering.
-            errors: An optional set of accepted error types. Only accepted errors are swallowed and rendered
-                with the fallback. If an error is not in this set but one of its base classes is, then the
-                error will still be accepted and the fallbak rendered. By default all errors are accepted.
-        """
-        super().__init__(*children)
-        self._errors = errors
-        self._fallback: Component = "" if fallback is None else fallback
-
-    def fallback_component(self, error: Exception) -> ComponentType:
-        """
-        Returns the fallback component for the given error.
-
-        Arguments:
-            error: The error that occurred during the rendering of the error boundary's subtree.
-
-        Raises:
-            Exception: The received error if it's not accepted.
-        """
-        if not (self._errors is None or any(e in self._errors for e in type(error).mro())):
-            raise error
-
-        return as_component_type(self._fallback)
 
 
 class WithContext(Fragment):

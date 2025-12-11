@@ -2,13 +2,19 @@ from __future__ import annotations
 
 from asyncio import gather as asyncio_gather
 from collections import ChainMap, deque
-from collections.abc import Awaitable, Callable, Iterator
 from inspect import isawaitable, iscoroutinefunction
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
 
-from htmy.core import ErrorBoundary, xml_format_string
-from htmy.typing import Component, ComponentType, Context, ContextProvider
+from htmy.core import xml_format_string
+from htmy.typing import Context
 from htmy.utils import is_component_sequence
+
+from .context import RendererContext
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable, Iterator
+
+    from htmy.typing import Component, ComponentType, ContextProvider
 
 
 class _Node:
@@ -49,7 +55,7 @@ class _ComponentRenderer:
     `ComponentType` renderer that converts a component tree into a linked list of resolved (`str`) nodes.
     """
 
-    __slots__ = ("_async_todos", "_error_boundary_todos", "_sync_todos", "_root", "_string_formatter")
+    __slots__ = ("_async_todos", "_sync_todos", "_root", "_string_formatter")
 
     def __init__(
         self,
@@ -68,8 +74,6 @@ class _ComponentRenderer:
         """
         self._async_todos: deque[_NodeAndChildContext] = deque()
         """Async node - context tuples that need to be rendered."""
-        self._error_boundary_todos: deque[_NodeAndChildContext] = deque()
-        """Node context tuples where `node.component` is an `ErrorBoundary`."""
         self._sync_todos: deque[_NodeAndChildContext] = deque()
         """
         Sync node - context tuples that need to be rendered (`node.component` is an `HTMYComponentType`).
@@ -103,30 +107,6 @@ class _ComponentRenderer:
             if extra_context
             else context
         )
-
-    async def _process_error_boundary(self, node: _Node, context: Context) -> None:
-        """
-        Processes a single node whose component is an `ErrorBoundary`.
-        """
-        component: ErrorBoundary = node.component  # type: ignore[assignment]
-        if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
-            context = await self._extend_context(component, context)
-
-        try:
-            result = await _render_component(
-                component.htmy(context),
-                context=context,
-                string_formatter=self._string_formatter,
-            )
-        except Exception as e:
-            renderer = _ComponentRenderer(
-                component.fallback_component(e),
-                context,
-                string_formatter=self._string_formatter,
-            )
-            result = await renderer.run()
-
-        node.component = result  # No string formatting.
 
     def _process_node_result(self, parent_node: _Node, component: Component, context: Context) -> None:
         """
@@ -168,7 +148,7 @@ class _ComponentRenderer:
                 last.next = node
                 last = node
         else:
-            raise ValueError("Invalid component type.")
+            raise ValueError(f"Invalid component type: {type(component)}")
 
     async def _process_async_node(self, node: _Node, context: Context) -> None:
         """
@@ -188,8 +168,6 @@ class _ComponentRenderer:
             pass  # Just skip the node
         elif iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
             self._async_todos.append((node, child_context))
-        elif isinstance(component, ErrorBoundary):
-            self._error_boundary_todos.append((node, child_context))
         else:
             self._sync_todos.append((node, child_context))
 
@@ -221,11 +199,6 @@ class _ComponentRenderer:
                 self._async_todos = async_todos = deque()
                 await asyncio_gather(*(process_async_node(n, ctx) for n, ctx in current_async_todos))
 
-        if self._error_boundary_todos:
-            await asyncio_gather(
-                *(self._process_error_boundary(n, ctx) for n, ctx in self._error_boundary_todos)
-            )
-
         return "".join(node.component for node in self._root.iter_nodes() if node.component is not None)  # type: ignore[misc]
 
 
@@ -238,14 +211,18 @@ async def _render_component(
     """Renders the given component with the given settings."""
     if hasattr(component, "htmy"):
         return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()
+    elif isinstance(component, str):
+        return string_formatter(component)
     elif is_component_sequence(component):
         if len(component) == 0:
             return ""
 
         renderers = (_ComponentRenderer(c, context, string_formatter=string_formatter) for c in component)
         return "".join(await asyncio_gather(*(r.run() for r in renderers)))
+    elif component is None:
+        return ""
     else:
-        raise ValueError("Invalid component type.")
+        raise ValueError(f"Invalid component type: {type(component)}")
 
 
 class Renderer:
@@ -289,8 +266,12 @@ class Renderer:
         Returns:
             The rendered string.
         """
+        # Create a new default context that also contains the renderer instance.
+        # We must not put it in `self._default_context` because then the renderer
+        # would keep a reference to itself.
+        default_context = {**self._default_context, RendererContext: self}
         # Type ignore: ChainMap expects mutable mappings, but context mutation is not allowed so don't care.
         context = (
-            self._default_context if context is None else ChainMap(context, self._default_context)  # type: ignore[arg-type]
+            default_context if context is None else ChainMap(context, default_context)  # type: ignore[arg-type]
         )
         return await _render_component(component, context=context, string_formatter=self._string_formatter)

@@ -1,5 +1,4 @@
 from .core import ContextAware as ContextAware
-from .core import ErrorBoundary as ErrorBoundary
 from .core import Formatter as Formatter
 from .core import Fragment as Fragment
 from .core import SafeStr as SafeStr
@@ -8,8 +7,10 @@ from .core import Text as Text
 from .core import WithContext as WithContext
 from .core import XBool as XBool
 from .core import xml_format_string as xml_format_string
+from .error_boundary import ErrorBoundary as ErrorBoundary
 from .function_component import component as component
 from .renderer import Renderer as Renderer
+from .renderer.typing import RendererType as RendererType
 from .snippet import Slots as Slots
 from .snippet import Snippet as Snippet
 from .tag import Tag as Tag
@@ -28,7 +29,6 @@ from .typing import HTMYComponentType as HTMYComponentType
 from .typing import MutableContext as MutableContext
 from .typing import Properties as Properties
 from .typing import PropertyValue as PropertyValue
-from .typing import RendererType as RendererType
 from .typing import StrictComponentType as StrictComponentType
 from .typing import SyncComponent as SyncComponent
 from .typing import SyncContextProvider as SyncContextProvider
