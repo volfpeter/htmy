@@ -8,12 +8,12 @@ from htmy.renderer.typing import RendererType
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("renderer",),
+    "renderer",
     [
-        (BaselineRenderer(),),
-        (BaselineRenderer({RendererContext: "not-the-renderer"}),),
-        (Renderer(),),
-        (Renderer({RendererContext: "not-the-renderer"}),),
+        BaselineRenderer(),
+        BaselineRenderer({RendererContext: "not-the-renderer"}),
+        Renderer(),
+        Renderer({RendererContext: "not-the-renderer"}),
     ],
 )
 async def test_renderer_in_context(renderer: RendererType) -> None:

@@ -23,7 +23,7 @@ class _TagWithPropsImpl:
 
 
 class _TagImpl:
-    __slots__ = ("name", "props", "children", "child_separator")
+    __slots__ = ("child_separator", "children", "name", "props")
 
     def __init__(
         self,
@@ -72,7 +72,7 @@ class TagWithProps:
 
 
 class Tag:
-    __slots__ = ("name", "child_separator")
+    __slots__ = ("child_separator", "name")
 
     def __init__(self, name: str, child_separator: ComponentType = "\n") -> None:
         self.name = name

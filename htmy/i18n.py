@@ -26,7 +26,7 @@ class I18n(ContextAware):
     Context-aware async internationalization utility.
     """
 
-    __slots__ = ("_path", "_fallback")
+    __slots__ = ("_fallback", "_path")
 
     _root_keys: ClassVar[frozenset[str]] = frozenset(("", "."))
     """Special keys that represent the "root" object, i.e. the entire translation resource file."""

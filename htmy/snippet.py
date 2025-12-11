@@ -44,7 +44,7 @@ class Slots:
     Implements: `htmy.typing.TextResolver`
     """
 
-    __slots__ = ("_slot_mapping", "_slot_re", "_not_found")
+    __slots__ = ("_not_found", "_slot_mapping", "_slot_re")
 
     class slot_re:
         """

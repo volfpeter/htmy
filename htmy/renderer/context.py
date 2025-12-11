@@ -18,6 +18,7 @@ class RendererContext:
 
         Raises:
             KeyError: If no renderer instance was found in the context.
+            TypeError: If the value corresponding to `RendererContext` in the context is not a renderer.
         """
         renderer = context[cls]
 

@@ -36,7 +36,7 @@ class ErrorBoundary:
             fallback: The fallback component to render in case an error occurs during children rendering.
             errors: An optional set of accepted error types. Only accepted errors are swallowed and rendered
                 with the fallback. If an error is not in this set but one of its base classes is, then the
-                error will still be accepted and the fallbak rendered. By default all errors are accepted.
+                error will still be accepted and the fallback rendered. By default all errors are accepted.
         """
         self._children = children
         self._errors = errors
