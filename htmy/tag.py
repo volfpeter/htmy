@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-# These types are assumed to be defined in `htmy.core` as per the prompt.
 from .core import Formatter, SafeStr
 from .utils import join_components
 
