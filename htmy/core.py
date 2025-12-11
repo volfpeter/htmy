@@ -1,21 +1,17 @@
 from __future__ import annotations
 
-import abc
 import enum
 import json
-from collections.abc import Callable, Container
-from typing import TYPE_CHECKING, Any, ClassVar, TypedDict, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr as xml_quoteattr
 
-from .typing import Component, ComponentType, Context, ContextKey, ContextValue, PropertyValue, T
-from .utils import as_component_type, join_components
-
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from typing_extensions import Never, Self
-else:
-    Never = Any
-    Self = Any
+
+    from .typing import Component, ComponentType, Context, ContextKey, ContextValue, T
 
 # -- Utility components
 
@@ -37,52 +33,6 @@ class Fragment:
     def htmy(self, context: Context) -> Component:
         """Renders the component."""
         return self._children
-
-
-class ErrorBoundary(Fragment):
-    """
-    Error boundary component for graceful error handling.
-
-    If an error occurs during the rendering of the error boundary's subtree,
-    the fallback component will be rendered instead.
-    """
-
-    __slots__ = ("_errors", "_fallback")
-
-    def __init__(
-        self,
-        *children: ComponentType,
-        fallback: Component | None = None,
-        errors: Container[type[Exception]] | None = None,
-    ) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            *children: The wrapped children components.
-            fallback: The fallback component to render in case an error occurs during children rendering.
-            errors: An optional set of accepted error types. Only accepted errors are swallowed and rendered
-                with the fallback. If an error is not in this set but one of its base classes is, then the
-                error will still be accepted and the fallbak rendered. By default all errors are accepted.
-        """
-        super().__init__(*children)
-        self._errors = errors
-        self._fallback: Component = "" if fallback is None else fallback
-
-    def fallback_component(self, error: Exception) -> ComponentType:
-        """
-        Returns the fallback component for the given error.
-
-        Arguments:
-            error: The error that occurred during the rendering of the error boundary's subtree.
-
-        Raises:
-            Exception: The received error if it's not accepted.
-        """
-        if not (self._errors is None or any(e in self._errors for e in type(error).mro())):
-            raise error
-
-        return as_component_type(self._fallback)
 
 
 class WithContext(Fragment):
@@ -348,143 +298,3 @@ class Formatter(ContextAware):
             XBool: lambda v: cast(XBool, v).format(),
             type(None): SkipProperty.format_property,
         }
-
-
-# -- XML
-
-
-_default_tag_formatter = Formatter()
-
-
-class TagConfig(TypedDict, total=False):
-    """Tag configuration."""
-
-    child_separator: ComponentType | None
-
-
-class BaseTag(abc.ABC):
-    """
-    Base tag class.
-
-    Tags are always synchronous.
-
-    If the content of a tag must be calculated asynchronously, then the content can be implemented
-    as a separate async component or be resolved in an async parent component. If a property of a
-    tag must be calculated asynchronously, then the tag can be wrapped in an async component that
-    resolves the async content and then passes the value to the tag.
-    """
-
-    __slots__ = ("_htmy_name",)
-
-    def __init__(self) -> None:
-        self._htmy_name = self._get_htmy_name()
-
-    @property
-    def htmy_name(self) -> str:
-        """The tag name."""
-        return self._htmy_name
-
-    @abc.abstractmethod
-    def htmy(self, context: Context) -> Component:
-        """Abstract base component implementation."""
-        ...
-
-    def _get_htmy_name(self) -> str:
-        return type(self).__name__
-
-
-class TagWithProps(BaseTag):
-    """Base class for tags with properties."""
-
-    __slots__ = ("props",)
-
-    def __init__(self, **props: PropertyValue) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            **props: Tag properties.
-        """
-        super().__init__()
-        self.props = props
-
-    def htmy(self, context: Context) -> Component:
-        """Renders the component."""
-        name = self.htmy_name
-        props = self._htmy_format_props(context=context)
-        return SafeStr(f"<{name} {props}/>")
-
-    def _htmy_format_props(self, context: Context) -> str:
-        """Formats tag properties."""
-        formatter = Formatter.from_context(context, _default_tag_formatter)
-        return " ".join(formatter.format(name, value) for name, value in self.props.items())
-
-
-class Tag(TagWithProps):
-    """Base class for tags with both properties and children."""
-
-    __slots__ = ("children",)
-
-    tag_config: TagConfig = {"child_separator": "\n"}
-
-    def __init__(self, *children: ComponentType, **props: PropertyValue) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            *children: Children components.
-            **props: Tag properties.
-        """
-        super().__init__(**props)
-        self.children = children
-
-    @property
-    def child_separator(self) -> ComponentType | None:
-        """The child separator to use."""
-        return self.tag_config.get("child_separator", None)
-
-    def htmy(self, context: Context) -> Component:
-        """Renders the component."""
-        name = self.htmy_name
-        props = self._htmy_format_props(context=context)
-        opening, closing = SafeStr(f"<{name} {props}>"), SafeStr(f"</{name}>")
-        separator = self.child_separator
-        return (
-            opening,
-            *(
-                self.children
-                if separator is None
-                else join_components(self.children, separator=separator, pad=True)
-            ),
-            closing,
-        )
-
-
-class WildcardTag(Tag):
-    """Tag that can have both children and properties, and whose tag name can be set."""
-
-    __slots__ = ("_child_separator",)
-
-    def __init__(
-        self,
-        *children: ComponentType,
-        htmy_name: str,
-        htmy_child_separator: ComponentType | None = None,
-        **props: PropertyValue,
-    ) -> None:
-        """
-        Initialization.
-
-        Arguments:
-            *children: Children components.
-            htmy_name: The tag name to use for this tag.
-            htmy_child_separator: The child separator to use (if any).
-            **props: Tag properties.
-        """
-        super().__init__(*children, **props)
-        self._htmy_name = htmy_name
-        self._child_separator = htmy_child_separator
-
-    @property
-    def child_separator(self) -> ComponentType | None:
-        return self._child_separator

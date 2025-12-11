@@ -20,10 +20,10 @@ def page(content: ComponentType, context: Context) -> Component:
         html.html(
             html.head(
                 html.title("Test page"),
-                html.meta.charset(),
-                html.meta.viewport(),
+                html.Meta.charset(),
+                html.Meta.viewport(),
                 html.script(src="https://cdn.tailwindcss.com"),
-                html.link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
+                html.Link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
             ),
             html.body(
                 content,
@@ -41,10 +41,10 @@ async def a_page(content: ComponentType, context: Context) -> Component:
         html.html(
             html.head(
                 html.title("Test page"),
-                html.meta.charset(),
-                html.meta.viewport(),
+                html.Meta.charset(),
+                html.Meta.viewport(),
                 html.script(src="https://cdn.tailwindcss.com"),
-                html.link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
+                html.Link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
             ),
             html.body(
                 content,

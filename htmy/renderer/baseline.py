@@ -3,9 +3,12 @@ from __future__ import annotations
 import asyncio
 from collections import ChainMap
 from collections.abc import Awaitable, Callable, Iterable
+from inspect import isawaitable
 
-from htmy.core import ErrorBoundary, xml_format_string
+from htmy.core import xml_format_string
 from htmy.typing import Component, ComponentType, Context
+
+from .context import RendererContext
 
 
 class Renderer:
@@ -53,11 +56,15 @@ class Renderer:
         Returns:
             The rendered string.
         """
+        # Create a new default context that also contains the renderer instance.
+        # We must not put it in `self._default_context` because then the renderer
+        # would keep a reference to itself.
+        default_context = {**self._default_context, RendererContext: self}
         return await self._render(
             component,
             # Type ignore: ChainMap expects mutable mappings,
             # but mutation is not supported by the Context typing.
-            self._default_context if context is None else ChainMap(context, self._default_context),  # type: ignore[arg-type]
+            default_context if context is None else ChainMap(context, default_context),  # type: ignore[arg-type]
         )
 
     async def _render(self, component: Component, context: Context) -> str:
@@ -103,21 +110,15 @@ class Renderer:
             child_context: Context = context
             if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
                 extra_context: Context | Awaitable[Context] = component.htmy_context()
-                if isinstance(extra_context, Awaitable):
+                if isawaitable(extra_context):
                     extra_context = await extra_context
 
                 if len(extra_context):
                     # Context must not be mutated, so we can ignore that ChainMap expext mutable mappings.
                     child_context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
-            try:
-                children = component.htmy(child_context)
-                if isinstance(children, Awaitable):
-                    children = await children
+            children = component.htmy(child_context)
+            if isawaitable(children):
+                children = await children
 
-                return await self._render(children, child_context)
-            except Exception as e:
-                if isinstance(component, ErrorBoundary):
-                    return await self._render_one(component.fallback_component(e), context)
-
-                raise e
+            return await self._render(children, child_context)

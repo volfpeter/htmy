@@ -38,19 +38,17 @@ class Page:
             async def htmy(self, context: Context) -> Component:
                 raise DemoValueError("Deliberate")
 
-        class div(Tag): ...
+        div = Tag("div")
 
-        class h1(Tag):
-            tag_config = {"child_separator": None}
+        h1 = Tag("h1", child_separator=None)
 
-        class a_h2(Tag):
-            tag_config = {"child_separator": None}
+        a_h2 = Tag("a_h2", child_separator=None)
 
-        class a_main(Tag): ...
+        a_main = Tag("a_main")
 
-        class img(TagWithProps): ...
+        img = TagWithProps("img")
 
-        class tp(TagWithProps): ...
+        tp = TagWithProps("tp")
 
         class AsyncText:
             def __init__(self, value: str) -> None:

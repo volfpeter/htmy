@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Callable, Coroutine
+from inspect import iscoroutinefunction
 from typing import Any, Protocol, TypeAlias, overload
 
 from .typing import AsyncComponent, Component, Context, SyncComponent
@@ -116,7 +116,7 @@ class ComponentDecorators:
             can be "instantiated" with the function component's properties.)
         """
 
-        if asyncio.iscoroutinefunction(func):
+        if iscoroutinefunction(func):
 
             def async_wrapper(props: TProps) -> AsyncComponent:
                 # This function must be async, in case the renderer inspects it to decide how to handle it.
@@ -278,7 +278,7 @@ class ComponentDecorators:
             returns a component instance. (Or loosly speaking, an `HTMYComponentType` which
             can be "instantiated" with the method component's properties.)
         """
-        if asyncio.iscoroutinefunction(func):
+        if iscoroutinefunction(func):
 
             def async_wrapper(self: TSelf, props: TProps) -> AsyncComponent:
                 # This function must be async, in case the renderer inspects it to decide how to handle it.
