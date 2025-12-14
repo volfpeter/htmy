@@ -10,6 +10,7 @@ from .core import xml_format_string as xml_format_string
 from .error_boundary import ErrorBoundary as ErrorBoundary
 from .function_component import component as component
 from .renderer import Renderer as Renderer
+from .renderer import StreamingRenderer as StreamingRenderer
 from .renderer.typing import RendererType as RendererType
 from .snippet import Slots as Slots
 from .snippet import Snippet as Snippet
