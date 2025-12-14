@@ -108,7 +108,7 @@ class Renderer:
             return
         elif isinstance(component, Iterable):
             for comp in component:
-                if component is not None:
+                if comp is not None:
                     async for chunk in self._stream_one(comp, context):
                         yield chunk
         else:
