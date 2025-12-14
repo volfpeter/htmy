@@ -61,6 +61,7 @@ nav:
       - Renderer:
           - api/renderer/default.md
           - api/renderer/baseline.md
+          - api/renderer/typing.md
       - api/utils.md
       - api/typing.md
       - api/etree.md

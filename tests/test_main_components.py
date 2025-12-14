@@ -16,7 +16,7 @@ from htmy import (
     XBool,
     component,
 )
-from htmy.renderer import BaselineRenderer, Renderer
+from htmy.renderer.typing import RendererType
 
 
 class Page:
@@ -151,8 +151,9 @@ class Page:
     ),
 )
 async def test_complex_page_rendering(
-    default_renderer: Renderer,
-    baseline_renderer: BaselineRenderer,
+    default_renderer: RendererType,
+    baseline_renderer: RendererType,
+    streaming_renderer: RendererType,
     page: Component,
     context: Context | None,
     expected: str,
@@ -161,4 +162,7 @@ async def test_complex_page_rendering(
     assert result == expected
 
     result = await baseline_renderer.render(page, context)
+    assert result == expected
+
+    result = await streaming_renderer.render(page, context)
     assert result == expected

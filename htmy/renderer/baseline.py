@@ -1,26 +1,28 @@
 from __future__ import annotations
 
-import asyncio
 from collections import ChainMap
-from collections.abc import Awaitable, Callable, Iterable
+from collections.abc import Iterable
 from inspect import isawaitable
+from typing import TYPE_CHECKING
 
 from htmy.core import xml_format_string
-from htmy.typing import Component, ComponentType, Context
 
 from .context import RendererContext
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Awaitable, Callable
+
+    from htmy.typing import Component, ComponentType, Context
 
 
 class Renderer:
     """
-    The baseline component renderer.
+    The baseline renderer that support both async streaming and rendering.
 
     Because of the simple, recursive implementation, this renderer is the easiest to reason about.
     Therefore it is useful for validating component correctness before bug reporting (if another
     renderer implementation fails), testing and debugging alternative implementations, and it can
-    also serve as the baseline for benchmarking optimized renderers.
-
-    The performance of this renderer is not production quality.
+    also serve as the baseline for benchmarking other renderer implementations.
     """
 
     __slots__ = ("_default_context", "_string_formatter")
@@ -47,7 +49,7 @@ class Renderer:
         """
         Renders the given component.
 
-        Implements `htmy.typing.RendererType`.
+        Implements `htmy.renderer.typing.RendererType`.
 
         Arguments:
             component: The component to render.
@@ -56,42 +58,64 @@ class Renderer:
         Returns:
             The rendered string.
         """
+        chunks = []
+        async for chunk in self.stream(component, context):
+            chunks.append(chunk)
+
+        return "".join(chunks)
+
+    async def stream(
+        self, component: Component, context: Context | None = None
+    ) -> AsyncGenerator[str, None]:
+        """
+        Async generator that renders the given component.
+
+        Implements `htmy.renderer.typing.StreamingRendererType`.
+
+        Arguments:
+            component: The component to render.
+            context: An optional rendering context.
+
+        Yields:
+            The rendered strings.
+        """
         # Create a new default context that also contains the renderer instance.
         # We must not put it in `self._default_context` because then the renderer
         # would keep a reference to itself.
         default_context = {**self._default_context, RendererContext: self}
-        return await self._render(
-            component,
-            # Type ignore: ChainMap expects mutable mappings,
-            # but mutation is not supported by the Context typing.
-            default_context if context is None else ChainMap(context, default_context),  # type: ignore[arg-type]
+        # Type ignore: ChainMap expects mutable mappings, but context mutation is not allowed so don't care.
+        context = (
+            default_context if context is None else ChainMap(context, default_context)  # type: ignore[arg-type]
         )
 
-    async def _render(self, component: Component, context: Context) -> str:
+        async for chunk in self._stream(component, context):
+            yield chunk
+
+    async def _stream(self, component: Component, context: Context) -> AsyncGenerator[str, None]:
         """
-        Renders a single component "level".
+        Renders the given component with the given context.
 
         Arguments:
             component: The component to render.
             context: The current rendering context.
 
-        Returns:
-            The rendered string.
+        Yields:
+            String chunks of the rendered component.
         """
         if isinstance(component, str):
-            return self._string_formatter(component)
+            yield self._string_formatter(component)
         elif component is None:
-            return ""
+            return
         elif isinstance(component, Iterable):
-            rendered_children = await asyncio.gather(
-                *(self._render_one(comp, context) for comp in component if comp is not None)
-            )
-
-            return "".join(child for child in rendered_children if child is not None)
+            for comp in component:
+                if component is not None:
+                    async for chunk in self._stream_one(comp, context):
+                        yield chunk
         else:
-            return await self._render_one(component, context) or ""
+            async for chunk in self._stream_one(component, context):
+                yield chunk
 
-    async def _render_one(self, component: ComponentType, context: Context) -> str | None:
+    async def _stream_one(self, component: ComponentType, context: Context) -> AsyncGenerator[str, None]:
         """
         Renders a single component.
 
@@ -99,14 +123,15 @@ class Renderer:
             component: The component to render.
             context: The current rendering context.
 
-        Returns:
-            The rendered string.
+        Yields:
+            The rendered strings.
         """
         if isinstance(component, str):
-            return self._string_formatter(component)
+            yield self._string_formatter(component)
         elif component is None:
-            return None
+            return
         else:
+            # Handle context providers
             child_context: Context = context
             if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
                 extra_context: Context | Awaitable[Context] = component.htmy_context()
@@ -114,11 +139,12 @@ class Renderer:
                     extra_context = await extra_context
 
                 if len(extra_context):
-                    # Context must not be mutated, so we can ignore that ChainMap expext mutable mappings.
+                    # Context must not be mutated, so we can ignore that ChainMap expects mutable mappings.
                     child_context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
             children = component.htmy(child_context)
             if isawaitable(children):
                 children = await children
 
-            return await self._render(children, child_context)
+            async for chunk in self._stream(children, child_context):
+                yield chunk
