@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from collections import ChainMap
-from collections.abc import Iterable
 from inspect import isawaitable
 from typing import TYPE_CHECKING
 
 from htmy.core import xml_format_string
+from htmy.utils import is_component_sequence
 
 from .context import RendererContext
 
@@ -106,13 +106,14 @@ class Renderer:
             yield self._string_formatter(component)
         elif component is None:
             return
-        elif isinstance(component, Iterable):
+        elif is_component_sequence(component):
             for comp in component:
                 if comp is not None:
                     async for chunk in self._stream_one(comp, context):
                         yield chunk
         else:
-            async for chunk in self._stream_one(component, context):
+            # Sync or async htmy component.
+            async for chunk in self._stream_one(component, context):  # type: ignore[arg-type]
                 yield chunk
 
     async def _stream_one(self, component: ComponentType, context: Context) -> AsyncGenerator[str, None]:
