@@ -1,3 +1,5 @@
+__version__ = "0.10.0"
+
 from .core import ContextAware as ContextAware
 from .core import Formatter as Formatter
 from .core import Fragment as Fragment
