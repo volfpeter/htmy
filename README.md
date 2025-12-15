@@ -361,7 +361,7 @@ The library aims to minimze its dependencies. Currently the following dependenci
 
 Use `ruff` for linting and formatting, `mypy` for static code analysis, and `pytest` for testing.
 
-The documentation is built with `mkdocs-material` and `mkdocstrings`.
+The documentation is built with `zensical` and `mkdocstrings`.
 
 ## Contributing
 

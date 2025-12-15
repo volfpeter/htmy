@@ -19,7 +19,6 @@ lxml = ["lxml>=6.0.0"]
 dev = [
     "fastapi>=0.116.0",
     "fasthx>=3.0.0",
-    "mkdocs-material>=9.6.16",
     "mkdocstrings[python]>=0.30.0",
     "mypy>=1.19.0,<2",
     "poethepoet>=0.38.0",
@@ -30,6 +29,7 @@ dev = [
     "types-markdown>=3.8.0.20250809,<4",
     "typing-extensions>=4.12.2,<5",
     "types-lxml>=2025.3.30",
+    "zensical>=0.0.11",
 ]
 
 [build-system]
@@ -92,4 +92,4 @@ check.ignore_fail = "return_non_zero"
 
 test = "python -m pytest tests"
 
-serve-docs = "mkdocs serve"
+serve-docs = "zensical serve"

@@ -53,12 +53,12 @@ nav:
       - examples/internationalization.md
   - API reference:
       - api/core.md
-      - HTML: api/html.md
-      - Snippet: api/snippet.md
-      - Markdown: api/md.md
+      - api/html.md
+      - api/snippet.md
+      - api/md.md
       - api/function_component.md
-      - I18n: api/i18n.md
-      - Renderer:
+      - api/i18n.md
+      - renderer:
           - api/renderer/default.md
           - api/renderer/baseline.md
           - api/renderer/typing.md
