@@ -28,7 +28,7 @@ class Centered(Fragment):
 class RequestHeaders:
     """Component that displays all the headers in the current request."""
 
-    def htmy(self, context: Context) -> html.div:
+    def htmy(self, context: Context) -> ComponentType:
         # Load the current request from the context.
         request = CurrentRequest.from_context(context)
         return html.div(

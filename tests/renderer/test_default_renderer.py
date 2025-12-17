@@ -2,12 +2,16 @@ from dataclasses import dataclass
 
 import pytest
 
-from htmy import Context, Renderer, Slots, Snippet, Text, component
-from htmy.renderer import BaselineRenderer
+from htmy import Context, Slots, Snippet, Text, component
+from htmy.renderer.typing import RendererType
 
 
 @pytest.mark.asyncio
-async def test_async_children_of_async_node() -> None:
+async def test_async_children_of_async_node(
+    baseline_renderer: RendererType,
+    default_renderer: RendererType,
+    streaming_renderer: RendererType,
+) -> None:
     @dataclass
     class Content:
         message: str
@@ -28,8 +32,11 @@ async def test_async_children_of_async_node() -> None:
             }
         ),
     )
-    rendered = await BaselineRenderer().render(snippet)
+    rendered = await baseline_renderer.render(snippet)
     assert rendered == "async slot content async fc slot content"
 
-    rendered = await Renderer().render(snippet)
+    rendered = await default_renderer.render(snippet)
+    assert rendered == "async slot content async fc slot content"
+
+    rendered = await streaming_renderer.render(snippet)
     assert rendered == "async slot content async fc slot content"

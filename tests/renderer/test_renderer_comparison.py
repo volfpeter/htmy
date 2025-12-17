@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from htmy import ErrorBoundary, Fragment, Renderer, component, html
-from htmy.renderer import BaselineRenderer
+from htmy import ErrorBoundary, Fragment, component, html
 
 if TYPE_CHECKING:
     from htmy import Component, ComponentType, Context
+    from htmy.renderer.typing import RendererType
 
 # -- Sync and async page.
 
@@ -20,10 +20,10 @@ def page(content: ComponentType, context: Context) -> Component:
         html.html(
             html.head(
                 html.title("Test page"),
-                html.meta.charset(),
-                html.meta.viewport(),
+                html.Meta.charset(),
+                html.Meta.viewport(),
                 html.script(src="https://cdn.tailwindcss.com"),
-                html.link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
+                html.Link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
             ),
             html.body(
                 content,
@@ -41,10 +41,10 @@ async def a_page(content: ComponentType, context: Context) -> Component:
         html.html(
             html.head(
                 html.title("Test page"),
-                html.meta.charset(),
-                html.meta.viewport(),
+                html.Meta.charset(),
+                html.Meta.viewport(),
                 html.script(src="https://cdn.tailwindcss.com"),
-                html.link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
+                html.Link.css("https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css"),
             ),
             html.body(
                 content,
@@ -118,9 +118,12 @@ class AsyncError:
 async def test_renderers(
     *,
     component: Component,
-    default_renderer: Renderer,
-    baseline_renderer: BaselineRenderer,
+    default_renderer: RendererType,
+    baseline_renderer: RendererType,
+    streaming_renderer: RendererType,
 ) -> None:
     default_renderer_result = await default_renderer.render(component)
     baseline_renderer_result = await baseline_renderer.render(component)
+    streaming_renderer_result = await streaming_renderer.render(component)
     assert default_renderer_result == baseline_renderer_result
+    assert streaming_renderer_result == baseline_renderer_result

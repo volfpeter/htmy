@@ -3,20 +3,26 @@ repo_name: volfpeter/htmy
 repo_url: https://github.com/volfpeter/htmy
 
 theme:
-  name: material
+  name: modern
   palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      scheme: slate
+      toggle:
+        icon: lucide/sun-moon
+        name: Switch to light mode
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: material/brightness-7
+        icon: lucide/sun
         name: Switch to dark mode
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+        icon: lucide/moon
+        name: Switch to system preference
   features:
     - navigation.indexes
     - navigation.instant
@@ -53,14 +59,15 @@ nav:
       - examples/internationalization.md
   - API reference:
       - api/core.md
-      - HTML: api/html.md
-      - Snippet: api/snippet.md
-      - Markdown: api/md.md
+      - api/html.md
+      - api/snippet.md
+      - api/md.md
       - api/function_component.md
-      - I18n: api/i18n.md
-      - Renderer:
+      - api/i18n.md
+      - renderer:
           - api/renderer/default.md
           - api/renderer/baseline.md
+          - api/renderer/typing.md
       - api/utils.md
       - api/typing.md
       - api/etree.md

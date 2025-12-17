@@ -12,8 +12,9 @@ except ImportError:
     from xml.etree.ElementTree import fromstring as etree_from_string  # type: ignore[assignment]
     from xml.etree.ElementTree import tostring as etree_to_string  # type: ignore[no-redef]
 
-from htmy import ComponentType, Properties
-from htmy.core import Fragment, SafeStr, WildcardTag
+from .core import Fragment, SafeStr
+from .tag import wildcard_tag
+from .typing import ComponentType, Properties
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Mapping
@@ -71,7 +72,7 @@ class ETreeConverter:
         properties = self._convert_properties(element)
 
         return (
-            WildcardTag(*children, htmy_name=tag, **properties)
+            wildcard_tag(*children, htmy_name=tag, **properties)
             if component is None
             else component(
                 *children,
