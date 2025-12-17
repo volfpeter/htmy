@@ -19,6 +19,7 @@ Unleash your creativity with the full power and Python, without the hassle of le
 - **Powerful**, React-like **context support**, so you can avoid prop-drilling.
 - Sync and async **function components** with **decorator syntax**.
 - All baseline **HTML** tags built-in.
+- **Async HTML streaming** support for optimal TTFB (time to first byte).
 - Support for **native HTML/XML** documents with dynamic formatting and **slot rendering**, **without custom syntax**.
 - **Markdown** support with tools for customization.
 - Async, JSON based **internationalization**.
@@ -57,7 +58,7 @@ $ pip install htmy
 
 The package has the following optional dependencies:
 
-- `lxml` *(recommended)*: When installed, it is prioritized over `xml.etree.ElementTree` and provides more secure, faster, and more flexible HTML and XML processing. It is used, for example, for Markdown processing. Install with: `pip install "htmy[lxml]"`.
+- `lxml` _(recommended)_: When installed, it is prioritized over `xml.etree.ElementTree` and provides more secure, faster, and more flexible HTML and XML processing. It is used, for example, for Markdown processing. Install with: `pip install "htmy[lxml]"`.
 
 ## Concepts
 
