@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
@@ -36,11 +36,9 @@ def is_renderer(obj: Any | None) -> TypeGuard[RendererType]:
 class StreamingRendererType(RendererType, Protocol):
     """Protocol definition for streaming renderers."""
 
-    async def stream(
-        self, component: Component, context: Context | None = None
-    ) -> AsyncGenerator[str, None]:
+    def stream(self, component: Component, context: Context | None = None) -> AsyncIterator[str]:
         """
-        Async generator that renders the given component.
+        Async iterator that renders the given component.
 
         Arguments:
             component: The component to render.
