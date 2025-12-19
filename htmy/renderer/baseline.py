@@ -66,7 +66,7 @@ class Renderer:
 
     async def stream(self, component: Component, context: Context | None = None) -> AsyncIterator[str]:
         """
-        Async generator that renders the given component.
+        Async iterator that renders the given component.
 
         Implements `htmy.renderer.typing.StreamingRendererType`.
 
