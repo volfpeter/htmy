@@ -10,7 +10,7 @@ from htmy.utils import is_component_sequence
 from .context import RendererContext
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Callable
+    from collections.abc import AsyncIterator, Awaitable, Callable
 
     from htmy.typing import Component, ComponentType, Context
 
@@ -64,9 +64,7 @@ class Renderer:
 
         return "".join(chunks)
 
-    async def stream(
-        self, component: Component, context: Context | None = None
-    ) -> AsyncGenerator[str, None]:
+    async def stream(self, component: Component, context: Context | None = None) -> AsyncIterator[str]:
         """
         Async generator that renders the given component.
 
@@ -91,7 +89,7 @@ class Renderer:
         async for chunk in self._stream(component, context):
             yield chunk
 
-    async def _stream(self, component: Component, context: Context) -> AsyncGenerator[str, None]:
+    async def _stream(self, component: Component, context: Context) -> AsyncIterator[str]:
         """
         Renders the given component with the given context.
 
@@ -116,7 +114,7 @@ class Renderer:
             async for chunk in self._stream_one(component, context):  # type: ignore[arg-type]
                 yield chunk
 
-    async def _stream_one(self, component: ComponentType, context: Context) -> AsyncGenerator[str, None]:
+    async def _stream_one(self, component: ComponentType, context: Context) -> AsyncIterator[str]:
         """
         Renders a single component.
 
