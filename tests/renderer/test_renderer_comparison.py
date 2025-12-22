@@ -102,7 +102,7 @@ class AsyncError:
 # -- Tests
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("component",),
     (
