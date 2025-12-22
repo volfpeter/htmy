@@ -5,7 +5,7 @@ from collections.abc import Iterator, Mapping
 from inspect import isawaitable
 from typing import TYPE_CHECKING
 
-from async_lru import alru_cache
+from anyio.functools import lru_cache
 
 from .core import SafeStr, Text
 from .io import load_text_file
@@ -270,7 +270,7 @@ class Snippet:
         return SafeStr(text)
 
     @staticmethod
-    @alru_cache()
+    @lru_cache()
     async def _load_text_file(path: str | Path) -> str:
         """Async text loader with an LRU cache."""
         return await load_text_file(path)

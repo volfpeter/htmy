@@ -1,4 +1,4 @@
-import asyncio
+import anyio
 from dataclasses import dataclass
 from datetime import date
 from time import perf_counter
@@ -25,7 +25,7 @@ def sync_function_component(msg: str, ctx: Context) -> ComponentType:
 
 @component
 async def async_function_component(msg: str, ctx: Context) -> ComponentType:
-    await asyncio.sleep(async_delay)
+    await anyio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
 
@@ -41,7 +41,7 @@ def sync_function_component_with_function_alias(msg: str, ctx: Context) -> Compo
 
 @component.function
 async def async_function_component_with_function_alias(msg: str, ctx: Context) -> ComponentType:
-    await asyncio.sleep(async_delay)
+    await anyio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", msg)
 
@@ -57,7 +57,7 @@ def sync_context_only_function_component(ctx: Context) -> ComponentType:
 
 @component.context_only
 async def async_context_only_function_component(ctx: Context) -> ComponentType:
-    await asyncio.sleep(async_delay)
+    await anyio.sleep(async_delay)
     dt: date = ctx["date"]
     return html.p(dt.isoformat(), ": ", message)
 
@@ -76,7 +76,7 @@ class Data:
 
     @component.method
     async def async_method_component(self, msg: str, ctx: Context) -> ComponentType:
-        await asyncio.sleep(async_delay)
+        await anyio.sleep(async_delay)
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", msg, " ", self.goodbye)
 
@@ -87,7 +87,7 @@ class Data:
 
     @component.context_only_method
     async def async_context_only_method_component(self, ctx: Context) -> ComponentType:
-        await asyncio.sleep(async_delay)
+        await anyio.sleep(async_delay)
         dt: date = ctx["date"]
         return html.p(dt.isoformat(), ": ", self.goodbye)
 
@@ -110,7 +110,7 @@ def baseline_renderer() -> BaselineRenderer:
 # -- Tests
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("comp", "expected", "min_duration"),
     (

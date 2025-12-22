@@ -6,7 +6,7 @@ from htmy import Context, Slots, Snippet, Text, component
 from htmy.renderer.typing import RendererType
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_async_children_of_async_node(
     baseline_renderer: RendererType,
     default_renderer: RendererType,

@@ -3,7 +3,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, ClassVar, overload
 
-from async_lru import alru_cache
+from anyio.functools import lru_cache
 
 from .core import ContextAware
 from .io import open_file
@@ -112,7 +112,7 @@ class I18n(ContextAware):
         return result
 
 
-@alru_cache()
+@lru_cache()
 async def load_translation_resource(path: Path) -> TranslationResource:
     """
     Loads the translation resource from the given path.

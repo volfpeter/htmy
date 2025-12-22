@@ -38,10 +38,10 @@ Inline `code` is **also** _fine_.
 - Third
 ````
 
-Then we can create the most minimal version of `app.py` that will be responsible for rendering `post.md` as HTML. Keep in mind that `htmy` is an _async_ rendering engine, so we will need `asyncio` (specifically `asyncio.run()`) to run the renderer.
+Then we can create the most minimal version of `app.py` that will be responsible for rendering `post.md` as HTML. Keep in mind that `htmy` is an _async_ rendering engine, so we will need `anyio` (specifically `anyio.run()`) to run the renderer.
 
 ```python
-import asyncio
+import anyio
 
 from htmy import Renderer, md
 
@@ -53,7 +53,7 @@ async def render_post() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(render_post())
+    anyio.run(render_post)
 ```
 
 That's it. You can now run `app.py` from the terminal with `python app.py`, and it will print out the generated HTML snippet. You can save the output to an HTML file, or even better, pipe the output of the script directly to a file with `python app.py > post.html` and just open the resulting HTML file in your browser.
