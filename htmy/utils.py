@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Generator
-from typing import TYPE_CHECKING, TypeGuard
+from typing import TYPE_CHECKING, Any, TypeGuard
+
+from htmy.typing import ComponentType
 
 if TYPE_CHECKING:
     from .typing import Component, ComponentSequence, ComponentType
@@ -44,13 +46,18 @@ def join(*items: str | None, separator: str = " ") -> str:
     return separator.join(i for i in items if i)
 
 
+def is_compenent_type(comp: Any) -> TypeGuard[ComponentType]:
+    """Returns whether the given object is a `ComponentType`."""
+    return hasattr(comp, "htmy")
+
+
 def is_component_sequence(comp: Component) -> TypeGuard[ComponentSequence]:
-    """Returns whether the given component is a component sequence."""
+    """Returns whether the given component is a `ComponentSequence`."""
     return isinstance(comp, (list, tuple))
 
 
 def as_component_sequence(comp: Component) -> ComponentSequence:
-    """Returns the given component as a component sequence."""
+    """Returns the given component as a `ComponentSequence`."""
     # mypy doesn't understand the `is_component_sequence` type guard.
     return comp if is_component_sequence(comp) else (comp,)  # type: ignore[return-value]
 

@@ -1,4 +1,4 @@
-__version__ = "0.10.1"
+__version__ = "0.10.2"
 
 from .core import ContextAware as ContextAware
 from .core import Formatter as Formatter
@@ -37,6 +37,7 @@ from .typing import SyncComponent as SyncComponent
 from .typing import SyncContextProvider as SyncContextProvider
 from .utils import as_component_sequence as as_component_sequence
 from .utils import as_component_type as as_component_type
+from .utils import is_compenent_type as is_compenent_type
 from .utils import is_component_sequence as is_component_sequence
 from .utils import join
 from .utils import join_components as join_components
