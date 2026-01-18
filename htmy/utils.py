@@ -46,7 +46,7 @@ def join(*items: str | None, separator: str = " ") -> str:
     return separator.join(i for i in items if i)
 
 
-def is_compenent_type(comp: Any) -> TypeGuard[ComponentType]:
+def is_component_type(comp: Any) -> TypeGuard[ComponentType]:
     """Returns whether the given object is a `ComponentType`."""
     return hasattr(comp, "htmy")
 
