@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard
 from htmy.typing import ComponentType
 
 if TYPE_CHECKING:
-    from .typing import Component, ComponentSequence, ComponentType
+    from .typing import Component, ComponentSequence, ComponentType, HTMYComponentType
 
 
 def join_components(
@@ -46,9 +46,17 @@ def join(*items: str | None, separator: str = " ") -> str:
     return separator.join(i for i in items if i)
 
 
+def is_htmy_component_type(comp: Any) -> TypeGuard[HTMYComponentType]:
+    """Returns whether the given object is a `HTMYComponentType` (has a `htmy` method)."""
+    # Lazy check, should be good enough.
+    return hasattr(comp, "htmy")
+
+
 def is_component_type(comp: Any) -> TypeGuard[ComponentType]:
     """Returns whether the given object is a `ComponentType`."""
-    return hasattr(comp, "htmy")
+    # Lazy check when it comes the htmy components, should be good enough.
+    # No `is_htmy_component_type()` call to avoid trivial extra function call.
+    return comp is None or isinstance(comp, str) or hasattr(comp, "htmy")
 
 
 def is_component_sequence(comp: Component) -> TypeGuard[ComponentSequence]:

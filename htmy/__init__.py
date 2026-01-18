@@ -39,6 +39,7 @@ from .utils import as_component_sequence as as_component_sequence
 from .utils import as_component_type as as_component_type
 from .utils import is_component_sequence as is_component_sequence
 from .utils import is_component_type as is_component_type
+from .utils import is_htmy_component_type as is_htmy_component_type
 from .utils import join
 from .utils import join_components as join_components
 
