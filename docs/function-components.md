@@ -43,7 +43,6 @@ If it sounded complicated and overly technical, don't worry, function components
 Before we dive into the actual components, let's import what we need and create a few utilities, just to have some data to work with. The examples assume that `htmy` is installed.
 
 ```python
-import asyncio
 from dataclasses import dataclass
 from typing import Callable
 
@@ -135,12 +134,11 @@ def users_page(context: Context) -> ComponentType:
 With all the components ready, we can now render the `users_page` component and have a look at the result:
 
 ```python
-rendered = asyncio.run(
-    renderer.render(
-        # Notice that we call the users_page component with no arguments,
-        # since this component has no properties.
-        users_page()
-    )
+rendered = anyio.run(
+    renderer.render,
+    # Notice that we call the users_page component with no arguments,
+    # since this component has no properties.
+    users_page()
 )
 print(rendered)
 ```
@@ -211,17 +209,16 @@ All that's left to do now is to create an instance of our new, `EnhancedUser` cl
 ```python
 emily = EnhancedUser(username="emily", email="emily@example.ccm", status="active")
 
-rendered = asyncio.run(
-    renderer.render(
-        html.div(
-            # We call the user.profile_page component only with its properties.
-            emily.profile_page(html.nav("Navbar")),
-            # We call the user.table_row component with no arguments, since
-            # this component has no properties.
-            emily.table_row(),
-            # EnhancedUser instances are also components, because they have an htmy() method.
-            emily,
-        )
+rendered = anyio.run(
+    renderer.render,
+    html.div(
+        # We call the user.profile_page component only with its properties.
+        emily.profile_page(html.nav("Navbar")),
+        # We call the user.table_row component with no arguments, since
+        # this component has no properties.
+        emily.table_row(),
+        # EnhancedUser instances are also components, because they have an htmy() method.
+        emily,
     )
 )
 print(rendered)

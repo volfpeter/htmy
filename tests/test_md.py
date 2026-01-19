@@ -141,7 +141,7 @@ def _md_renderer(children: Component, metadata: md.MarkdownMetadataDict | None) 
     return html.div(html.h1(title[0]), *as_component_sequence(children))
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_md_with_slot() -> None:
     md_component = md.MD(
         Text(_blog_post_format_string),
@@ -157,7 +157,7 @@ async def test_md_with_slot() -> None:
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("path_or_text", "text_processor", "expected"),
     (
@@ -184,7 +184,7 @@ async def test_parsing(
     assert rendered == expected
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("path_or_text", "components", "text_processor", "expected"),
     (

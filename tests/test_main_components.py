@@ -1,4 +1,4 @@
-import asyncio
+import anyio
 from collections.abc import Callable
 from datetime import date, datetime, timezone
 from typing import Any
@@ -55,7 +55,7 @@ class Page:
                 self._value = value
 
             async def htmy(self, context: Context) -> Component:
-                await asyncio.sleep(context["aio-sleep"])
+                await anyio.sleep(context["aio-sleep"])
                 return self._value
 
         @component
@@ -64,7 +64,7 @@ class Page:
 
         @component
         async def async_fc(props: int, context: Context) -> Component:
-            await asyncio.sleep(context["aio-sleep"])
+            await anyio.sleep(context["aio-sleep"])
             return f"async_fc-{Formatter.from_context(context).format_value(props)}"
 
         return WithContext(
@@ -142,7 +142,7 @@ class Page:
         )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("page", "context", "expected"),
     (

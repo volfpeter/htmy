@@ -11,7 +11,7 @@ Using the `htmy()` method name enables the conversion of any of your pre-existin
 With the technical details out of the way, let's see some examples with built-in Python types:
 
 ```python
-import asyncio
+import anyio
 from datetime import datetime
 
 from htmy import Component, ComponentType, Context, Renderer, html, join_components
@@ -96,7 +96,7 @@ async def render() -> None:
     print(f"Result:\n{result}")
 
 
-asyncio.run(render())
+anyio.run(render)
 ```
 
 You can use these patterns to enhance your existing business objects with rendering capabilities, without affecting their original functionality in any way.

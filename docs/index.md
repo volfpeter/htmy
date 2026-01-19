@@ -182,10 +182,10 @@ user_table = html.table(
 
 If you're using the library in an async web framework like [FastAPI](https://fastapi.tiangolo.com/), then you're already in an async environment, so you can render components as simply as this: `await Renderer().render(my_root_component)`.
 
-If you're trying to run the renderer in a sync environment, like a local script or CLI, then you first need to wrap the renderer in an async task and execute that task with `asyncio.run()`:
+If you're trying to run the renderer in a sync environment, like a local script or CLI, then you first need to wrap the renderer in an async task and execute that task with `anyio.run()`:
 
 ```python
-import asyncio
+import anyio
 
 from htmy import Renderer, html
 
@@ -205,7 +205,7 @@ async def render_page() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(render_page())
+    anyio.run(render_page)
 ```
 
 ### Context
@@ -219,7 +219,7 @@ There is no restriction on what can be in the context, it can be used for anythi
 Here's an example context provider and consumer implementation:
 
 ```python
-import asyncio
+import anyio
 
 from htmy import Component, ComponentType, Context, Renderer, component, html
 
@@ -271,7 +271,7 @@ async def render_welcome_page() -> None:
     print(result)
 
 if __name__ == "__main__":
-    asyncio.run(render_welcome_page())
+    anyio.run(render_welcome_page)
 ```
 
 You can of course rely on the built-in context related utilities like the `ContextAware` or `WithContext` classes for convenient and typed context use with less boilerplate code.
@@ -300,7 +300,7 @@ Optionally, you can define which errors an error boundary can handle, giving you
 
 In general, a component should be async if it must await some async call inside.
 
-If a component executes a potentially "long-running" synchronous call, it is strongly recommended to delegate that call to a worker thread an await it (thus making the component async). This can be done for example with `anyio`'s `to_thread` [utility](https://anyio.readthedocs.io/en/stable/threads.html), `starlette`'s (or `fastapi`'s) `run_in_threadpool()`, and so on. The goal here is to avoid blocking the asyncio event loop, as that can lead to performance issues.
+If a component executes a potentially "long-running" synchronous call, it is strongly recommended to delegate that call to a worker thread an await it (thus making the component async). This can be done for example with `anyio`'s `to_thread` [utility](https://anyio.readthedocs.io/en/stable/threads.html), `starlette`'s (or `fastapi`'s) `run_in_threadpool()`, and so on. The goal here is to avoid blocking the event loop, as that can lead to performance issues.
 
 In all other cases, it's best to use sync components.
 
@@ -350,8 +350,7 @@ The primary aim of `htmy` is to be a `Jinja` alternative that is similarly power
 
 The library aims to minimze its dependencies. Currently the following dependencies are required:
 
-- `anyio`: for async file operations and networking.
-- `async-lru`: for async caching.
+- `anyio`: for async file operations, networking and async caching.
 - `markdown`: for markdown parsing.
 
 ## Development
