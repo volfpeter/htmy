@@ -359,7 +359,6 @@ The primary aim of `htmy` is to be a `Jinja` alternative that is similarly power
 The library aims to minimze its dependencies. Currently the following dependencies are required:
 
 - `anyio`: for async file operations and networking.
-- `async-lru`: for async caching.
 - `markdown`: for markdown parsing.
 
 ## Development
