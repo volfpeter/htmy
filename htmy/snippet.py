@@ -260,7 +260,7 @@ class Snippet:
         if isinstance(path_or_text, Text):
             return path_or_text
         else:
-            return await Snippet._load_text_file(path_or_text)
+            return await Snippet._load_text_file(path_or_text)  # type: ignore[no-any-return]
 
     def _render_text(self, text: str, context: Context) -> Component:
         """

@@ -60,6 +60,10 @@ The package has the following optional dependencies:
 
 - `lxml` _(recommended)_: When installed, it is prioritized over `xml.etree.ElementTree` and provides more secure, faster, and more flexible HTML and XML processing. It is used, for example, for Markdown processing. Install with: `pip install "htmy[lxml]"`.
 
+## Component libraries
+
+- [htmui](https://github.com/volfpeter/htmui): [BasecoatUI](https://basecoatui.com/) and [TailwindCSS](https://tailwindcss.com/) components.
+
 ## Concepts
 
 The entire library -- from the rendering engine itself to the built-in components -- is built around a few simple protocols and a handful of simple utility classes. This means that you can easily customize, extend, or replace basically everything in the library. Yes, even the rendering engine. The remaining parts will keep working as expected.
@@ -354,7 +358,7 @@ The primary aim of `htmy` is to be a `Jinja` alternative that is similarly power
 
 The library aims to minimze its dependencies. Currently the following dependencies are required:
 
-- `anyio`: for async file operations, networking, and async caching.
+- `anyio`: for async file operations and networking.
 - `markdown`: for markdown parsing.
 
 ## Development
