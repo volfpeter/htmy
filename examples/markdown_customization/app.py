@@ -1,4 +1,4 @@
-import asyncio
+import anyio
 
 from htmy import Component, ComponentType, Context, PropertyValue, Renderer, etree, html, md
 
@@ -96,4 +96,4 @@ async def render_post() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(render_post())
+    anyio.run(render_post)

@@ -1,5 +1,6 @@
-import asyncio
 from pathlib import Path
+
+import anyio
 
 from htmy import Component, Context, Renderer, html
 from htmy.i18n import I18n
@@ -42,4 +43,4 @@ async def render_hello() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(render_hello())
+    anyio.run(render_hello)

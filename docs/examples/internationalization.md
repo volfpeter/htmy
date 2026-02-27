@@ -9,7 +9,7 @@ Using `I18n` consists of only two steps: create an `I18n` instance, and include 
 With the translation resource in place, we can create the `app.py` file and implement our translated components like this:
 
 ```python
-import asyncio
+import anyio
 from pathlib import Path
 
 from htmy import Component, Context, Renderer, html
@@ -55,11 +55,11 @@ async def render_hello() -> None:
     print(rendered)
 ```
 
-Finally we add the usual `asyncio` run call:
+Finally we add the usual `anyio` run call:
 
 ```python
 if __name__ == "__main__":
-    asyncio.run(render_hello())
+    anyio.run(render_hello)
 ```
 
 With `app.py` and the `locale/en/page/hello.json` translation resource in place, we can finally run the application with `python app.py` and see the translated content in the result. That's it.

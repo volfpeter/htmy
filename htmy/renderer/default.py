@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from asyncio import gather as asyncio_gather
 from collections import ChainMap, deque
 from inspect import isawaitable, iscoroutinefunction
 from typing import TYPE_CHECKING, TypeAlias
+
+from anyio import create_task_group
 
 from htmy.core import xml_format_string
 from htmy.typing import Context
@@ -197,7 +198,10 @@ class _ComponentRenderer:
             if async_todos:
                 current_async_todos = async_todos
                 self._async_todos = async_todos = deque()
-                await asyncio_gather(*(process_async_node(n, ctx) for n, ctx in current_async_todos))
+
+                async with create_task_group() as tg:
+                    for n, ctx in current_async_todos:
+                        tg.start_soon(process_async_node, n, ctx)
 
         return "".join(node.component for node in self._root.iter_nodes() if node.component is not None)  # type: ignore[misc]
 
@@ -218,7 +222,16 @@ async def _render_component(
             return ""
 
         renderers = (_ComponentRenderer(c, context, string_formatter=string_formatter) for c in component)
-        return "".join(await asyncio_gather(*(r.run() for r in renderers)))
+        items = []
+
+        async def run(renderer: _ComponentRenderer) -> None:
+            items.append(await renderer.run())
+
+        async with create_task_group() as tg:
+            for r in renderers:
+                tg.start_soon(run, r)
+
+        return "".join(items)
     elif component is None:
         return ""
     else:

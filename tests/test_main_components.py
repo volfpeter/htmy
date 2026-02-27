@@ -1,8 +1,8 @@
-import asyncio
 from collections.abc import Callable
 from datetime import date, datetime, timezone
 from typing import Any
 
+import anyio
 import pytest
 
 from htmy import (
@@ -19,11 +19,12 @@ from htmy import (
 from htmy.renderer.typing import RendererType
 
 
+class DemoValueError(ValueError): ...
+
+
 class Page:
     @staticmethod
     def page() -> Component:
-        class DemoValueError(ValueError): ...
-
         class CustomTagFormatter(Formatter):
             def __init__(
                 self,
@@ -55,7 +56,7 @@ class Page:
                 self._value = value
 
             async def htmy(self, context: Context) -> Component:
-                await asyncio.sleep(context["aio-sleep"])
+                await anyio.sleep(context["aio-sleep"])
                 return self._value
 
         @component
@@ -64,7 +65,7 @@ class Page:
 
         @component
         async def async_fc(props: int, context: Context) -> Component:
-            await asyncio.sleep(context["aio-sleep"])
+            await anyio.sleep(context["aio-sleep"])
             return f"async_fc-{Formatter.from_context(context).format_value(props)}"
 
         return WithContext(
@@ -142,7 +143,7 @@ class Page:
         )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("page", "context", "expected"),
     (
@@ -158,8 +159,8 @@ async def test_complex_page_rendering(
     context: Context | None,
     expected: str,
 ) -> None:
-    result = await default_renderer.render(page, context)
-    assert result == expected
+    with pytest.RaisesGroup(DemoValueError, flatten_subgroups=True):
+        result = await default_renderer.render(page, context)
 
     result = await baseline_renderer.render(page, context)
     assert result == expected
