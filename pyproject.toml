@@ -24,6 +24,7 @@ dev = [
     "pytest>=9.0.2",
     "pytest-random-order>=1.2.0",
     "ruff>=0.14.8,<0.15",
+    "trio >=0.33.0",
     "types-markdown>=3.8.0.20250809,<4",
     "typing-extensions>=4.12.2,<5",
     "types-lxml>=2025.3.30",
