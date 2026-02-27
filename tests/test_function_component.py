@@ -1,8 +1,8 @@
-import anyio
 from dataclasses import dataclass
 from datetime import date
 from time import perf_counter
 
+import anyio
 import pytest
 
 from htmy import Component, ComponentType, Context, Renderer, component, html

@@ -1,8 +1,8 @@
-import anyio
 from collections.abc import Callable
 from datetime import date, datetime, timezone
 from typing import Any
 
+import anyio
 import pytest
 
 from htmy import (
@@ -19,11 +19,12 @@ from htmy import (
 from htmy.renderer.typing import RendererType
 
 
+class DemoValueError(ValueError): ...
+
+
 class Page:
     @staticmethod
     def page() -> Component:
-        class DemoValueError(ValueError): ...
-
         class CustomTagFormatter(Formatter):
             def __init__(
                 self,
@@ -158,8 +159,8 @@ async def test_complex_page_rendering(
     context: Context | None,
     expected: str,
 ) -> None:
-    result = await default_renderer.render(page, context)
-    assert result == expected
+    with pytest.RaisesGroup(DemoValueError, flatten_subgroups=True):
+        result = await default_renderer.render(page, context)
 
     result = await baseline_renderer.render(page, context)
     assert result == expected

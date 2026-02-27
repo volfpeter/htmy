@@ -1,5 +1,6 @@
-import anyio
 from pathlib import Path
+
+import anyio
 
 from htmy import Component, Context, Renderer, html
 from htmy.i18n import I18n
