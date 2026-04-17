@@ -48,7 +48,7 @@ async def async_text_processor(text: str, context: Context) -> str:
     return text.format(message="Filled by async text processor.")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("path_or_text", "text_processor", "expected"),
     (
@@ -201,7 +201,7 @@ def test_slots(slots: Slots, text: str, expected: list[str] | None) -> None:
         assert result == expected
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_snippet_with_text_processor_and_slots() -> None:
     slot_mapping = {
         "message": html.p("Hope you're having fun."),

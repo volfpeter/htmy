@@ -6,7 +6,7 @@ from htmy.renderer.context import RendererContext
 from htmy.renderer.typing import RendererType
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     "renderer",
     [

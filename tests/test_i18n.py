@@ -23,7 +23,7 @@ hu_with_en_fallback = I18n(
 """I18n instance that can be used for fallback testing."""
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("dotted_path", "key", "kwargs", "expected"),
     (
@@ -68,7 +68,7 @@ async def test_i18n_with_fallback(
     assert result == expected
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("dotted_path", "key", "error"),
     (

@@ -63,7 +63,8 @@ class ErrorBoundary:
         Raises:
             Exception: The received error if it's not accepted.
         """
-        if not (self._errors is None or any(e in self._errors for e in type(error).mro())):
+        errors = error.exceptions if isinstance(error, ExceptionGroup) else (error,)
+        if not (self._errors is None or any(e in self._errors for err in errors for e in type(err).mro())):
             raise error
 
         return as_component_type(self._fallback)
