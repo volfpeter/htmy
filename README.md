@@ -29,6 +29,7 @@ Unleash your creativity with the full power and Python, without the hassle of le
 - Automatic and customizable **property-name conversion** from snake case to kebab case.
 - **Compatible** with any other templating library through wrappers.
 - **Fully-typed**.
+- **Trio**-compatible, through `AnyIO`.
 
 ## Testimonials
 
@@ -358,7 +359,7 @@ The primary aim of `htmy` is to be a `Jinja` alternative that is similarly power
 
 The library aims to minimze its dependencies. Currently the following dependencies are required:
 
-- `anyio`: for async file operations and networking.
+- `anyio`: for everything async.
 - `markdown`: for markdown parsing.
 
 ## Development
