@@ -3,7 +3,6 @@ repo_name: volfpeter/htmy
 repo_url: https://github.com/volfpeter/htmy
 
 theme:
-  name: modern
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
