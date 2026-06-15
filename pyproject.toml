@@ -16,19 +16,19 @@ lxml = ["lxml>=6.0.0"]
 
 [dependency-groups]
 dev = [
-    "fastapi>=0.136.0",
+    "fastapi>=0.137.0",
     "fasthx>=3.1.0",
     "mkdocstrings[python]>=1.0.4",
-    "mypy>=1.20.1,<2",
-    "poethepoet>=0.44.0",
-    "pytest>=9.0.3",
+    "mypy>=2.1.0,<3",
+    "poethepoet>=0.46.0",
+    "pytest>=9.1.0",
     "pytest-random-order>=1.2.0",
-    "ruff>=0.15.11,<0.16",
-    "types-markdown>=3.10.2.20260408,<4",
+    "ruff>=0.15.17,<0.16",
+    "types-markdown>=3.10.2.20260518,<4",
     "typing-extensions>=4.12.2,<5",
     "trio>=0.33.0",
     "types-lxml>=2026.2.16",
-    "zensical>=0.0.33",
+    "zensical>=0.0.45",
 ]
 
 [build-system]
