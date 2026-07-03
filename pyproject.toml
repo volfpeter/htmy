@@ -12,7 +12,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+jinja = ["jinja2>=3.1.6", "markupsafe>=3.0.3"]
 lxml = ["lxml>=6.0.0"]
+all = ["htmy[jinja,lxml]"]
 
 [dependency-groups]
 dev = [
