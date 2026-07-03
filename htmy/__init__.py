@@ -1,4 +1,4 @@
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 from .core import ContextAware as ContextAware
 from .core import Formatter as Formatter
@@ -44,6 +44,3 @@ from .utils import join
 from .utils import join_components as join_components
 
 join_classes = join
-
-HTMY = Renderer
-"""Deprecated alias for `Renderer`."""
