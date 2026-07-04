@@ -41,6 +41,11 @@ build-backend = "pdm.backend"
 [tool.mypy]
 strict = true
 show_error_codes = true
+explicit_package_bases = true
+exclude = [
+    "examples/jinja-slots-fastapi",
+    "examples/snippet-slots-fastapi",
+]
 
 [tool.pdm.build]
 excludes = ["tests/", "examples/"]
