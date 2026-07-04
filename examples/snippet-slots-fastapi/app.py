@@ -61,8 +61,8 @@ app = FastAPI()
 
 htmy = HTMY()
 """
-The `HTMY` instance (from `FastHX`) that takes care of component rendering
-through its route decorators.
+The `HTMY` instance that takes care of component
+rendering through its route decorators.
 """
 
 
