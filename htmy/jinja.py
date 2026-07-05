@@ -23,7 +23,12 @@ class JinjaTemplateSource(Protocol):
 
 
 class JinjaTemplates(ContextAware):
-    """Context-aware Jinja2 template source that can be placed in the `htmy` rendering context."""
+    """
+    Context-aware Jinja2 template source that can be placed in the `htmy` rendering context.
+
+    The `JinjaTemplate` component looks up the `JinjaTemplates` instance from the `htmy` rendering
+    context to find and render templates.
+    """
 
     __slots__ = ("_source",)
 
@@ -47,7 +52,13 @@ class JinjaTemplates(ContextAware):
 
 
 class DefaultSlots(ContextAware):
-    """Context-aware holder of default named slots for `JinjaTemplate`."""
+    """
+    Context-aware holder of default named slots for `JinjaTemplate`.
+
+    The `JinjaTemplate` component looks up the `DefaultSlots` instance from the `htmy` rendering
+    context. If found, `JinjaTemplate` renders each slot and passes the rendered values as
+    `markupsafe.Markup` strings to the Jinja template.
+    """
 
     __slots__ = ("_slots",)
 
@@ -56,13 +67,13 @@ class DefaultSlots(ContextAware):
         Initialization.
 
         Arguments:
-            slots: Optional default slots mapping.
+            slots: Optional mapping of slot names to `htmy` components.
         """
         self._slots = {} if slots is None else slots
 
     @property
     def slots(self) -> Mapping[str, Component]:
-        """The default slots mapping."""
+        """Mapping of slot names to `htmy` components."""
         return self._slots
 
 
@@ -70,8 +81,12 @@ class JinjaTemplate:
     """
     Component that renders a Jinja2 template.
 
-    The template source (`JinjaTemplates`) must be in the `htmy` rendering context. The looked up
-    template source is used to load and render the template.
+    The template source (a `JinjaTemplates` instance) must be in the `htmy` rendering context.
+    The looked up template source is used to load and render the template.
+
+    If a `DefaultSlots` instance is found in the `htmy` rendering context, its slots are rendered
+    and included in the `slots` context variable passed to Jinja. `slots` passed directly to this
+    component take precedence over `DefaultSlots` slots when both contain a slot with the same name.
     """
 
     __slots__ = ("_jinja_context", "_slots", "_template_name")

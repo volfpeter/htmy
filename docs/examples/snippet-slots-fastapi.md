@@ -10,9 +10,9 @@ One additional note, before we start coding: the `MD` component (for markdown re
 
 Our project structure will look like this:
 
-- `layout.html`: The HTML snippet for the `layout` component factory.
-- `centered.html`: The HTML snippet for the `centered` component factory.
-- `app.py`: All our `htmy` components, component factories, and the `FastAPI` application.
+- `layout.html`: The HTML snippet for `layout`.
+- `centered.html`: The HTML snippet for `centered`.
+- `app.py`: All our `htmy` components and the `FastAPI` application.
 
 Let's start by creating the `layout.html` file. Layouts often require a deeply nested component structure, so it's a good idea to use `Snippet` for then with dynamic slot rendering, because it improves performance and you can write almost the entire HTML structure in native `.html` files (without custom syntax).
 
@@ -64,7 +64,7 @@ Let's start by creating the `layout.html` file. Layouts often require a deeply n
 
 As you can see, we have the basic HTML document definition and some static content in this file, including a `<!-- slot[content] -->` marker (plain HTML comment), which will be resolved by `Snippet` to the correct `htmy` component during rendering.
 
-Next, we will create the `centered.html` file, which will be a lot simpler. Actually, it's so simple we shouldn't even use `Snippet` for it (a plain `htmy` component would be simpler and more efficient), but we will, just to showcase multiple `Snippet` usage patterns.
+Next, we create the `centered.html` file, which will be a lot simpler. Actually, it's so simple we shouldn't even use `Snippet` for it (a plain `htmy` component would be simpler and more efficient), but we will, just to showcase multiple `Snippet` usage patterns.
 
 ```html
 <div class="flex flex-col w-full h-full items-center justify-center">
@@ -110,7 +110,7 @@ def centered(*children: ComponentType) -> Snippet:
     )
 ```
 
-We create one more component - `request_headers` - just to have something that's not built with `Snippet`. It requires access to the current request from the `htmy` rendering context - loaded via `CurrentRequest` `fasthx utility` -, so we need a real component in this case. Is has no properties, so a context-only function component is a good choice:
+We create one more component - `request_headers` - just to have something that's not built with `Snippet`. It requires access to the current request from the `htmy` rendering context - loaded via `CurrentRequest` `fasthx` utility -, so we need a real component in this case. Is has no properties, so a context-only function component is a good choice:
 
 ```python
 @component.context_only

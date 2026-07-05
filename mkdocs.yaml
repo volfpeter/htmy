@@ -53,12 +53,14 @@ nav:
   - Examples:
       - Examples: examples/index.md
       - examples/snippet-slots-fastapi.md
+      - examples/jinja-slots-fastapi.md
       - examples/fastapi-htmx-tailwind-daisyui.md
       - examples/markdown.md
       - examples/internationalization.md
   - API reference:
       - api/core.md
       - api/html.md
+      - api/jinja.md
       - api/snippet.md
       - api/md.md
       - api/function_component.md

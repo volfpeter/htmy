@@ -58,9 +58,6 @@ def index_page(_: None) -> JinjaTemplate:
     return layout(centered(request_headers()))
 
 
-app = FastAPI()
-"""The FastAPI application."""
-
 jinja_templates = JinjaTemplates(Environment(loader=FileSystemLoader("."), autoescape=True))
 """Jinja templates that `htmy` `JinjaTemplate` components should use."""
 
@@ -76,6 +73,9 @@ The `HTMY` instance that takes care of component rendering through
 its route decorators. It uses the pre-configured renderer which has
 `jinja_templates` in its default context.
 """
+
+app = FastAPI()
+"""The FastAPI application."""
 
 
 @app.get("/")
