@@ -333,7 +333,7 @@ Because of the similarity with native HTML, JSX, and React, you can expect good 
 
 By design, `htmy` is compatible with any other Python templating library, for example Jinja, through wrappers. A wrapper is simply a custom `htmy` component that internally offloads rendering to another templating framework. This makes it possible to easily combine `htmy` with other libraries, to gradually adopt it, and even to enjoy the benefits of multiple frameworks.
 
-The `htmy.jinja` module provide built-in support for Jinja templates.
+The `htmy.jinja` module provides built-in support for Jinja templates.
 
 Performance strongly depends on how you use `htmy`. The `Snippet` component for example makes it possible to reach almost Python string formatting performance, while rendering large, deep component trees is noticeably slower than Jinja for example. Wrapping another templating library for certain use-cases, or pre-rendering components and later using `Snippet` to fill in the dynamic content can be beneficial for performance.
 
