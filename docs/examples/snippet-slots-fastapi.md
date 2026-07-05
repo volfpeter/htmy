@@ -14,7 +14,7 @@ Our project structure will look like this:
 - `centered.html`: The HTML snippet for `centered`.
 - `app.py`: All our `htmy` components and the `FastAPI` application.
 
-Let's start by creating the `layout.html` file. Layouts often require a deeply nested component structure, so it's a good idea to use `Snippet` for then with dynamic slot rendering, because it improves performance and you can write almost the entire HTML structure in native `.html` files (without custom syntax).
+Let's start by creating the `layout.html` file. Layouts often require a deeply nested component structure, so it's a good idea to use `Snippet` for them with dynamic slot rendering, because it improves performance and you can write almost the entire HTML structure in native `.html` files (without custom syntax).
 
 ```html
 <!doctype html>
