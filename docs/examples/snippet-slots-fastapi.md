@@ -10,14 +10,14 @@ One additional note, before we start coding: the `MD` component (for markdown re
 
 Our project structure will look like this:
 
-- `layout.html`: The HTML snippet for the `layout` `htmy` component.
-- `centered.html`: The HTML snippet for the `Centered` `htmy` component.
-- `app.py`: All our `htmy` components and the `FastAPI` application.
+- `layout.html`: The HTML snippet for the `layout` component factory.
+- `centered.html`: The HTML snippet for the `centered` component factory.
+- `app.py`: All our `htmy` components, component factories, and the `FastAPI` application.
 
 Let's start by creating the `layout.html` file. Layouts often require a deeply nested component structure, so it's a good idea to use `Snippet` for then with dynamic slot rendering, because it improves performance and you can write almost the entire HTML structure in native `.html` files (without custom syntax).
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Snippet with Slots</title>
@@ -74,13 +74,13 @@ Next, we will create the `centered.html` file, which will be a lot simpler. Actu
 
 This HTML file also contains a `<!-- slot[content] -->` marker, but the slot's key (`content`) could be anything else. The important thing, as you'll see below, is that the `Slots()` instance of the `Snippet()` contains the right component for the right slot key.
 
-We have all the HTML we need for our `Snippet`s, so we can finally get started with the application in `app.py`. We will do it step by step, starting with the `layout` component (factory):
+We have all the HTML we need for our `Snippet`s, so we can finally get started with the application in `app.py`. We will do it step by step, starting with the imports and the `layout` component factory:
 
 ```python
 from fastapi import FastAPI
 from fasthx.htmy import HTMY, CurrentRequest
 
-from htmy import ComponentType, Context, Fragment, Slots, Snippet, html
+from htmy import ComponentType, Context, Fragment, Slots, Snippet, component, html
 
 
 def layout(*children: ComponentType) -> Snippet:
@@ -94,43 +94,41 @@ def layout(*children: ComponentType) -> Snippet:
     )
 ```
 
-In this case, `layout` is not even an `htmy` component, it's just a simple function that returns a `Snippet` that's configured to load the `layout.html` file we previously created, and render the given children components in place of the `content` slot.
+In this case, `layout` is not an `htmy` component, it's just a simple function that returns a `Snippet` that's configured to load the `layout.html` file we previously created, and render the given children components in place of the `content` slot.
 
-Now we can implement the `Centered` component. In this case we use a slightly different pattern, we subclass the component from the `Fragment` component: this way we get the `_children` property without having to write the `__init__(self, *children)` method.
+Now we can implement `centered`, another component factory. Since it only wraps its children and doesn't need access to the rendering context, a factory is the simplest and most efficient choice.
 
 ```python
-class Centered(Fragment):
-    """Component that centers its children both vertically and horizontally."""
-
-    def htmy(self, context: Context) -> Snippet:
-        return Snippet(
-            "centered.html",  # Path to the HTML snippet.
-            Slots({"content": self._children}),  # Render all children in the "content" slot.
-        )
+def centered(*children: ComponentType) -> Snippet:
+    """
+    Component factory that creates a `Snippet` configured to render `centered.html` with the
+    given children components replacing the `content` slot.
+    """
+    return Snippet(
+        "centered.html",  # Path to the HTML snippet.
+        Slots({"content": children}),  # Render all children in the "content" slot.
+    )
 ```
 
-Unlike `layout`, this component only creates the configured `Snippet` instance during rendering (in the `htmy()` method). In this simple case there's not much difference between the two patterns, but `Centered` could technically have extra state, take values from `context`, execute business logic, and use the extra data to configure the `Snippet` instance.
-
-We create one more component (`RequestHeaders`), just to have something that's not built with `Snippet`. This component simply shows all the headers from the current request in a grid:
+We create one more component - `request_headers` - just to have something that's not built with `Snippet`. It requires access to the current request from the `htmy` rendering context - loaded via `CurrentRequest` `fasthx utility` -, so we need a real component in this case. Is has no properties, so a context-only function component is a good choice:
 
 ```python
-class RequestHeaders:
-    """Component that displays all the headers in the current request."""
-
-    def htmy(self, context: Context) -> ComponentType:
-        # Load the current request from the context.
-        request = CurrentRequest.from_context(context)
-        return html.div(
-            html.h2("Request headers:", class_="text-lg font-semibold pb-2"),
-            html.div(
-                *(
-                    # Convert header name and value pairs to fragments.
-                    Fragment(html.label(name + ":"), html.label(value))
-                    for name, value in request.headers.items()
-                ),
-                class_="grid grid-cols-[max-content_1fr] gap-2",
+@component.context_only
+def request_headers(context: Context) -> ComponentType:
+    """Context-only function component that displays all the headers in the current request."""
+    # Load the current request from the context.
+    request = CurrentRequest.from_context(context)
+    return html.div(
+        html.h2("Request headers:", class_="text-lg font-semibold pb-2"),
+        html.div(
+            *(
+                # Convert header name and value pairs to fragments.
+                Fragment(html.label(name + ":"), html.label(value))
+                for name, value in request.headers.items()
             ),
-        )
+            class_="grid grid-cols-[max-content_1fr] gap-2",
+        ),
+    )
 ```
 
 The final step before creating the FastAPI application is to create a function that returns the content of the index page:
@@ -145,12 +143,12 @@ def index_page(_: None) -> Snippet:
     accept a single argument (the return value of the route) and return
     the component(s) that should be rendered.
     """
-    return layout(Centered(RequestHeaders()))
+    return layout(centered(request_headers()))
 ```
 
-`index_page()`, similarly to `layout()` is also not a component, just a function that returns a component. Specifically, it shows the `RequestHeaders` component, centered in the page. We don't really need this function, we could use `lambda _: layout(Centered(RequestHeaders()))` instead in the `FastHX` `page()` decorator, but the example is more readable and easier to follow this way.
+`index_page()`, similarly to `layout()` and `centered()`, is also not a component, just a function that returns a component. Specifically, it shows the `request_headers` component, centered in the page. We don't really need this function, we could use `lambda _: layout(centered(request_headers()))` instead in the `FastHX` `page()` decorator, but the example is more readable and easier to follow this way.
 
-Finally, we everything is ready, we can create the FastAPI application itself:
+Finally, everything is ready, we can create the FastAPI application, the `fasthx.htmy.HTMY` instance that takes care of component rendering through its route decorators, and register a route for the index page:
 
 ```python
 app = FastAPI()
@@ -158,8 +156,8 @@ app = FastAPI()
 
 htmy = HTMY()
 """
-The `HTMY` instance (from `FastHX`) that takes care of component rendering
-through its route decorators.
+The `HTMY` instance that takes care of component
+rendering through its route decorators.
 """
 
 
@@ -168,7 +166,6 @@ through its route decorators.
 async def index() -> None:
     """The index route. It has no business logic, so it can remain empty."""
     ...
-
 ```
 
 The `@htmy.page()` decorator takes care of rendering the result of the `index()` route with the component the `index_page()` function returns. The only thing that remains is to run the application with `python -m uvicorn app:app`, open http://127.0.0.1:8000 in the browser, and see the result of our work.
