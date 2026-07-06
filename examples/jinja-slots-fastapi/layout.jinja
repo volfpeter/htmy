@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Snippet with Slots</title>
+    <title>Jinja with Slots</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
@@ -14,29 +14,30 @@
           href="https://volfpeter.github.io/htmy/"
           class="text-blue-600 visited:text-purple-600"
           target="_blank"
-          >htmy</a
-        >,
+          >htmy</a>,
         <a
           href="https://volfpeter.github.io/fasthx/"
           class="text-blue-600 visited:text-purple-600"
           target="_blank"
-          >FastHX</a
-        >,
+          >FastHX</a>,
         <a
           href="https://fastapi.tiangolo.com/"
           class="text-blue-600 visited:text-purple-600"
           target="_blank"
-          >FastAPI</a
-        >,
+          >FastAPI</a>,
+        <a
+          href="https://jinja.palletsprojects.com/"
+          class="text-blue-600 visited:text-purple-600"
+          target="_blank"
+          >Jinja</a>,
         <a
           href="https://tailwindcss.com/"
           class="text-blue-600 visited:text-purple-600"
           target="_blank"
-          >TailwindCSSv4</a
-        >.
+          >TailwindCSSv4</a>.
       </p>
       <div class="h-full w-full">
-        <!-- slot[content] -->
+        {{ slots.content }}
       </div>
     </div>
   </body>

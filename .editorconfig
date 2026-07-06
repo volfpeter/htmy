@@ -1,0 +1,2 @@
+[*.{jinja,html,js,css}]
+tab_width = 2

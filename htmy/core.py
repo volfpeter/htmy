@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import enum
 import json
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast, overload
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr as xml_quoteattr
 
@@ -59,6 +59,8 @@ class WithContext(Fragment):
 
 
 # -- Context utilities
+
+_MISSING: Any = object()
 
 
 class ContextAware:
@@ -124,18 +126,37 @@ class ContextAware:
 
         return result
 
+    @overload
     @classmethod
-    def from_context(cls, context: Context, default: Self | None = None) -> Self:
+    def from_context(cls, context: Context) -> Self: ...
+
+    @overload
+    @classmethod
+    def from_context(cls, context: Context, default: None) -> Self | None: ...
+
+    @overload
+    @classmethod
+    def from_context(cls, context: Context, default: Self) -> Self: ...
+
+    @classmethod
+    def from_context(cls, context: Context, default: Self | None = _MISSING) -> Self | None:
         """
-        Looks up an instance of this class from the given contexts.
+        Looks up an instance of this class from the given context.
 
         Arguments:
             context: The context the instance should be loaded from.
-            default: The default to use if no instance was found in the context.
+            default: The default to use if no instance is found in the context. If omitted,
+                a `KeyError` is raised on absence.
+
+        Raises:
+            KeyError: If no instance was found and no `default` was given.
+            TypeError: If the value in the context is not an instance of this class.
         """
-        result = context[cls] if default is None else context.get(cls, default)
+        result = context[cls] if default is _MISSING else context.get(cls, default)
         if isinstance(result, cls):
             return result
+        if result is None:
+            return None
 
         raise TypeError(f"Invalid context data type for {cls.__name__}.")
 

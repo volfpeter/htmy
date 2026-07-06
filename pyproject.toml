@@ -12,7 +12,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+jinja = ["jinja2>=3.1.6", "markupsafe>=3.0.3"]
 lxml = ["lxml>=6.0.0"]
+all = ["htmy[jinja,lxml]"]
 
 [dependency-groups]
 dev = [
@@ -29,6 +31,7 @@ dev = [
     "trio>=0.33.0",
     "types-lxml>=2026.2.16",
     "zensical>=0.0.45",
+    "uvicorn>=0.50.0",
 ]
 
 [build-system]
@@ -38,6 +41,11 @@ build-backend = "pdm.backend"
 [tool.mypy]
 strict = true
 show_error_codes = true
+explicit_package_bases = true
+exclude = [
+    "examples/jinja-slots-fastapi",
+    "examples/snippet-slots-fastapi",
+]
 
 [tool.pdm.build]
 excludes = ["tests/", "examples/"]
