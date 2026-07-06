@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Protocol
+from collections.abc import Callable, Mapping
+from typing import TYPE_CHECKING, Any, Protocol, TypeAlias
 
 import anyio
 from markupsafe import Markup
@@ -9,6 +9,9 @@ from markupsafe import Markup
 from .core import ContextAware, SafeStr
 from .renderer.context import RendererContext
 from .typing import Component, Context
+
+JinjaContextFactory: TypeAlias = Callable[[Context], Mapping[str, Any]]
+"""A function that builds additional Jinja context entries from an `htmy` rendering context."""
 
 if TYPE_CHECKING:
     from jinja2 import Template
@@ -87,15 +90,19 @@ class JinjaTemplate:
     If a `DefaultSlots` instance is found in the `htmy` rendering context, its slots are rendered
     and included in the `slots` context variable passed to Jinja. `slots` passed directly to this
     component take precedence over `DefaultSlots` slots when both contain a slot with the same name.
+
+    Jinja context creation precedence: `jinja_context`, `_build_context()`, `make_context`, and
+    finally the reserved `slots` key.
     """
 
-    __slots__ = ("_jinja_context", "_slots", "_template_name")
+    __slots__ = ("_jinja_context", "_make_context", "_slots", "_template_name")
 
     def __init__(
         self,
         template_name: str,
         *,
         jinja_context: Mapping[str, Any] | None = None,
+        make_context: JinjaContextFactory | None = None,
         slots: Mapping[str, Component] | None = None,
     ) -> None:
         """
@@ -104,13 +111,17 @@ class JinjaTemplate:
         Arguments:
             template_name: The name of the template to render.
             jinja_context: Optional mapping passed to Jinja as the template context.
-            slots: Optional named slots to be rendered in the template. Values are `htmy` components, they
-                are rendered before being passed to Jinja as `markupsafe.Markup` to avoid double-escaping,
-                content is not re-escaped by Jinja's autoescape. Slots are available through the `slots`
-                key in the Jinja context and accessed as `{{ slots.<name> }}`.
+            make_context: Optional callable that receives the `htmy` rendering context and
+                returns additional Jinja context entries. It runs after `_build_context()`,
+                but before slot rendering, so it can not override the reserved `slots` key.
+            slots: Optional named slots to be rendered in the template. Values are `htmy` components,
+                they are rendered before being passed to Jinja as `markupsafe.Markup` to avoid
+                double-escaping, content is not re-escaped by Jinja's autoescape. Slots are available
+                through the `slots` key in the Jinja context and accessed as `{{ slots.<name> }}`.
         """
         self._template_name = template_name
         self._jinja_context = jinja_context
+        self._make_context = make_context
         self._slots = slots
 
     def _build_context(self, htmy_context: Context, /) -> dict[str, Any]:
@@ -131,8 +142,11 @@ class JinjaTemplate:
         default_slots = DefaultSlots.from_context(context, None)
 
         template = templates.get_template(self._template_name)
-        jinja_context = self._build_context(context)
         slots: dict[str, Markup] = {}
+
+        jinja_context = self._build_context(context)
+        if self._make_context is not None:
+            jinja_context.update(self._make_context(context))
 
         if default_slots is not None:
             for name, component in default_slots.slots.items():
