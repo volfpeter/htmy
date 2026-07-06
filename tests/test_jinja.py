@@ -1,12 +1,11 @@
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
 
 from htmy import Renderer, SafeStr
-from htmy.jinja import DefaultSlots, JinjaTemplate, JinjaTemplates
+from htmy.jinja import DefaultSlots, JinjaContextFactory, JinjaTemplate, JinjaTemplates
 from htmy.renderer import BaselineRenderer
 from htmy.typing import Component
 
@@ -140,7 +139,7 @@ async def test_jinja_template(
     jinja_context: Mapping[str, object] | None,
     slots: Mapping[str, Component] | None,
     default_slots: Mapping[str, Component] | None,
-    make_context: Any,
+    make_context: JinjaContextFactory | None,
     expected: str,
 ) -> None:
     """Renders a Jinja template with both renderers and both template sources."""
