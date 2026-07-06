@@ -156,8 +156,7 @@ class JinjaTemplate:
             for name, component in self._slots.items():
                 slots[name] = Markup(await renderer.render(component, context))  # noqa: S704
 
-        if len(slots) > 0:
-            jinja_context["slots"] = slots
+        jinja_context["slots"] = slots
 
         if template.environment.is_async:
             rendered = await template.render_async(**jinja_context)
