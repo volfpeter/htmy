@@ -28,15 +28,16 @@ _ASYNC_TEMPLATES = JinjaTemplates(
     ids=["sync", "async"],
 )
 @pytest.mark.parametrize(
-    ("jinja_context", "slots", "default_slots", "make_context", "expected"),
+    ("jinja_context", "slots", "default_slots", "make_context", "use_default_slots", "expected"),
     [
-        pytest.param(None, None, None, None, "title=\nheading=\nmessage=", id="default-context"),
-        pytest.param({}, None, None, None, "title=\nheading=\nmessage=", id="empty-context"),
+        pytest.param(None, None, None, None, False, "title=\nheading=\nmessage=", id="default-context"),
+        pytest.param({}, None, None, None, False, "title=\nheading=\nmessage=", id="empty-context"),
         pytest.param(
             {"title": "Hello", "heading": "Hi there", "message": "Welcome."},
             None,
             None,
             None,
+            False,
             "title=Hello\nheading=Hi there\nmessage=Welcome.",
             id="filled-context",
         ),
@@ -45,6 +46,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             None,
             None,
             None,
+            False,
             "title=A &amp; B\nheading=\nmessage=",
             id="autoescape",
         ),
@@ -53,6 +55,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             {"children": SafeStr("<b>child</b>")},
             None,
             None,
+            False,
             "title=Hello\nheading=\nmessage=\nnav=\nchildren=<b>child</b>",
             id="single-slot",
         ),
@@ -61,6 +64,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             {"children": SafeStr("body"), "nav": SafeStr("<nav>links</nav>")},
             None,
             None,
+            False,
             "title=Hello\nheading=\nmessage=\nnav=<nav>links</nav>\nchildren=body",
             id="multiple-slots",
         ),
@@ -69,6 +73,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             {"children": SafeStr("<b>child</b>")},
             None,
             None,
+            False,
             "title=&lt;b&gt;\nheading=\nmessage=\nnav=\nchildren=<b>child</b>",
             id="no-double-escape",
         ),
@@ -77,6 +82,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             {"children": SafeStr("real")},
             None,
             None,
+            False,
             "title=t\nheading=\nmessage=\nnav=\nchildren=real",
             id="slots-key-is-reserved",
         ),
@@ -85,6 +91,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             None,
             None,
             lambda ctx: {"title": "from make_context"},
+            False,
             "title=from make_context\nheading=\nmessage=",
             id="make-context-overrides-static",
         ),
@@ -93,6 +100,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             {"children": SafeStr("real")},
             None,
             lambda ctx: {"slots": "forbidden"},
+            False,
             "title=t\nheading=\nmessage=\nnav=\nchildren=real",
             id="make-context-cannot-override-slots",
         ),
@@ -101,16 +109,36 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             None,
             {"children": SafeStr("<b>default-child</b>"), "nav": SafeStr("default-nav")},
             None,
+            True,
             "title=Hello\nheading=\nmessage=\nnav=default-nav\nchildren=<b>default-child</b>",
             id="default-slots-only",
+        ),
+        pytest.param(
+            {"title": "Hello"},
+            None,
+            {"children": SafeStr("<b>default-child</b>"), "nav": SafeStr("default-nav")},
+            None,
+            False,
+            "title=Hello\nheading=\nmessage=",
+            id="default-slots-opted-out",
         ),
         pytest.param(
             {"title": "Hello"},
             {"children": SafeStr("explicit-children")},
             {"children": SafeStr("default-children"), "nav": SafeStr("<nav>default-nav</nav>")},
             None,
+            True,
             ("title=Hello\nheading=\nmessage=\nnav=<nav>default-nav</nav>\nchildren=explicit-children"),
             id="default-slots-merged-with-explicit",
+        ),
+        pytest.param(
+            {"title": "Hello"},
+            {"children": SafeStr("explicit-children")},
+            {"children": SafeStr("default-children"), "nav": SafeStr("<nav>default-nav</nav>")},
+            None,
+            False,
+            ("title=Hello\nheading=\nmessage=\nnav=\nchildren=explicit-children"),
+            id="default-slots-opted-out-keeps-explicit",
         ),
         pytest.param(
             {"title": "outer-title"},
@@ -123,6 +151,7 @@ _ASYNC_TEMPLATES = JinjaTemplates(
             },
             None,
             None,
+            False,
             (
                 "title=outer-title\nheading=\nmessage=\nnav=\n"
                 "children=title=inner-title\nheading=\nmessage=\nnav=\nchildren=<i>deep</i>"
@@ -140,6 +169,7 @@ async def test_jinja_template(
     slots: Mapping[str, Component] | None,
     default_slots: Mapping[str, Component] | None,
     make_context: JinjaContextFactory | None,
+    use_default_slots: bool,
     expected: str,
 ) -> None:
     """Renders a Jinja template with both renderers and both template sources."""
@@ -148,6 +178,7 @@ async def test_jinja_template(
         jinja_context=jinja_context,
         slots=slots,
         make_context=make_context,
+        use_default_slots=use_default_slots,
     )
     component = DefaultSlots(default_slots).in_context(template) if default_slots is not None else template
     for renderer in (default_renderer, baseline_renderer):
