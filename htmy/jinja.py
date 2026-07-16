@@ -129,7 +129,7 @@ class JinjaTemplate:
         self._template_name = template_name
         self._jinja_context = jinja_context
         self._make_context = make_context
-        self._slots = slots
+        self._slots: Mapping[str, Component] = {} if slots is None else slots
         self._use_default_slots = use_default_slots
 
     def _build_context(self, htmy_context: Context, /) -> dict[str, Any]:
@@ -172,11 +172,13 @@ class JinjaTemplate:
 
         if self._use_default_slots:
             for name, component in self._get_default_slots(context).items():
+                if name in self._slots:
+                    continue  # Do not waste time rendering a slot that would be overwritten
+
                 slots[name] = Markup(await renderer.render(component, context))  # noqa: S704
 
-        if self._slots is not None:
-            for name, component in self._slots.items():
-                slots[name] = Markup(await renderer.render(component, context))  # noqa: S704
+        for name, component in self._slots.items():
+            slots[name] = Markup(await renderer.render(component, context))  # noqa: S704
 
         jinja_context["slots"] = slots
 
