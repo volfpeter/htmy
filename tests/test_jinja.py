@@ -21,11 +21,23 @@ _ASYNC_TEMPLATES = JinjaTemplates(
     )
 )
 
+_LAZY_SYNC_TEMPLATES = JinjaTemplates(
+    lambda: Environment(loader=FileSystemLoader(_TEMPLATE_DIR), autoescape=True)
+)
+
+_LAZY_ASYNC_TEMPLATES = JinjaTemplates(
+    lambda: Environment(
+        loader=FileSystemLoader(_TEMPLATE_DIR),
+        enable_async=True,
+        autoescape=True,
+    )
+)
+
 
 @pytest.mark.parametrize(
     "templates",
-    [_SYNC_TEMPLATES, _ASYNC_TEMPLATES],
-    ids=["sync", "async"],
+    [_SYNC_TEMPLATES, _ASYNC_TEMPLATES, _LAZY_SYNC_TEMPLATES, _LAZY_ASYNC_TEMPLATES],
+    ids=["sync", "async", "lazy-sync", "lazy-async"],
 )
 @pytest.mark.parametrize(
     ("jinja_context", "slots", "default_slots", "make_context", "use_default_slots", "expected"),
