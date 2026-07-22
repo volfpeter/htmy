@@ -10,11 +10,11 @@ from .core import ContextAware, SafeStr
 from .renderer.context import RendererContext
 from .typing import Component, Context
 
-JinjaContextFactory: TypeAlias = Callable[[Context], Mapping[str, Any]]
-"""A function that builds additional Jinja context entries from an `htmy` rendering context."""
-
 if TYPE_CHECKING:
     from jinja2 import Template
+
+JinjaContextFactory: TypeAlias = Callable[[Context], Mapping[str, Any]]
+"""A function that builds additional Jinja context entries from an `htmy` rendering context."""
 
 
 class JinjaTemplateSource(Protocol):
@@ -33,25 +33,36 @@ class JinjaTemplates(ContextAware):
     context to find and render templates.
     """
 
-    __slots__ = ("_source",)
+    __slots__ = ("_source", "_source_factory")
 
-    def __init__(self, source: JinjaTemplateSource) -> None:
+    def __init__(self, source: JinjaTemplateSource | Callable[[], JinjaTemplateSource]) -> None:
         """
         Initialization.
 
         Arguments:
-            source: A Jinja2 template source, e.g. a `jinja2.Environment` instance.
+            source: A Jinja2 template source (e.g. a `jinja2.Environment` instance) or a
+                zero-argument factory that returns one. When a factory is provided, the
+                source is created once, when first needed.
         """
-        self._source = source
+        is_factory = callable(source) and not hasattr(source, "get_template")
+        self._source: JinjaTemplateSource | None = None if is_factory else source  # type: ignore[assignment]
+        self._source_factory: Callable[[], JinjaTemplateSource] | None = source if is_factory else None  # type: ignore[assignment]
 
     @property
     def source(self) -> JinjaTemplateSource:
-        """The wrapped Jinja2 template source."""
+        """
+        The wrapped Jinja2 template source.
+
+        For instances constructed with a factory, the source is built once, when first accessed.
+        """
+        if self._source is None:
+            # self._source_factory must be a callable in this case
+            self._source = self._source_factory()  # type: ignore[misc]
         return self._source
 
     def get_template(self, name: str) -> Template:
         """Returns the Jinja2 template with the given name."""
-        return self._source.get_template(name)
+        return self.source.get_template(name)
 
 
 class DefaultSlots(ContextAware):
