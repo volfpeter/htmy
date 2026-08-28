@@ -158,6 +158,11 @@ def resolve_json_path(root: Path, dotted_subpath: str) -> Path:
     Raises:
         I18nValueError: If the given dotted path is invalid.
     """
+    # Since "." is the path separator, ".." segments are impossible (they split into empty
+    # segments), so rejecting path separators is sufficient to prevent path traversal.
+    if "/" in dotted_subpath or "\\" in dotted_subpath:
+        raise I18nValueError("Invalid path.")
+
     *dirs, name = dotted_subpath.split(".")
     if not name:
         raise I18nValueError("Invalid path.")

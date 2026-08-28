@@ -236,6 +236,10 @@ class Formatter(ContextAware):
     subclassing for formatter selection, e.g. with `LocaleDatetime(datetime)`-like classes.
 
     Property name and value formatters may raise a `SkipProperty` error if a property should be skipped.
+
+    Important: property names are formatted as-is, without escaping or validation. They must always be
+    developer-controlled identifiers, only property *values* are safely escaped. Never pass untrusted
+    data as a property name.
     """
 
     __slots__ = ("_default_formatter", "_name_formatter", "_value_formatters")
