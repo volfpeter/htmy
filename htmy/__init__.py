@@ -1,4 +1,4 @@
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 from .core import ContextAware as ContextAware
 from .core import Formatter as Formatter
