@@ -154,9 +154,14 @@ class _ComponentRenderer:
         """Resolves all pending async `htmy()` results concurrently."""
         current_async_todos = self._async_todos
         self._async_todos = deque()
-        async with create_task_group() as tg:
-            for awaitable, node in current_async_todos:
-                tg.start_soon(self._process_async_result, awaitable, node)
+        try:
+            async with create_task_group() as tg:
+                for awaitable, node in current_async_todos:
+                    tg.start_soon(self._process_async_result, awaitable, node)
+        except BaseException:
+            # Closes awaitables whose tasks were cancelled before they could start them.
+            self._cancel_pending(current_async_todos)
+            raise
 
     async def run(self) -> str:
         """Runs the component renderer."""
