@@ -1,54 +1,41 @@
 from __future__ import annotations
 
 from collections import ChainMap, deque
-from inspect import isawaitable, iscoroutinefunction
+from inspect import isawaitable
 from typing import TYPE_CHECKING, TypeAlias
 
 from anyio import create_task_group
 
 from htmy.core import xml_format_string
-from htmy.typing import Context
-from htmy.utils import is_component_sequence
+from htmy.utils import is_component_sequence, is_htmy_component_type
 
 from .context import RendererContext
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable, Iterator
+    from collections.abc import Awaitable, Callable
 
-    from htmy.typing import Component, ComponentType, ContextProvider
+    from htmy.typing import Component, ComponentSequence, ComponentType, Context, HTMYComponentType
+
+    _PendingAsyncNode: TypeAlias = tuple["Awaitable[Component]", "_Node"]
 
 
 class _Node:
     """A single node in the linked list the renderer constructs to resolve a component tree."""
 
-    __slots__ = ("component", "next")
+    __slots__ = ("component", "context", "next")
 
-    def __init__(self, component: ComponentType, next: _Node | None = None) -> None:
+    def __init__(self, component: ComponentType, context: Context, next: _Node | None = None) -> None:
         """
         Initialization.
 
         Arguments:
             component: The component in this node.
+            context: The rendering context for the component.
             next: The next component in the list, if there is one.
         """
         self.component = component
+        self.context = context
         self.next = next
-
-    def iter_nodes(self, *, include_self: bool = True) -> Iterator[_Node]:
-        """
-        Iterates over all following nodes.
-
-        Arguments:
-            include_self: Whether the node on which this method is called should also
-                be included in the iterator.
-        """
-        current = self if include_self else self.next
-        while current is not None:
-            yield current
-            current = current.next
-
-
-_NodeAndChildContext: TypeAlias = tuple[_Node, Context]
 
 
 class _ComponentRenderer:
@@ -60,7 +47,7 @@ class _ComponentRenderer:
 
     def __init__(
         self,
-        component: ComponentType,
+        component: HTMYComponentType,
         context: Context,
         *,
         string_formatter: Callable[[str], str],
@@ -70,139 +57,152 @@ class _ComponentRenderer:
 
         Arguments:
             component: The component to render.
-            context: The base context to use for rendering the component.
+            context: The base context to use for rendering.
             string_formatter: The string formatter to use.
         """
-        self._async_todos: deque[_NodeAndChildContext] = deque()
-        """Async node - context tuples that need to be rendered."""
-        self._sync_todos: deque[_NodeAndChildContext] = deque()
-        """
-        Sync node - context tuples that need to be rendered (`node.component` is an `HTMYComponentType`).
-        """
+        self._root = root = _Node(component, context)
+        """The root node in the linked list the renderer constructs."""
+        self._async_todos: deque[_PendingAsyncNode] = deque()
+        """Pending `htmy()` results that must be awaited before node processing."""
+        self._sync_todos: deque[_Node] = deque((root,))
+        """Nodes whose `htmy()` method needs to be called."""
         self._string_formatter = string_formatter
         """The string formatter to use."""
 
-        if isinstance(component, str):
-            root = _Node(string_formatter(component), None)
-        else:
-            root = _Node(component, None)
-            self._schedule_node(root, context)
-        self._root = root
-        """The root node in the linked list the renderer constructs."""
-
-    async def _extend_context(self, component: ContextProvider, context: Context) -> Context:
-        """
-        Returns a new context from the given component and context.
-
-        Arguments:
-            component: A `ContextProvider` component.
-            context: The current rendering context.
-        """
-        extra_context: Context | Awaitable[Context] = component.htmy_context()
-        if isawaitable(extra_context):
-            extra_context = await extra_context
-
-        return (
-            # Context must not be mutated. We can ignore that ChainMap expects mutable mappings.
-            ChainMap(extra_context, context)  # type: ignore[arg-type]
-            if extra_context
-            else context
-        )
-
-    def _process_node_result(self, parent_node: _Node, component: Component, context: Context) -> None:
+    def _process_node_result(self, node: _Node, component: Component) -> None:
         """
         Processes the result of a single node.
 
         Arguments:
-            parent_node: The node that was resolved.
-            component: The (awaited if async) result of `parent_node.component.htmy()`.
-            context: The context that was used for rendering `parent_node.component`.
+            node: The node that was resolved.
+            component: The (awaited if async) result of `node.component.htmy()`.
         """
-        schedule_node = self._schedule_node
-        string_formatter = self._string_formatter
         if hasattr(component, "htmy"):
-            parent_node.component = component
-            schedule_node(parent_node, context)
+            node.component = component
+            self._sync_todos.append(node)
         elif isinstance(component, str):
-            parent_node.component = string_formatter(component)
+            node.component = self._string_formatter(component)
+        elif component is None:
+            node.component = ""
         elif is_component_sequence(component):
-            if len(component) == 0:
-                parent_node.component = ""
-                return
-
-            first_comp, *rest_comps = component
-            if isinstance(first_comp, str):
-                parent_node.component = string_formatter(first_comp)
-            else:
-                parent_node.component = first_comp
-                schedule_node(parent_node, context)
-
-            old_next = parent_node.next
-            last: _Node = parent_node
-            for c in rest_comps:
-                if isinstance(c, str):
-                    node = _Node(string_formatter(c), old_next)
-                else:
-                    node = _Node(c, old_next)
-                    schedule_node(node, context)
-
-                last.next = node
-                last = node
+            self._expand_node_sequence(node, component)
         else:
             raise ValueError(f"Invalid component type: {type(component)}")
 
-    async def _process_async_node(self, node: _Node, context: Context) -> None:
+    def _expand_node_sequence(self, node: _Node, component: ComponentSequence) -> None:
         """
-        Processes the given node. `node.component` must be an async component.
-        """
-        result = await node.component.htmy(context)  # type: ignore[misc,union-attr]
-        self._process_node_result(node, result, context)
+        Expands the given node in place with the items of the given component sequence.
 
-    def _schedule_node(self, node: _Node, child_context: Context) -> None:
-        """
-        Schedules the given node for rendering with the given child context.
+        The first item takes over the resolved node's place in the list, the rest are
+        appended as new nodes between the resolved node and its next node. `None` items
+        are skipped.
 
-        `node.component` must be an `HTMYComponentType` (single component and not `str`).
+        Arguments:
+            node: The node that resolved to the given sequence.
+            component: The component sequence the node resolved to.
         """
-        component = node.component
-        if component is None:
-            pass  # Just skip the node
-        elif iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
-            self._async_todos.append((node, child_context))
+        sync_todos = self._sync_todos
+        string_formatter = self._string_formatter
+        context = node.context
+        old_next = node.next
+        items = iter(component)
+        for first in items:
+            if first is None:
+                continue
+            if isinstance(first, str):
+                node.component = string_formatter(first)
+            else:
+                node.component = first
+                sync_todos.append(node)
+            break
         else:
-            self._sync_todos.append((node, child_context))
+            node.component = ""
+            return
+
+        last = node
+        for c in items:
+            if c is None:
+                continue
+            if isinstance(c, str):
+                child = _Node(string_formatter(c), context, old_next)
+            else:
+                child = _Node(c, context, old_next)
+                sync_todos.append(child)
+
+            last.next = child
+            last = child
+
+    async def _process_async_result(self, awaitable: Awaitable[Component], node: _Node) -> None:
+        """
+        Resolves the given pending `htmy()` result and processes the resolved component.
+
+        Arguments:
+            awaitable: The pending `htmy()` result of `node.component`.
+            node: The node that produced the awaitable.
+        """
+        result = await awaitable
+        self._process_node_result(node, result)
+
+    def _cancel_pending(self, async_todos: deque[_PendingAsyncNode]) -> None:
+        """Closes pending `htmy()` results that were never awaited."""
+        for awaitable, _ in async_todos:
+            close = getattr(awaitable, "close", None)
+            if close is not None:
+                close()
+
+    async def _run_async_batch(self) -> None:
+        """Resolves all pending async `htmy()` results concurrently."""
+        current_async_todos = self._async_todos
+        self._async_todos = deque()
+        try:
+            async with create_task_group() as tg:
+                for awaitable, node in current_async_todos:
+                    tg.start_soon(self._process_async_result, awaitable, node)
+        except BaseException:
+            # Closes awaitables whose tasks were cancelled before they could start them.
+            self._cancel_pending(current_async_todos)
+            raise
 
     async def run(self) -> str:
         """Runs the component renderer."""
-        async_todos = self._async_todos
         sync_todos = self._sync_todos
         process_node_result = self._process_node_result
-        process_async_node = self._process_async_node
 
-        while sync_todos or async_todos:
-            while sync_todos:
-                node, child_context = sync_todos.pop()
-                component = node.component
-                if component is None:
-                    continue
+        try:
+            while sync_todos or self._async_todos:
+                while sync_todos:
+                    node = sync_todos.pop()
+                    component = node.component
+                    context = node.context
 
-                if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
-                    child_context = await self._extend_context(component, child_context)  # type: ignore[arg-type]
+                    if hasattr(component, "htmy_context"):  # isinstance() is too expensive.
+                        extra_context: Context | Awaitable[Context] = component.htmy_context()  # type: ignore[union-attr]
+                        if isawaitable(extra_context):
+                            extra_context = await extra_context
+                        if extra_context:
+                            # Context must not be mutated (ChainMap's mutability expectation is irrelevant).
+                            context = node.context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
-                if iscoroutinefunction(component.htmy):  # type: ignore[union-attr]
-                    async_todos.append((node, child_context))
-                else:
-                    result: Component = component.htmy(child_context)  # type: ignore[assignment,union-attr]
-                    process_node_result(node, result, child_context)
+                    result: Component = component.htmy(context)  # type: ignore[assignment,union-attr]
+                    if isawaitable(result):
+                        # Coroutine creation doesn't run any component code, the
+                        # result is resolved by a task group later.
+                        self._async_todos.append((result, node))
+                    else:
+                        process_node_result(node, result)
 
-            if async_todos:
-                current_async_todos = async_todos
-                self._async_todos = async_todos = deque()
-                async with create_task_group() as tg:
-                    for n, ctx in current_async_todos:
-                        tg.start_soon(process_async_node, n, ctx)
+                if self._async_todos:
+                    await self._run_async_batch()
+        except BaseException:
+            self._cancel_pending(self._async_todos)
+            raise
 
-        return "".join(node.component for node in self._root.iter_nodes() if node.component is not None)  # type: ignore[misc]
+        parts: list[str] = []
+        current: _Node | None = self._root
+        while current is not None:
+            parts.append(current.component)  # type: ignore[arg-type]
+            current = current.next
+        return "".join(parts)
 
 
 async def _render_component(
@@ -212,17 +212,19 @@ async def _render_component(
     string_formatter: Callable[[str], str],
 ) -> str:
     """Renders the given component with the given settings."""
-    if hasattr(component, "htmy"):
+    if is_htmy_component_type(component):
         return await _ComponentRenderer(component, context, string_formatter=string_formatter).run()
     elif isinstance(component, str):
         return string_formatter(component)
     elif is_component_sequence(component):
-        if len(component) == 0:
-            return ""
-
         result = ""
         for c in component:
-            result += await _ComponentRenderer(c, context, string_formatter=string_formatter).run()
+            if c is None:
+                continue
+            elif isinstance(c, str):
+                result += string_formatter(c)
+            else:
+                result += await _ComponentRenderer(c, context, string_formatter=string_formatter).run()
         return result
     elif component is None:
         return ""
