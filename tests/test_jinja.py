@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 from jinja2 import Environment, FileSystemLoader
 
-from htmy import Renderer, SafeStr
+from htmy import SafeStr
 from htmy.jinja import DefaultSlots, JinjaContextFactory, JinjaTemplate, JinjaTemplates
-from htmy.renderer import BaselineRenderer
+from htmy.renderer.typing import RendererType
 from htmy.typing import Component
 
 _TEMPLATE_DIR = Path(__file__).parent / "data"
@@ -174,8 +174,9 @@ _LAZY_ASYNC_TEMPLATES = JinjaTemplates(
 )
 @pytest.mark.anyio
 async def test_jinja_template(
-    default_renderer: Renderer,
-    baseline_renderer: BaselineRenderer,
+    default_renderer: RendererType,
+    baseline_renderer: RendererType,
+    rs_renderer: RendererType,
     templates: JinjaTemplates,
     jinja_context: Mapping[str, object] | None,
     slots: Mapping[str, Component] | None,
@@ -193,6 +194,6 @@ async def test_jinja_template(
         use_default_slots=use_default_slots,
     )
     component = DefaultSlots(default_slots).in_context(template) if default_slots is not None else template
-    for renderer in (default_renderer, baseline_renderer):
+    for renderer in (default_renderer, baseline_renderer, rs_renderer):
         result = await renderer.render(component, context=templates.to_context())
         assert result == expected

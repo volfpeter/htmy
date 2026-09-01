@@ -192,12 +192,15 @@ async def test_renderers(
     default_renderer: RendererType,
     baseline_renderer: RendererType,
     streaming_renderer: RendererType,
+    rs_renderer: RendererType,
 ) -> None:
     default_renderer_result = await default_renderer.render(component)
     baseline_renderer_result = await baseline_renderer.render(component)
     streaming_renderer_result = await streaming_renderer.render(component)
+    rs_renderer_result = await rs_renderer.render(component)
     assert default_renderer_result == baseline_renderer_result
     assert streaming_renderer_result == baseline_renderer_result
+    assert rs_renderer_result == baseline_renderer_result
 
 
 @pytest.mark.anyio
@@ -217,7 +220,30 @@ async def test_none_components_render_nothing(
     default_renderer: RendererType,
     baseline_renderer: RendererType,
     streaming_renderer: RendererType,
+    rs_renderer: RendererType,
 ) -> None:
     """`None` components must not raise and must not render anything."""
-    for renderer in (default_renderer, baseline_renderer, streaming_renderer):
+    for renderer in (default_renderer, baseline_renderer, streaming_renderer, rs_renderer):
         assert await renderer.render(component) == expected
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "component",
+    (
+        123,
+        # Sequences are not valid tag children, only components may return them.
+        html.div(["a", "b"]),  # type: ignore[arg-type]
+    ),
+)
+async def test_invalid_component_raises_value_error(
+    *,
+    component: Component,
+    default_renderer: RendererType,
+    baseline_renderer: RendererType,
+    streaming_renderer: RendererType,
+    rs_renderer: RendererType,
+) -> None:
+    for renderer in (default_renderer, baseline_renderer, streaming_renderer, rs_renderer):
+        with pytest.raises(ValueError, match="Invalid component type"):
+            await renderer.render(component)
