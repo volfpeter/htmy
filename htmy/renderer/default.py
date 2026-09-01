@@ -163,7 +163,7 @@ class _ComponentRenderer:
             self._cancel_pending(current_async_todos)
             raise
 
-    async def run(self) -> str:
+    async def run(self) -> str:  # noqa: C901
         """Runs the component renderer."""
         sync_todos = self._sync_todos
         process_node_result = self._process_node_result
@@ -183,7 +183,12 @@ class _ComponentRenderer:
                             # Context must not be mutated (ChainMap's mutability expectation is irrelevant).
                             context = node.context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
-                    result: Component = component.htmy(context)  # type: ignore[assignment,union-attr]
+                    try:
+                        htmy_method: Callable[[Context], Component] = component.htmy  # type: ignore[assignment,union-attr]
+                    except AttributeError:
+                        raise ValueError(f"Invalid component type: {type(component)}") from None
+
+                    result = htmy_method(context)
                     if isawaitable(result):
                         # Coroutine creation doesn't run any component code, the
                         # result is resolved by a task group later.
