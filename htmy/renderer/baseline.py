@@ -141,7 +141,12 @@ class Renderer:
                     # Context must not be mutated, so we can ignore that ChainMap expects mutable mappings.
                     child_context = ChainMap(extra_context, context)  # type: ignore[arg-type]
 
-            children = component.htmy(child_context)
+            try:
+                htmy_method = component.htmy
+            except AttributeError:
+                raise ValueError(f"Invalid component type: {type(component)}") from None
+
+            children = htmy_method(child_context)
             if isawaitable(children):
                 children = await children
 
