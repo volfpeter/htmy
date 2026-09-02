@@ -46,10 +46,6 @@ Unleash your creativity with the full power and Python, without the hassle of le
 
 "Great API design!" ([ref](https://www.reddit.com/r/Python/comments/1gp3mww/comment/lwpdyq9))
 
-## Support
-
-Consider supporting the development and maintenance of the project through [sponsoring](https://buymeacoffee.com/volfpeter), or reach out for [consulting](https://www.volfp.com/contact?subject=Consulting%20-%20HTMY) so you can get the most out of the library.
-
 ## Installation
 
 The package is available on PyPI and can be installed with:
@@ -62,7 +58,12 @@ The package has the following optional dependency groups:
 
 - `lxml` _(includes the `lxml` library, recommended)_: When installed, it is prioritized over `xml.etree.ElementTree` and provides more secure, faster, and more flexible HTML and XML processing. It is used, for example, for Markdown processing. Install with: `pip install "htmy[lxml]"`.
 - `jinja` _(includes `jinja2` and `markupsafe`)_: When installed, it provides support for rendering Jinja templates using the `htmy.jinja` module. Install with: `pip install "htmy[jinja]"`.
+- `rs` _(includes [`htmy-rs`](https://github.com/volfpeter/htmy-rs))_: Optional native accelerator, providing 4-10x performance improvement, depending on the types of components in the rendered component tree. When installed, tag objects and the default renderer are transparently replaced by the corresponding Rust implementations without affecting user code. `htmy.renderer.default:Renderer` remains untouched, all other import paths are replaced. Rendering results are identical and `htmy` works the same without it. Install with: `pip install "htmy[rs]"`.
 - `all`: Installs all optional dependencies. Install with: `pip install "htmy[all]"`.
+
+## Support
+
+Consider supporting the development and maintenance of the project through [sponsoring](https://buymeacoffee.com/volfpeter), or reach out for [consulting](https://www.volfp.com/contact?subject=Consulting%20-%20HTMY) so you can get the most out of the library.
 
 ## Component libraries
 
@@ -336,6 +337,8 @@ By design, `htmy` is compatible with any other Python templating library, for ex
 The `htmy.jinja` module provides built-in support for Jinja templates.
 
 Performance strongly depends on how you use `htmy`. The `Snippet` component for example makes it possible to reach almost Python string formatting performance, while rendering large, deep component trees is noticeably slower than Jinja for example. Wrapping another templating library for certain use-cases, or pre-rendering components and later using `Snippet` to fill in the dynamic content can be beneficial for performance.
+
+The optional [`htmy-rs`](https://github.com/volfpeter/htmy-rs) native accelerator (installed with `pip install "htmy[rs]"`) significantly improves performance by transparently replacing the pure-Python tag implementations and the default renderer with matching Rust implementations, producing identical rendering results. Jinja is still faster, depending on the component / template structure, but not by a wide margin.
 
 ## Framework integrations
 

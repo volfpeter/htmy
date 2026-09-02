@@ -4,9 +4,11 @@ from time import perf_counter
 
 import anyio
 import pytest
+from htmy_rs.renderer import Renderer as RsRenderer
 
-from htmy import Component, ComponentType, Context, Renderer, component, html
+from htmy import Component, ComponentType, Context, component, html
 from htmy.renderer import BaselineRenderer
+from htmy.renderer.default import Renderer
 
 async_delay = 0.16
 rendering_context: Context = {"date": date(2025, 3, 14)}
@@ -107,6 +109,11 @@ def baseline_renderer() -> BaselineRenderer:
     return BaselineRenderer(rendering_context)
 
 
+@pytest.fixture(scope="session")
+def rs_renderer() -> RsRenderer:
+    return RsRenderer(rendering_context)
+
+
 # -- Tests
 
 
@@ -185,6 +192,7 @@ def baseline_renderer() -> BaselineRenderer:
 async def test_function_component(
     renderer: Renderer,
     baseline_renderer: BaselineRenderer,
+    rs_renderer: RsRenderer,
     comp: Component,
     expected: str,
     min_duration: float,
@@ -196,5 +204,10 @@ async def test_function_component(
 
     t_start = perf_counter()
     assert await baseline_renderer.render(comp) == expected
+    # Test that async calls in async components are awaited.
+    assert perf_counter() - t_start >= min_duration
+
+    t_start = perf_counter()
+    assert await rs_renderer.render(comp) == expected
     # Test that async calls in async components are awaited.
     assert perf_counter() - t_start >= min_duration

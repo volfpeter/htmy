@@ -1,8 +1,10 @@
 import pytest
+from htmy_rs.renderer import Renderer as RsRenderer
 
 from htmy import Context, component
-from htmy.renderer import BaselineRenderer, Renderer
+from htmy.renderer import BaselineRenderer
 from htmy.renderer.context import RendererContext
+from htmy.renderer.default import Renderer
 from htmy.renderer.typing import RendererType
 
 
@@ -14,6 +16,8 @@ from htmy.renderer.typing import RendererType
         BaselineRenderer({RendererContext: "not-the-renderer"}),
         Renderer(),
         Renderer({RendererContext: "not-the-renderer"}),
+        RsRenderer(),
+        RsRenderer({RendererContext: "not-the-renderer"}),
     ],
 )
 async def test_renderer_in_context(renderer: RendererType) -> None:

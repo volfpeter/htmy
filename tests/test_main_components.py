@@ -154,6 +154,7 @@ async def test_complex_page_rendering(
     default_renderer: RendererType,
     baseline_renderer: RendererType,
     streaming_renderer: RendererType,
+    rs_renderer: RendererType,
     page: Component,
     context: Context | None,
     expected: str,
@@ -165,4 +166,7 @@ async def test_complex_page_rendering(
     assert result == expected
 
     result = await streaming_renderer.render(page, context)
+    assert result == expected
+
+    result = await rs_renderer.render(page, context)
     assert result == expected

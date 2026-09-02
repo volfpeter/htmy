@@ -50,6 +50,15 @@ class _TagImpl:
         )
 
 
+# Replace _TagImpl and _TagWithPropsImpl with their Rust-based counterparts if they are available.
+if not TYPE_CHECKING:
+    try:
+        from htmy_rs.tag import TagImpl as _TagImpl
+        from htmy_rs.tag import TagWithPropsImpl as _TagWithPropsImpl
+    except ImportError:
+        pass
+
+
 _default_formatter = Formatter()
 
 

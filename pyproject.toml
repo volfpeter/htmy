@@ -14,10 +14,12 @@ dependencies = [
 [project.optional-dependencies]
 jinja = ["jinja2>=3.1.6", "markupsafe>=3.0.3"]
 lxml = ["lxml>=6.0.0"]
-all = ["htmy[jinja,lxml]"]
+rs = ["htmy-rs>=0.1.2"]
+all = ["htmy[jinja,lxml,rs]"]
 
 [dependency-groups]
 dev = [
+    "htmy[all]",
     "fastapi>=0.137.0",
     "fasthx>=3.1.0",
     "mkdocstrings[python]>=1.0.4",
@@ -90,11 +92,11 @@ format = "ruff format --check ."
 format-fix = "ruff format ."
 
 lint = "ruff check ."
-lint-fix = "ruff . --fix"
+lint-fix = "ruff check . --fix"
 
-mypy = "mypy ."
+type = "mypy ."
 
-check.sequence = ["format", "lint", "mypy"]
+check.sequence = ["format", "lint", "type"]
 check.ignore_fail = "return_non_zero"
 
 test = "python -m pytest tests"
