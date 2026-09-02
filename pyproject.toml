@@ -14,7 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 jinja = ["jinja2>=3.1.6", "markupsafe>=3.0.3"]
 lxml = ["lxml>=6.0.0"]
-rs = ["htmy-rs>=0.1.0"]
+rs = ["htmy-rs>=0.1.2"]
 all = ["htmy[jinja,lxml,rs]"]
 
 [dependency-groups]
