@@ -386,7 +386,7 @@ select = Tag("select")
 See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select.
 """
 
-textarea = Tag("textarea")
+textarea = Tag("textarea", child_separator=None)
 """
 `<textarea>` element.
 
